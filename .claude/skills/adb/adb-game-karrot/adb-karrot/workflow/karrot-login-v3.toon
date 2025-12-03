@@ -1,0 +1,422 @@
+name: Karrot Login Workflow v3
+version: 3.0.0
+description: Resilient login workflow with auto-recovery and banned zone protection
+last_updated: 2024-12-03
+
+# USER SETTINGS (SAVED)
+user:
+  neighborhood: "서초동"
+  phone_number: "01039705176"
+  country: "Korea"
+
+# Device Configuration
+device:
+  id: "127.0.0.1:5555"
+  emulator: "BlueStacks Air"
+  resolution: "1440x2560"
+
+# Scripts
+scripts:
+  resilient_tap: "karrot_resilient_tap.py"
+  safe_tap: "adb-karrot-safe-tap.py"
+  safe_tap_v2: "karrot_safe_tap.py"
+
+# Target Package
+target:
+  package: "com.towneers.www"
+  activity: ".launcher.LauncherActivity"
+  splash_activity: ".ui.splash.SplashActivity"
+
+# Alert Packages (trigger auto-recovery)
+alert_packages:
+  - com.android.vending       # Google Play Store
+  - com.uncube.launcher3      # BlueStacks Launcher
+  - com.google.android.gms    # Google Play Services
+
+# BANNED ZONES - NEVER TAP HERE (BlueStacks Air 1440x2560)
+banned_zones:
+  - id: bluestacks_game_banner
+    description: "BlueStacks POPULAR GAMES TO PLAY - opens Play Store!"
+    x_min: 0
+    x_max: 1440
+    y_min: 2187
+    y_max: 2560
+    severity: critical
+    auto_recovery: true
+
+  - id: bluestacks_ad_container
+    description: "BlueStacks side ad container"
+    x_min: 840
+    x_max: 1440
+    y_min: 162
+    y_max: 2422
+    severity: high
+    auto_recovery: true
+
+  - id: bluestacks_search
+    description: "BlueStacks Search bar"
+    x_min: 240
+    x_max: 1200
+    y_min: 178
+    y_max: 258
+    severity: medium
+    auto_recovery: false
+
+# Safe Tap Targets (1440x2560 resolution)
+# NOTE: All y-coordinates verified to avoid banned zones
+safe_targets:
+  # Welcome Screen
+  welcome_get_started:
+    x: 720
+    y: 2350  # SAFE: Upper part of button (button bounds: [32,2322][1408,2426])
+    description: "Get Started button - upper safe zone"
+    safe: true
+    verification: "Button bounds [32,2322][1408,2426], ad zone starts at y=2187"
+
+  welcome_login:
+    x: 872
+    y: 2493
+    description: "Log In link"
+    safe: false  # WARNING: May be in ad zone
+    alternative: "Use welcome_get_started instead"
+
+  # Neighborhood Selection
+  search_field:
+    x: 756
+    y: 104
+    description: "Search by neighborhood input"
+    safe: true
+
+  find_nearby:
+    x: 720
+    y: 216
+    description: "Find nearby neighborhoods button"
+    safe: true
+
+  # Verification
+  verify_now:
+    x: 720
+    y: 2484
+    description: "Verify now button (30 sec)"
+    safe: true
+    note: "May vary based on screen content"
+
+  # Phone Entry
+  phone_input:
+    x: 720
+    y: 400
+    description: "Phone number input field"
+    safe: true
+
+  confirm_button:
+    x: 720
+    y: 2400
+    description: "Confirm/Continue button"
+    safe: true
+
+  # Navigation
+  back_button:
+    x: 64
+    y: 104
+    description: "Back arrow"
+    safe: true
+
+# Timing Configuration
+timing:
+  tap_delay:
+    min_ms: 500
+    max_ms: 2000
+    description: "Random delay before each tap"
+
+  tap_variance:
+    enabled: true
+    offset_px: 5
+    description: "Random coordinate offset"
+
+  post_tap_wait_ms: 1000
+  recovery_wait_ms: 2000
+  screen_load_wait_ms: 3000
+
+# Workflow Phases
+phases:
+  - id: safe_launch
+    name: Safe App Launch
+    description: "Launch Karrot with interference prevention"
+    steps:
+      - action: force-stop
+        packages:
+          - com.uncube.launcher3
+          - com.android.vending
+        description: "Kill interfering apps first"
+
+      - action: wait
+        ms: 500
+
+      - action: launch
+        package: "{{target.package}}"
+        activity: "{{target.activity}}"
+        wait_ms: 3000
+
+      - action: verify-package
+        expected: "{{target.package}}"
+        on_fail:
+          action: retry
+          max_attempts: 3
+          wait_ms: 2000
+
+  - id: welcome_screen
+    name: Handle Welcome Screen
+    description: "Navigate welcome screen with safe tap"
+    pre_check:
+      - action: verify-package
+        expected: "{{target.package}}"
+        on_fail: goto safe_launch
+
+    steps:
+      - action: wait-for-element
+        resource_id: "com.towneers.www:id/buttonNewNext"
+        text: "Get started"
+        timeout_ms: 10000
+        on_timeout:
+          action: screenshot
+          path: "/tmp/karrot_welcome_timeout.png"
+
+      - action: resilient-tap
+        target: welcome_get_started
+        script: "{{scripts.resilient_tap}}"
+        description: "Tap Get Started with full verification"
+        pre_verify: true
+        post_verify: true
+        auto_recover: true
+
+      - action: wait
+        ms: 3000
+
+      - action: verify-not-package
+        packages: "{{alert_packages}}"
+        on_fail:
+          action: recover
+          goto: safe_launch
+
+  - id: neighborhood_selection
+    name: Select Neighborhood
+    description: "Search and select 서초동"
+    pre_check:
+      - action: verify-package
+        expected: "{{target.package}}"
+        on_fail: goto safe_launch
+
+    steps:
+      - action: wait-for-text
+        text: "Search by neighborhood"
+        timeout_ms: 10000
+
+      - action: resilient-tap
+        target: find_nearby
+        script: "{{scripts.resilient_tap}}"
+        description: "Tap Find nearby neighborhoods"
+
+      - action: wait
+        ms: 3000
+
+      # Try to find 서초동 using OCR or UI dump
+      - action: ocr-find
+        text: "{{user.neighborhood}}"
+        on_found:
+          action: tap-element
+          wait_ms: 2000
+        on_not_found:
+          action: tap-first-result
+          description: "Select first available neighborhood"
+
+      - action: wait
+        ms: 2000
+
+  - id: identity_verification
+    name: Identity Verification
+    description: "Handle Verify now screen (30 seconds)"
+    pre_check:
+      - action: verify-package
+        expected: "{{target.package}}"
+        on_fail: goto safe_launch
+
+    steps:
+      - action: wait-for-text
+        text: "Verify now"
+        timeout_ms: 10000
+        optional: true
+
+      - action: resilient-tap
+        target: verify_now
+        script: "{{scripts.resilient_tap}}"
+        description: "Tap Verify now"
+        optional: true
+
+      # This step requires manual intervention
+      - action: user-prompt
+        message: "Complete verification manually, then press Enter"
+        timeout_sec: 120
+        optional: true
+
+  - id: phone_entry
+    name: Enter Phone Number
+    description: "Enter phone number and confirm"
+    pre_check:
+      - action: verify-package
+        expected: "{{target.package}}"
+        on_fail: goto safe_launch
+
+    steps:
+      - action: wait-for-text
+        text: "phone"
+        timeout_ms: 10000
+        case_insensitive: true
+
+      - action: resilient-tap
+        target: phone_input
+        script: "{{scripts.resilient_tap}}"
+        description: "Tap phone input field"
+
+      - action: input-text
+        text: "{{user.phone_number}}"
+        method: "keyevent"
+        char_delay_ms: 80
+        char_variance_ms: 40
+        description: "Type phone number with human-like delays"
+
+      - action: wait
+        ms: 1000
+
+      - action: resilient-tap
+        target: confirm_button
+        script: "{{scripts.resilient_tap}}"
+        description: "Tap confirm button"
+
+  - id: sms_verification
+    name: SMS Verification
+    description: "Wait for SMS code entry"
+    steps:
+      - action: user-prompt
+        message: "Enter SMS code manually, then press Enter"
+        timeout_sec: 300
+        description: "Manual SMS code entry required"
+
+# Recovery Configuration
+recovery:
+  enabled: true
+  max_attempts: 3
+  strategy: "aggressive"
+
+  on_alert_package:
+    - action: log
+      message: "Alert package detected, starting recovery"
+    - action: press-back
+      count: 2
+      delay_ms: 500
+    - action: force-stop
+      packages: "{{alert_packages}}"
+    - action: wait
+      ms: 1000
+    - action: launch
+      package: "{{target.package}}"
+      activity: "{{target.activity}}"
+    - action: wait
+      ms: 3000
+    - action: verify-package
+      expected: "{{target.package}}"
+
+  on_crash:
+    - action: log
+      message: "App crash detected"
+    - action: wait
+      ms: 2000
+    - action: launch
+      package: "{{target.package}}"
+      activity: "{{target.activity}}"
+
+  on_banned_zone_tap:
+    - action: abort-tap
+      log: true
+      message: "Tap aborted - in banned zone"
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  interval_ms: 2000
+  auto_recover: true
+
+  package_check:
+    enabled: true
+    target: "{{target.package}}"
+    alert_on: "{{alert_packages}}"
+
+  logcat:
+    enabled: true
+    keywords:
+      - LIAPP
+      - security
+      - tamper
+      - detection
+      - root
+    on_detect:
+      action: pause-and-alert
+      message: "Security detection keyword found in logcat"
+
+# Logging Configuration
+logging:
+  enabled: true
+  file: "/tmp/karrot-workflow-v3.log"
+  json_log: "/tmp/karrot-tap-log.json"
+  level: "INFO"
+  include_timestamps: true
+  include_screenshots: true
+  screenshot_path: "/tmp/karrot-screenshots/"
+
+# Execution Configuration
+execution:
+  mode: "sequential"
+  stop_on_error: false
+  retry_failed_phases: true
+  skip_completed: true
+
+# Quick Commands
+commands:
+  launch: "uv run karrot_resilient_tap.py --launch"
+  recover: "uv run karrot_resilient_tap.py --recover"
+  status: "uv run karrot_resilient_tap.py --status"
+  tap_start: "uv run karrot_resilient_tap.py --tap welcome_get_started"
+  monitor: "uv run karrot_safe_tap.py --monitor"
+
+# Notes
+notes:
+  - "v3.0.0: Complete rewrite with resilient tap and auto-recovery"
+  - "BlueStacks ad banner starts at y=2187 - NEVER tap below this"
+  - "Get Started button bounds: [32,2322][1408,2426] - use y=2350 for safety"
+  - "User neighborhood: 서초동 (may not be in default list)"
+  - "Phone: 010-3970-5176 stored as 01039705176"
+  - "Uses karrot_resilient_tap.py for all tap operations"
+  - "Auto-recovery closes Play Store and relaunches Karrot"
+  - "All taps include pre/post package verification"
+
+# Changelog
+changelog:
+  - version: "3.0.0"
+    date: "2024-12-03"
+    changes:
+      - "Complete rewrite with resilient tap system"
+      - "Added auto-recovery at every phase"
+      - "Fixed welcome_get_started coordinate (2374 -> 2350)"
+      - "Added pre/post tap package verification"
+      - "Integrated karrot_resilient_tap.py script"
+
+  - version: "2.0.0"
+    date: "2024-12-03"
+    changes:
+      - "Added banned zone protection"
+      - "Added user settings persistence"
+      - "Added monitoring configuration"
+
+  - version: "1.0.0"
+    date: "2024-12-02"
+    changes:
+      - "Initial workflow"

@@ -1,0 +1,102 @@
+id: adb-swipe
+name: Swipe Screen
+description: Simulate touch swipe gesture from one point to another
+category: control
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = default device)"
+    required: false
+  - name: x1
+    type: integer
+    default: 0
+    description: "Starting X coordinate in pixels"
+    required: true
+  - name: y1
+    type: integer
+    default: 0
+    description: "Starting Y coordinate in pixels"
+    required: true
+  - name: x2
+    type: integer
+    default: 0
+    description: "Ending X coordinate in pixels"
+    required: true
+  - name: y2
+    type: integer
+    default: 0
+    description: "Ending Y coordinate in pixels"
+    required: true
+  - name: duration
+    type: integer
+    default: 500
+    description: "Swipe duration in milliseconds"
+    required: false
+  - name: direction
+    type: string
+    default: "custom"
+    description: "Swipe direction: up, down, left, right, or custom"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/control/swipe.py
+  args: ["--device", "{{ device }}", "--x1", "{{ x1 }}", "--y1", "{{ y1 }}", "--x2", "{{ x2 }}", "--y2", "{{ y2 }}", "--duration", "{{ duration }}", "--direction", "{{ direction }}"]
+  timeout_seconds: 15
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Swipe successful"
+    - "swipe completed"
+  output_patterns:
+    - "Swiped from \(\d+, \d+\) to \(\d+, \d+\)"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 1
+  on_error:
+    - exit_code: 1
+      action: "Device not found or offline"
+    - exit_code: 2
+      action: "Invalid coordinates, outside screen bounds"
+    - exit_code: 3
+      action: "Swipe gesture failed"
+
+outputs:
+  - name: swipe_status
+    type: string
+    description: "Status of swipe operation"
+  - name: start_coords
+    type: object
+    description: "Starting coordinates"
+    properties:
+      x:
+        type: integer
+      y:
+        type: integer
+  - name: end_coords
+    type: object
+    description: "Ending coordinates"
+    properties:
+      x:
+        type: integer
+      y:
+        type: integer
+  - name: duration_ms
+    type: integer
+    description: "Actual swipe duration in milliseconds"
+  - name: distance_pixels
+    type: number
+    description: "Distance swiped in pixels"
+
+validation:
+  - name: coordinate_bounds
+    rule: "All coordinates must be non-negative and within screen resolution"
+  - name: duration_positive
+    rule: "duration must be between 100 and 5000 milliseconds"
+  - name: different_positions
+    rule: "Start and end positions must be different"

@@ -45,3 +45,6 @@ vite.config.ts.timestamp-*
 
 /.venv/
 /target/
+CLAUDE.local.md
+.moai/cache/
+.moai/logs/

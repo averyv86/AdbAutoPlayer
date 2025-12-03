@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "MoAI Tab Suspender",
+  "version": "1.0.0",
+  "description": "Suspend inactive tabs to free memory for macOS Resource Optimizer",
+  "permissions": ["tabs", "nativeMessaging"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "48": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='22' fill='%234CAF50'/%3E%3Ctext x='24' y='32' font-size='24' text-anchor='middle' fill='white'%3E💤%3C/text%3E%3C/svg%3E"
+  }
+}

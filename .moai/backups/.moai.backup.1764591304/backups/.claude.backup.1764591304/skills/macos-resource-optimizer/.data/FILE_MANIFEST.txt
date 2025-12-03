@@ -1,0 +1,208 @@
+================================================================================
+                        MoAI TEST SUITE - FILE MANIFEST
+================================================================================
+
+PROJECT: macOS Resource Optimizer
+CREATED: 2025-11-30
+TOTAL FILES: 10 (6 test files + 4 docs/config)
+
+================================================================================
+                           PRIMARY TEST FILES
+================================================================================
+
+COMMAND 0: Initialization Tests
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_0_init.py
+  Tests: 13
+  Size: ~12 KB
+  Focus: Python engine validation, dependency checking, MetricsCache setup
+
+COMMAND 1: Analysis Tests
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_1_analyze.py
+  Tests: 13
+  Size: ~15 KB
+  Focus: Parallel 6-category analysis, performance targets, JSON output
+
+COMMAND 2: Optimization Tests
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_2_optimize.py
+  Tests: 13
+  Size: ~14 KB
+  Focus: Sequential workflow, Korean UI, user approval, rollback
+
+COMMAND 3: Monitoring Tests
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_3_monitor.py
+  Tests: 15
+  Size: ~15 KB
+  Focus: Continuous loop, threshold alerts, termination, state save
+
+COMMAND 4: Report Tests
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_4_report.py
+  Tests: 12
+  Size: ~14 KB
+  Focus: Markdown, JSON, HTML generation with format validation
+
+COMMAND 9: Feedback Tests
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_9_feedback.py
+  Tests: 18
+  Size: ~16 KB
+  Focus: Feedback collection, validation, /moai:9-feedback integration
+
+================================================================================
+                       DOCUMENTATION & CONFIG FILES
+================================================================================
+
+QUICK REFERENCE
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/TESTS.md
+  Purpose: Quick reference guide with test overview
+  Size: ~4 KB
+
+TEST DOCUMENTATION
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/README.md
+  Purpose: Detailed test structure and running instructions
+  Size: ~16 KB
+
+TEST SUMMARY
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/TEST_SUMMARY.md
+  Purpose: Comprehensive breakdown of all 84 tests
+  Size: ~10 KB
+
+PYTEST CONFIGURATION
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/pytest.ini
+  Purpose: pytest settings, markers, and coverage configuration
+  Size: ~1 KB
+
+PACKAGE INITIALIZATION
+  File: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/__init__.py
+  Purpose: Python package initialization for tests
+  Size: ~0.5 KB
+
+================================================================================
+                          FILE STATISTICS
+================================================================================
+
+TEST FILES:
+  Total files: 6
+  Total size: ~84 KB
+  Total lines: ~4,500
+  Total test functions: 84
+
+DOCUMENTATION FILES:
+  Total files: 3
+  Total size: ~30 KB
+  Total lines: ~1,200
+
+CONFIGURATION FILES:
+  Total files: 2
+  Total size: ~1.5 KB
+  Total lines: ~50
+
+================================================================================
+                        DIRECTORY STRUCTURE
+================================================================================
+
+.claude/skills/macos-resource-optimizer/.data/
+├── TESTS.md                          (4 KB)  - Quick reference
+├── FILE_MANIFEST.txt                 (2 KB)  - This file
+├── pytest.ini                        (1 KB)  - pytest configuration
+└── tests/
+    ├── __init__.py                   (0.5 KB)
+    ├── README.md                     (16 KB)  - Detailed documentation
+    ├── TEST_SUMMARY.md               (10 KB)  - Comprehensive breakdown
+    ├── test_command_0_init.py        (12 KB)  - 13 tests
+    ├── test_command_1_analyze.py     (15 KB)  - 13 tests
+    ├── test_command_2_optimize.py    (14 KB)  - 13 tests
+    ├── test_command_3_monitor.py     (15 KB)  - 15 tests
+    ├── test_command_4_report.py      (14 KB)  - 12 tests
+    └── test_command_9_feedback.py    (16 KB)  - 18 tests
+
+Total Size: ~120 KB
+Total Files: 10 (6 test + 4 doc/config)
+
+================================================================================
+                      ABSOLUTE FILE PATHS
+================================================================================
+
+Test Files (Commands):
+  0-init:    /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_0_init.py
+  1-analyze: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_1_analyze.py
+  2-optimize:/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_2_optimize.py
+  3-monitor: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_3_monitor.py
+  4-report:  /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_4_report.py
+  9-feedback:/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_9_feedback.py
+
+Documentation:
+  TESTS.md:       /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/TESTS.md
+  README.md:      /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/README.md
+  TEST_SUMMARY:   /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/TEST_SUMMARY.md
+  FILE_MANIFEST:  /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/FILE_MANIFEST.txt
+
+Configuration:
+  pytest.ini:     /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/pytest.ini
+  __init__.py:    /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/__init__.py
+
+================================================================================
+                        HOW TO USE THESE FILES
+================================================================================
+
+1. QUICK START
+   Read: .claude/skills/macos-resource-optimizer/.data/TESTS.md
+   Run:  pytest .claude/skills/macos-resource-optimizer/.data/tests/ -v
+
+2. UNDERSTAND TEST STRUCTURE
+   Read: .claude/skills/macos-resource-optimizer/.data/tests/README.md
+   Contains: Detailed test organization, running commands, success criteria
+
+3. DETAILED TEST BREAKDOWN
+   Read: .claude/skills/macos-resource-optimizer/.data/tests/TEST_SUMMARY.md
+   Contains: All 84 tests with descriptions, categories, and assertions
+
+4. RUN SPECIFIC TESTS
+   pytest .claude/skills/macos-resource-optimizer/.data/tests/test_command_1_analyze.py -v
+
+5. GENERATE COVERAGE REPORT
+   pytest .claude/skills/macos-resource-optimizer/.data/tests/ --cov=.claude/skills/macos-resource-optimizer/.data --cov-report=html
+
+================================================================================
+                          TEST EXECUTION
+================================================================================
+
+Basic:
+  pytest .claude/skills/macos-resource-optimizer/.data/tests/ -v
+
+With Coverage:
+  pytest .claude/skills/macos-resource-optimizer/.data/tests/ --cov=.claude/skills/macos-resource-optimizer/.data --cov-report=html
+
+Specific Command:
+  pytest .claude/skills/macos-resource-optimizer/.data/tests/test_command_0_init.py -v
+
+Specific Test Class:
+  pytest .claude/skills/macos-resource-optimizer/.data/tests/test_command_1_analyze.py::TestCommand1AnalyzeDelegation -v
+
+Specific Test Function:
+  pytest .claude/skills/macos-resource-optimizer/.data/tests/test_command_2_optimize.py::test_optimize_command_complete_workflow -v
+
+Integration Tests Only:
+  pytest .claude/skills/macos-resource-optimizer/.data/tests/ -k integration -v
+
+Async Tests Only:
+  pytest .claude/skills/macos-resource-optimizer/.data/tests/ -m asyncio -v
+
+================================================================================
+                            SUMMARY
+================================================================================
+
+Created: 2025-11-30
+Version: 1.0.0
+
+Total Tests:        84 test functions
+Test Files:         6 (test_command_*.py)
+Commands Covered:   6/6 (100%)
+Documentation:      3 files (TESTS.md, README.md, TEST_SUMMARY.md)
+Configuration:      2 files (pytest.ini, __init__.py)
+
+All files use absolute paths for cross-platform compatibility.
+All tests use mocks to avoid actual subprocess execution.
+All tests follow pytest best practices with fixtures and markers.
+
+Status: READY FOR EXECUTION
+
+================================================================================

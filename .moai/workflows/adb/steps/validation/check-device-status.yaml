@@ -1,0 +1,117 @@
+id: adb-check-device-status
+name: Check Device Status
+description: Comprehensive device status check including connectivity, services, and system health
+category: validation
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = default device)"
+    required: false
+  - name: check_services
+    type: boolean
+    default: true
+    description: "Check system services status"
+    required: false
+  - name: check_battery
+    type: boolean
+    default: true
+    description: "Check battery status"
+    required: false
+  - name: check_storage
+    type: boolean
+    default: true
+    description: "Check storage space"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/validation/check_device_status.py
+  args: ["--device", "{{ device }}", "--check-services", "{{ check_services }}", "--check-battery", "{{ check_battery }}", "--check-storage", "{{ check_storage }}"]
+  timeout_seconds: 30
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Device status"
+    - "healthy"
+    - "operational"
+  output_patterns:
+    - "Status: (healthy|warning|critical)"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 2
+  on_error:
+    - exit_code: 1
+      action: "Device not found or offline"
+    - exit_code: 2
+      action: "Device status check timed out"
+    - exit_code: 3
+      action: "Device in critical state"
+
+outputs:
+  - name: overall_status
+    type: string
+    description: "Overall device status (healthy/warning/critical)"
+  - name: connectivity_status
+    type: string
+    description: "Network connectivity status"
+  - name: battery_status
+    type: object
+    description: "Battery information"
+    properties:
+      level:
+        type: integer
+        description: "Battery percentage (0-100)"
+      health:
+        type: string
+        description: "Battery health status"
+      temperature:
+        type: number
+        description: "Battery temperature in Celsius"
+      charging:
+        type: boolean
+        description: "Is device charging"
+  - name: storage_status
+    type: object
+    description: "Storage information"
+    properties:
+      total_gb:
+        type: number
+      used_gb:
+        type: number
+      free_gb:
+        type: number
+      free_percent:
+        type: number
+  - name: memory_status
+    type: object
+    description: "Memory information"
+    properties:
+      total_mb:
+        type: integer
+      available_mb:
+        type: integer
+      used_mb:
+        type: integer
+  - name: services_status
+    type: object
+    description: "System services status"
+    properties:
+      adb_daemon:
+        type: string
+      system_server:
+        type: string
+  - name: warnings
+    type: array
+    description: "List of warnings if any"
+  - name: check_timestamp
+    type: string
+    description: "Timestamp of status check"
+
+validation:
+  - name: boolean_params
+    rule: "check_services, check_battery, check_storage must be boolean"

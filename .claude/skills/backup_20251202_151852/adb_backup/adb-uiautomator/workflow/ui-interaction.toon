@@ -1,0 +1,246 @@
+name: UI Element Interaction Workflow
+description: Perform interactions with UI elements including tap, swipe, long-press, and text input
+version: 1.0.0
+
+metadata:
+  category: ui-automation
+  skill: adb-uiautomator
+  difficulty: intermediate
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  interaction:
+    type: string
+    default: "tap"
+    description: "Interaction type: tap, long_press, swipe, text_input"
+  x:
+    type: integer
+    default: 540
+    description: X coordinate for interaction
+  y:
+    type: integer
+    default: 960
+    description: Y coordinate for interaction
+  text:
+    type: string
+    default: ""
+    description: Text to input (for text_input interaction)
+  duration:
+    type: integer
+    default: 500
+    description: Duration in milliseconds for long press
+  swipe_direction:
+    type: string
+    default: "up"
+    description: "Swipe direction: up, down, left, right"
+
+phases:
+  - id: prepare_interaction
+    name: Prepare for Interaction
+    description: Verify target element and device state
+    steps:
+      - id: capture_current_state
+        name: Capture Current State
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/pre_interaction.png"
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_coordinates
+        name: Verify Coordinates Valid
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo '{{ x }},{{ y }}' | grep -E '^[0-9]+,[0-9]+$' > /dev/null && echo 'valid' || echo 'invalid'"
+          timeout: 5
+        on_success: continue
+        on_failure: abort
+
+  - id: perform_tap
+    name: Perform Tap Interaction
+    description: Tap on specified coordinates
+    steps:
+      - id: execute_tap
+        name: Execute Tap
+        action: adb-tap
+        params:
+          device: "{{ device }}"
+          x: "{{ x }}"
+          y: "{{ y }}"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: wait_response
+        name: Wait for Response
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: screen_change
+          timeout: 3
+        on_success: continue
+        on_failure: skip
+
+  - id: perform_long_press
+    name: Perform Long Press
+    description: Long press on element
+    steps:
+      - id: execute_long_press
+        name: Execute Long Press
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "input swipe {{ x }} {{ y }} {{ x }} {{ y }} {{ duration }}"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: wait_long_press_response
+        name: Wait for Long Press Response
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: screen_change
+          timeout: 2
+        on_success: continue
+        on_failure: skip
+
+  - id: perform_swipe
+    name: Perform Swipe Interaction
+    description: Swipe in specified direction
+    steps:
+      - id: calculate_swipe_coords
+        name: Calculate Swipe Coordinates
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Swiping {{ swipe_direction }} from {{ x }},{{ y }}'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: execute_swipe
+        name: Execute Swipe
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: |
+            case "{{ swipe_direction }}" in
+              up) input swipe {{ x }} $(({{ y }} + 200)) {{ x }} $(({{ y }} - 200)) 500 ;;
+              down) input swipe {{ x }} $(({{ y }} - 200)) {{ x }} $(({{ y }} + 200)) 500 ;;
+              left) input swipe $(({{ x }} + 200)) {{ y }} $(({{ x }} - 200)) {{ y }} 500 ;;
+              right) input swipe $(({{ x }} - 200)) {{ y }} $(({{ x }} + 200)) {{ y }} 500 ;;
+            esac
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: wait_swipe_settle
+        name: Wait for Swipe to Settle
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: stability
+          timeout: 2
+        on_success: continue
+        on_failure: skip
+
+  - id: perform_text_input
+    name: Perform Text Input
+    description: Input text into focused field
+    steps:
+      - id: clear_field
+        name: Clear Field First
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "input keyevent KEYCODE_CTRL_A && input keyevent KEYCODE_DEL"
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+      - id: execute_text_input
+        name: Input Text
+        action: adb-text-input
+        params:
+          device: "{{ device }}"
+          text: "{{ text }}"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_text_entered
+        name: Verify Text Entered
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/text_input_result.png"
+        on_success: continue
+        on_failure: continue
+
+  - id: verify_interaction
+    name: Verify Interaction Result
+    description: Confirm interaction had desired effect
+    steps:
+      - id: capture_post_state
+        name: Capture Post-Interaction State
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/post_interaction.png"
+        on_success: continue
+        on_failure: continue
+
+      - id: dump_ui_tree
+        name: Dump UI Tree After Interaction
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "uiautomator dump /tmp/ui_tree_post.xml 2>/dev/null && echo 'dumped'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+validation:
+  - phase: prepare_interaction
+    condition: "coordinates_valid == true"
+    on_failure: abort
+
+  - phase: perform_tap
+    condition: "interaction == 'tap'"
+    on_failure: skip
+
+  - phase: perform_text_input
+    condition: "interaction == 'text_input'"
+    on_failure: skip
+
+recovery:
+  - on_error: execute_tap
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: execute_swipe
+    action: retry
+    max_attempts: 2
+
+  - on_error: execute_text_input
+    action: log_and_continue
+    max_attempts: 1
+
+outputs:
+  - name: interaction_result
+    format: json
+    description: Interaction success/failure status
+
+  - name: ui_state_change
+    format: table
+    description: UI state before and after interaction
+
+  - name: interaction_log
+    format: text
+    description: Detailed interaction execution log

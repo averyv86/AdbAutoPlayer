@@ -1,0 +1,564 @@
+name: Karrot Daily Routine Workflow
+description: "Automated daily tasks for Karrot app with detection avoidance"
+version: 1.0.0
+
+metadata:
+  game: karrot
+  workflow_type: daily-routine
+  difficulty: intermediate
+  tags: [daily, routine, automation, feed-browsing, chat-management]
+  author: AdbAutoPlayer
+  created: 2025-12-03
+
+parameters:
+  device: "127.0.0.1:5555"
+  behavior_profile: "casual_user"
+  session_duration_min: 8
+  session_duration_max: 20
+  browse_feed_count: 10
+  check_messages: true
+  like_probability: 0.15
+  comment_probability: 0.05
+  search_items: false
+  search_keywords: []
+
+session_config:
+  max_duration_minutes: 25
+  min_duration_minutes: 8
+  actions_per_session_min: 5
+  actions_per_session_max: 20
+  idle_between_actions: true
+  idle_min: 2.0
+  idle_max: 6.0
+
+human_simulation:
+  enabled: true
+  tap_delay_min: 1.0
+  tap_delay_max: 3.5
+  scroll_duration_min: 300
+  scroll_duration_max: 800
+  reading_time_min: 2.0
+  reading_time_max: 8.0
+  back_probability: 0.12
+  random_scroll_probability: 0.25
+
+phases:
+  - id: session_start
+    name: Initialize Daily Session
+    description: Start app and prepare for daily routine
+    retry_on_failure: true
+    timeout: 30
+    steps:
+      - id: start_step1
+        name: Launch Karrot App
+        action: adb-launch
+        params:
+          device: "{{ device }}"
+          package: "com.towneers.www"
+          activity: ".MainActivity"
+          timeout: 15
+        on_success: continue
+        on_failure: retry
+
+      - id: start_step2
+        name: Wait for Main Feed
+        action: wait-state
+        params:
+          device: "{{ device }}"
+          state: "main_feed"
+          timeout: 15
+          method: hybrid
+        on_success: continue
+        on_failure: retry
+
+      - id: start_step3
+        name: Initial Idle Period
+        action: delay
+        params:
+          min: 2.0
+          max: 5.0
+        on_success: continue
+        on_failure: continue
+
+      - id: start_step4
+        name: Capture Feed State
+        action: screenshot
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/karrot_feed_initial.png"
+        on_success: continue
+        on_failure: continue
+
+  - id: browse_feed
+    name: Browse Main Feed
+    description: Scroll through feed items with human-like behavior
+    retry_on_failure: false
+    timeout: 300
+    steps:
+      - id: browse_step1
+        name: Scroll to Refresh
+        action: swipe
+        params:
+          device: "{{ device }}"
+          direction: "down"
+          start_x: 540
+          start_y: 400
+          end_x: 540
+          end_y: 1200
+          duration_ms: 400
+        on_success: continue
+        on_failure: continue
+
+      - id: browse_step2
+        name: Wait for Refresh
+        action: delay
+        params:
+          min: 1.5
+          max: 3.0
+        on_success: continue
+        on_failure: continue
+
+      - id: browse_step3
+        name: Browse Feed Items
+        action: loop
+        params:
+          device: "{{ device }}"
+          iterations: "{{ browse_feed_count }}"
+          loop_actions:
+            - action: scroll
+              direction: up
+              distance: random
+              duration_ms: [300, 800]
+
+            - action: conditional-tap
+              condition: "random() < {{ like_probability }}"
+              target: "like_button"
+              method: hybrid
+
+            - action: delay
+              min: "{{ reading_time_min }}"
+              max: "{{ reading_time_max }}"
+
+            - action: conditional-action
+              condition: "random() < 0.2"
+              action: tap_item_details
+
+            - action: conditional-action
+              condition: "random() < {{ back_probability }}"
+              action: press_back
+        on_success: continue
+        on_failure: continue
+
+      - id: browse_step4
+        name: Random Additional Scroll
+        action: conditional-action
+        params:
+          device: "{{ device }}"
+          condition: "random() < 0.4"
+          action: scroll_feed
+          repeat: [2, 5]
+        on_success: continue
+        on_failure: continue
+
+  - id: check_notifications
+    name: Check Notifications
+    description: View and interact with notifications
+    retry_on_failure: false
+    timeout: 60
+    steps:
+      - id: notif_step1
+        name: Navigate to Notifications
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Notifications icon"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: notif_step2
+        name: Wait for Notifications Screen
+        action: wait-state
+        params:
+          device: "{{ device }}"
+          state: "notifications"
+          timeout: 10
+          method: hybrid
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: notif_step3
+        name: Browse Notifications
+        action: scroll
+        params:
+          device: "{{ device }}"
+          direction: up
+          repeat: [2, 5]
+          duration_ms: [400, 700]
+          delay_between: [1.5, 3.0]
+        on_success: continue
+        on_failure: continue
+
+      - id: notif_step4
+        name: Randomly Open Notification
+        action: conditional-action
+        params:
+          device: "{{ device }}"
+          condition: "random() < 0.3"
+          action: tap_first_notification
+        on_success: continue
+        on_failure: continue
+
+      - id: notif_step5
+        name: Return to Main Feed
+        action: press-back
+        params:
+          device: "{{ device }}"
+          repeat: 2
+          delay_between: 1.0
+        on_success: continue
+        on_failure: continue
+
+  - id: check_messages
+    name: Check Messages
+    description: View chat messages if enabled
+    retry_on_failure: false
+    timeout: 60
+    condition: "{{ check_messages }}"
+    steps:
+      - id: msg_step1
+        name: Navigate to Messages
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Messages icon"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: msg_step2
+        name: Wait for Messages Screen
+        action: wait-state
+        params:
+          device: "{{ device }}"
+          state: "messages_list"
+          timeout: 10
+          method: hybrid
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: msg_step3
+        name: Browse Message List
+        action: scroll
+        params:
+          device: "{{ device }}"
+          direction: up
+          repeat: [1, 3]
+          duration_ms: [300, 600]
+          delay_between: [2.0, 4.0]
+        on_success: continue
+        on_failure: continue
+
+      - id: msg_step4
+        name: Random Idle
+        action: delay
+        params:
+          min: 2.0
+          max: 5.0
+        on_success: continue
+        on_failure: continue
+
+      - id: msg_step5
+        name: Return to Main Feed
+        action: press-back
+        params:
+          device: "{{ device }}"
+          repeat: 1
+        on_success: continue
+        on_failure: continue
+
+  - id: browse_categories
+    name: Browse Categories
+    description: Explore different item categories
+    retry_on_failure: false
+    timeout: 120
+    steps:
+      - id: cat_step1
+        name: Open Category Menu
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Category menu button"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: cat_step2
+        name: Select Random Category
+        action: tap-random
+        params:
+          device: "{{ device }}"
+          region: "category_list"
+          method: hybrid
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: cat_step3
+        name: Browse Category Items
+        action: loop
+        params:
+          device: "{{ device }}"
+          iterations: [3, 7]
+          loop_actions:
+            - action: scroll
+              direction: up
+              duration_ms: [400, 800]
+
+            - action: delay
+              min: 2.0
+              max: 5.0
+
+            - action: conditional-tap
+              condition: "random() < 0.2"
+              target: item_in_list
+        on_success: continue
+        on_failure: continue
+
+      - id: cat_step4
+        name: Return to Main Feed
+        action: press-back
+        params:
+          device: "{{ device }}"
+          repeat: 2
+          delay_between: 1.0
+        on_success: continue
+        on_failure: continue
+
+  - id: search_items
+    name: Search for Items
+    description: Search for specific items if keywords provided
+    retry_on_failure: false
+    timeout: 90
+    condition: "{{ search_items }}"
+    steps:
+      - id: search_step1
+        name: Open Search
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Search icon"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: search_step2
+        name: Enter Search Query
+        action: input-text
+        params:
+          device: "{{ device }}"
+          text: "{{ search_keywords[0] }}"
+          typing_mode: human_simulation
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: search_step3
+        name: Execute Search
+        action: press-enter
+        params:
+          device: "{{ device }}"
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: search_step4
+        name: Browse Search Results
+        action: scroll
+        params:
+          device: "{{ device }}"
+          direction: up
+          repeat: [3, 6]
+          duration_ms: [400, 700]
+          delay_between: [2.0, 4.0]
+        on_success: continue
+        on_failure: continue
+
+      - id: search_step5
+        name: Return to Main Feed
+        action: press-back
+        params:
+          device: "{{ device }}"
+          repeat: 2
+          delay_between: 1.0
+        on_success: continue
+        on_failure: continue
+
+  - id: profile_check
+    name: Check Profile
+    description: Occasionally check own profile
+    retry_on_failure: false
+    timeout: 45
+    steps:
+      - id: profile_step1
+        name: Navigate to Profile
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "My profile icon"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: profile_step2
+        name: Wait for Profile Screen
+        action: wait-state
+        params:
+          device: "{{ device }}"
+          state: "profile"
+          timeout: 10
+          method: hybrid
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: profile_step3
+        name: Browse Profile
+        action: scroll
+        params:
+          device: "{{ device }}"
+          direction: up
+          repeat: [1, 3]
+          duration_ms: [400, 700]
+          delay_between: [2.0, 4.0]
+        on_success: continue
+        on_failure: continue
+
+      - id: profile_step4
+        name: Return to Main Feed
+        action: press-back
+        params:
+          device: "{{ device }}"
+          repeat: 1
+        on_success: continue
+        on_failure: continue
+
+  - id: session_end
+    name: End Daily Session
+    description: Gracefully exit and save session data
+    retry_on_failure: false
+    timeout: 20
+    steps:
+      - id: end_step1
+        name: Return to Main Feed
+        action: press-back
+        params:
+          device: "{{ device }}"
+          repeat: 3
+          delay_between: 1.0
+        on_success: continue
+        on_failure: continue
+
+      - id: end_step2
+        name: Final Capture
+        action: screenshot
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/karrot_feed_final.png"
+        on_success: continue
+        on_failure: continue
+
+      - id: end_step3
+        name: Press Home
+        action: press-home
+        params:
+          device: "{{ device }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: end_step4
+        name: Log Session Complete
+        action: log-event
+        params:
+          event: "daily_routine_complete"
+          session_duration: "{{ session_duration }}"
+          actions_performed: "{{ actions_count }}"
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: session_start
+    condition: "app_launched == true"
+    on_failure: abort
+
+  - phase: browse_feed
+    condition: "feed_browsed == true"
+    on_failure: continue
+
+  - phase: session_end
+    condition: "session_ended == true"
+    on_failure: continue
+
+recovery:
+  - on_error: app_crash
+    action: restart_and_retry
+    max_attempts: 2
+
+  - on_error: network_error
+    action: wait_and_retry
+    wait_duration: 30
+    max_attempts: 3
+
+  - on_error: timeout
+    action: skip_phase_and_continue
+    max_attempts: 1
+
+  - on_error: device_disconnected
+    action: abort
+    max_attempts: 1
+
+best_practices:
+  - name: Random Session Times
+    description: "Run at different times each day within behavior profile hours"
+    enforcement: suggest
+
+  - name: Vary Browse Count
+    description: "Don't browse exactly same number of items every session"
+    enforcement: hard_randomize
+
+  - name: Natural Interaction
+    description: "Include occasional back presses, idle periods, and random scrolls"
+    enforcement: enabled
+
+  - name: Limit Daily Sessions
+    description: "Maximum 3-5 daily routine sessions per day"
+    enforcement: warn
+
+outputs:
+  - name: daily_routine_status
+    format: json
+    description: Daily routine execution status
+    fields:
+      - success: boolean
+      - phases_completed: array
+      - actions_performed: int
+      - session_duration: float
+      - feed_items_viewed: int
+
+  - name: daily_routine_log
+    format: text
+    description: Detailed execution log
+
+  - name: interaction_metrics
+    format: table
+    description: User interaction metrics
+    columns:
+      - action_type
+      - count
+      - avg_duration
+      - success_rate
+
+  - name: session_screenshots
+    format: image_list
+    description: Screenshots captured during session

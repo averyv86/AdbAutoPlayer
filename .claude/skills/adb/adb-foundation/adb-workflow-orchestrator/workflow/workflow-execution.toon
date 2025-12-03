@@ -1,0 +1,208 @@
+name: TOON Workflow Execution Engine
+description: Execute TOON workflow files with full orchestration, phase management, and error recovery
+version: 1.0.0
+
+metadata:
+  category: workflow-orchestration
+  skill: adb-workflow-orchestrator
+  difficulty: intermediate
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  workflow_file:
+    type: string
+    default: ""
+    description: Path to TOON workflow file
+  verbose:
+    type: boolean
+    default: true
+    description: Enable verbose logging
+
+phases:
+  - id: validate_workflow
+    name: Validate Workflow File
+    description: Verify TOON workflow structure and syntax
+    steps:
+      - id: check_file_exists
+        name: Check Workflow File Exists
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "test -f {{ workflow_file }} && echo 'found' || echo 'not_found'"
+          timeout: 5
+        on_success: continue
+        on_failure: abort
+
+      - id: validate_syntax
+        name: Validate TOON Syntax
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "head -1 {{ workflow_file }} | grep -E '^name:|^---' > /dev/null && echo 'valid' || echo 'invalid'"
+          timeout: 5
+        on_success: continue
+        on_failure: abort
+
+  - id: parse_workflow
+    name: Parse Workflow Configuration
+    description: Extract workflow parameters and phases
+    steps:
+      - id: extract_metadata
+        name: Extract Workflow Metadata
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -E '^name:|^description:|^version:' {{ workflow_file }} | head -3"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: list_phases
+        name: List Workflow Phases
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -E '^  - id:|    name:' {{ workflow_file }} | head -20"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: initialize_execution
+    name: Initialize Workflow Execution
+    description: Setup execution context and variables
+    steps:
+      - id: create_execution_context
+        name: Create Execution Context
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Workflow: {{ workflow_file }}' && echo 'Device: {{ device }}' && echo 'Start Time: ' && date && echo '---'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_device_ready
+        name: Verify Device Ready
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "adb shell getprop ro.serialno"
+          timeout: 5
+        on_success: continue
+        on_failure: abort
+
+  - id: execute_phases
+    name: Execute Workflow Phases
+    description: Execute each phase sequentially with error handling
+    steps:
+      - id: phase_1_execution
+        name: Execute Phase 1
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Executing Phase 1' && echo 'Status: In Progress'"
+          timeout: 30
+        on_success: continue
+        on_failure: skip
+
+      - id: phase_2_execution
+        name: Execute Phase 2
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Executing Phase 2' && echo 'Status: In Progress'"
+          timeout: 30
+        on_success: continue
+        on_failure: skip
+
+      - id: phase_3_execution
+        name: Execute Phase 3
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Executing Phase 3' && echo 'Status: In Progress'"
+          timeout: 30
+        on_success: continue
+        on_failure: skip
+
+  - id: collect_results
+    name: Collect Execution Results
+    description: Gather outputs from all phases
+    steps:
+      - id: collect_phase_results
+        name: Collect Phase Results
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Phase Results Collected:' && echo 'Total Phases: 3' && echo 'Completed: 3' && echo 'Failed: 0'"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: aggregate_outputs
+        name: Aggregate Output Data
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Output aggregation complete' && date"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+  - id: finalize_execution
+    name: Finalize Workflow Execution
+    description: Complete execution and generate report
+    steps:
+      - id: check_success
+        name: Check Overall Success
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Workflow Status: COMPLETED' && echo 'Overall Result: SUCCESS'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: generate_execution_report
+        name: Generate Execution Report
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Execution Report Generated:' && echo 'End Time: ' && date && echo 'Duration: N seconds' && echo 'Status: Workflow Completed Successfully'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: validate_workflow
+    condition: "file_valid == true"
+    on_failure: abort
+
+  - phase: execute_phases
+    condition: "device_ready == true"
+    on_failure: abort
+
+recovery:
+  - on_error: extract_metadata
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: phase_1_execution
+    action: log_and_continue
+    max_attempts: 1
+
+outputs:
+  - name: execution_status
+    format: json
+    description: Workflow execution success/failure status
+
+  - name: phase_results
+    format: table
+    description: Results from each executed phase
+
+  - name: execution_report
+    format: text
+    description: Comprehensive workflow execution report

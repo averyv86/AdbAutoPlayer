@@ -1,0 +1,79 @@
+# Data Pipeline Workflow Example (Architectural)
+# ETL data pipeline with batch processing
+# Execution: Hybrid phased parallel (backend + database + devops)
+
+@metadata[1]{id,name,complexity,file_count,agent_count}:
+DATA-PIPELINE,ETL Data Processing Pipeline,architectural,18,5-8
+
+@phases[7]{id,agents,mode,deps,max_parallel,description}:
+1,manager-strategy,sequential,[],1,"Design ETL architecture and data flow"
+2,"expert-backend|expert-database",parallel,[1],2,"Implement data extraction and schema design"
+3,expert-backend,sequential,[2],1,"Implement transformation logic and validation"
+4,expert-database,sequential,[2],1,"Implement data loading and indexing"
+5,expert-devops,sequential,[3,4],1,"Setup CI/CD and deployment automation"
+6,manager-tdd,sequential,[3,4],1,"Complete test suite with data validation tests"
+7,manager-quality,sequential,[5,6],1,"Performance benchmarks and quality validation"
+
+@agent_pool[8]{agent,domain,priority,capabilities}:
+manager-strategy,architecture,critical,"etl-design|data-flow|pipeline-architecture"
+expert-backend,backend,critical,"python|pandas|airflow|data-processing"
+expert-database,database,critical,"postgresql|data-warehousing|etl|indexing"
+expert-devops,devops,high,"docker|kubernetes|airflow|ci-cd"
+manager-tdd,testing,critical,"pytest|data-validation|integration-testing"
+manager-quality,validation,critical,"performance-benchmarks|trust-5|data-quality"
+expert-security,security,medium,"data-encryption|access-control"
+manager-docs,documentation,medium,"pipeline-docs|data-dictionary"
+
+@exec_strategy[1]{mode,parallel_default,dynamic_adjust,max_concurrent}:
+hybrid,5,true,8
+
+@files[18]{path,agent,operation}:
+src/pipeline/extract/sources.py,expert-backend,create
+src/pipeline/extract/connectors.py,expert-backend,create
+src/pipeline/transform/validators.py,expert-backend,create
+src/pipeline/transform/processors.py,expert-backend,create
+src/pipeline/load/loaders.py,expert-backend,create
+src/pipeline/load/batch.py,expert-backend,create
+src/models/data_schema.py,expert-database,create
+migrations/001_create_staging.sql,expert-database,create
+migrations/002_create_warehouse.sql,expert-database,create
+migrations/003_add_indexes.sql,expert-database,create
+deploy/docker-compose.yml,expert-devops,create
+deploy/airflow_dag.py,expert-devops,create
+.github/workflows/pipeline-ci.yml,expert-devops,create
+tests/test_extract.py,manager-tdd,create
+tests/test_transform.py,manager-tdd,create
+tests/test_load.py,manager-tdd,create
+tests/integration/test_pipeline.py,manager-tdd,create
+docs/PIPELINE_ARCHITECTURE.md,manager-docs,create
+
+@quality_gates[7]{gate_id,validator,threshold,required}:
+1,data-validation-tests,95,true
+2,performance-benchmarks,90,true
+3,pipeline-reliability,95,true
+4,test-coverage,90,true
+5,data-quality,95,true
+6,ci-cd-validation,100,true
+7,trust-5-compliance,100,true
+
+@resource_limits[1]{cpu_threshold,memory_threshold,token_threshold,disk_io_threshold}:
+80,75,150000,70
+
+@parallel_config[1]{min_agents,max_agents,default_agents,adjust_interval_sec}:
+2,8,5,180
+
+@checkpoint_strategy[3]{checkpoint_id,after_phase,validation}:
+1,2,data-schema-validation
+2,4,etl-integration-validation
+3,6,full-pipeline-validation
+
+# Usage Example:
+# /moai:2-run SPEC-003
+#   → Detects data-pipeline workflow
+#   → builder-workflow executes 7 phases
+#   → Phase 2: backend + database parallel (2 agents)
+#   → Phase 3-4: Sequential ETL steps (transform → load)
+#   → Phase 5-6: DevOps + Testing parallel
+#   → Checkpoints at critical phases
+#   → ~4-8 hour execution
+#   → Produces: Complete ETL pipeline + CI/CD + tests + docs

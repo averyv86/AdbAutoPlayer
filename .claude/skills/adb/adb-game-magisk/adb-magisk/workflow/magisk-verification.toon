@@ -1,0 +1,218 @@
+name: Magisk Installation Verification
+description: Verify Magisk installation, version, and module system integrity
+version: 1.0.0
+
+metadata:
+  category: system-verification
+  skill: adb-magisk
+  difficulty: intermediate
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  timeout:
+    type: integer
+    default: 30
+    description: Action timeout in seconds
+  check_root_access:
+    type: boolean
+    default: true
+    description: Verify root access is available
+
+phases:
+  - id: verify_installation
+    name: Verify Magisk Installation
+    description: Check Magisk is installed and accessible
+    steps:
+      - id: check_magisk_package
+        name: Check Magisk Package
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "pm list packages | grep com.topjohnwu.magisk"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: abort
+
+      - id: get_magisk_version
+        name: Get Magisk Version
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "magisk --version"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_magisk_binary
+        name: Verify Magisk Binary
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "which magisk && magisk -v"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: check_modules
+    name: Check Magisk Modules
+    description: Verify module system and list modules
+    steps:
+      - id: list_modules
+        name: List Installed Modules
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls -la /data/adb/modules/ | grep -v '^\\.' | wc -l"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_module_dir
+        name: Verify Module Directory
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "test -d /data/adb/modules && echo 'ok' || echo 'missing'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: check_pif_module
+        name: Check PlayIntegrityFix Module
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls /data/adb/modules/ | grep -i 'playintegrity\\|pif'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: verify_system_integrity
+    name: Verify System Integrity
+    description: Check system is properly modified by Magisk
+    steps:
+      - id: check_system_mount
+        name: Check System Mount Status
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "mount | grep -i system"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_vendor_mount
+        name: Verify Vendor Mount
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "mount | grep -i vendor"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: check_magisk_hide
+        name: Check Magisk Hide Status
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "dumpsys package | grep -A3 'magisk' || echo 'no_magisk'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: test_root_access
+    name: Test Root Access
+    description: Verify root permissions are functional
+    steps:
+      - id: test_su_command
+        name: Test SU Command
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "su -c 'id' 2>&1 | head -1"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: verify_root_permissions
+        name: Verify Root File Permissions
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "su -c 'cat /data/adb/magisk.db 2>/dev/null | wc -l' || echo 'denied'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: check_selinux_context
+        name: Check SELinux Context
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "getenforce"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+  - id: generate_verification_report
+    name: Generate Verification Report
+    description: Create detailed verification results
+    steps:
+      - id: capture_magisk_info
+        name: Capture Magisk Information
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "magisk --version && magisk --list-modules 2>/dev/null | head -20"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: compile_results
+        name: Compile Verification Results
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Verification completed at:' && date && echo '---' && id"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: verify_installation
+    condition: "magisk_package_found == true"
+    on_failure: abort
+
+  - phase: check_modules
+    condition: "module_dir_exists == true"
+    on_failure: continue
+
+  - phase: verify_system_integrity
+    condition: "system_mounted == true"
+    on_failure: continue
+
+recovery:
+  - on_error: get_magisk_version
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: test_su_command
+    action: skip
+    max_attempts: 1
+
+outputs:
+  - name: magisk_status
+    format: json
+    description: Magisk installation and version status
+
+  - name: module_list
+    format: table
+    description: Installed Magisk modules and their status
+
+  - name: verification_report
+    format: text
+    description: Detailed verification results and system status

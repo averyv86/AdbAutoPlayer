@@ -1,0 +1,519 @@
+# Bluestacks Demonstration Workflow
+# TOON v4.0 (YAML-based hierarchical format)
+# Purpose: Comprehensive workflow demonstrating ADB device interaction with Bluestacks emulator
+# Author: MoAI-ADK
+# Last Updated: 2025-12-02
+
+workflow:
+  metadata:
+    name: bluestacks-demo
+    title: Bluestacks Device Demonstration Workflow
+    description: "Complete workflow demonstrating ADB connection, device info retrieval, display capabilities, tap simulation, screenshot capture, and swipe gestures on Bluestacks emulator"
+    version: 1.0.0
+    category: adb-demonstrations
+    platform: bluestacks
+    difficulty: intermediate
+    estimated_duration_minutes: 3
+    tags:
+      - bluestacks
+      - adb
+      - device-control
+      - screen-capture
+      - gestures
+      - demonstration
+
+  # Configuration references (runtime variable resolution)
+  config_source: "{project-root}/.moai/config/config.json"
+  output_folder: "{project-root}/.moai/workflows/adb/demos/outputs"
+  project_root: "{project-root}"
+  timestamp: "{system:timestamp}"
+
+  # Workflow components
+  installed_path: "{project-root}/.moai/workflows/adb/demos"
+  documentation: "{installed_path}/bluestacks-demo.md"
+
+  # Parameters with defaults
+  parameters:
+    - name: device
+      type: string
+      default: "127.0.0.1:5555"
+      description: "Bluestacks device IP and port (default: localhost on standard port)"
+      required: false
+
+    - name: screenshot_dir
+      type: string
+      default: "/tmp"
+      description: "Directory to save screenshots"
+      required: false
+
+    - name: demo_duration
+      type: integer
+      default: 15
+      description: "Total demo duration in seconds (approximate)"
+      required: false
+
+    - name: tap_wait_duration
+      type: integer
+      default: 1
+      description: "Wait duration between taps (seconds)"
+      required: false
+
+    - name: swipe_wait_duration
+      type: integer
+      default: 1.5
+      description: "Wait duration between swipes (seconds)"
+      required: false
+
+  # Phase 1: Connection and Device Info
+  phase1_connection:
+    name: "Phase 1 - Connection and Device Information"
+    description: "Establish ADB connection and retrieve device information"
+    sequence: 1
+    steps:
+      - name: "step_1_1_connect"
+        title: "Connect to Bluestacks Device"
+        action: !include ../steps/connection/connect.yaml
+        parameters:
+          device: "{{ parameters.device }}"
+          timeout: 10
+        validation:
+          success_exit_codes: [0]
+          required_outputs: ["connection_status"]
+        on_failure:
+          action: "retry"
+          max_attempts: 3
+          delay_seconds: 2
+
+      - name: "step_1_2_verify_connection"
+        title: "Verify Connection Stability"
+        description: "Verify that connection is stable and device is accessible"
+        action:
+          script: ".claude/skills/moai-domain-adb/scripts/validation/verify-connection.py"
+          args: ["--device", "{{ parameters.device }}", "--timeout", "5"]
+          timeout_seconds: 15
+        validation:
+          exit_code: 0
+          output_patterns:
+            - "Connection verified"
+            - "Device responsive"
+        on_failure:
+          action: "abort"
+          error_message: "Device connection verification failed"
+
+      - name: "step_1_3_get_device_info"
+        title: "Retrieve Device Information"
+        description: "Get device model, Android version, resolution, and manufacturer"
+        action:
+          script: ".claude/skills/moai-domain-adb/scripts/capture/get-device-info.py"
+          args: ["--device", "{{ parameters.device }}", "--format", "json"]
+          timeout_seconds: 10
+        outputs:
+          - name: device_model
+            type: string
+            path: "$.device.model"
+          - name: android_version
+            type: string
+            path: "$.device.android_version"
+          - name: resolution
+            type: string
+            path: "$.device.resolution"
+          - name: manufacturer
+            type: string
+            path: "$.device.manufacturer"
+        validation:
+          exit_code: 0
+          output_contains: ["model", "version", "resolution"]
+
+      - name: "step_1_4_display_device_table"
+        title: "Display Device Information Table"
+        description: "Format and display device info in human-readable table format"
+        action:
+          type: format_output
+          format: table
+          title: "Bluestacks Device Information"
+          fields:
+            - name: "Model"
+              source: "{{ phase1.outputs.device_model }}"
+            - name: "Android Version"
+              source: "{{ phase1.outputs.android_version }}"
+            - name: "Resolution"
+              source: "{{ phase1.outputs.resolution }}"
+            - name: "Manufacturer"
+              source: "{{ phase1.outputs.manufacturer }}"
+
+    checkpoint: true
+    rollback_on_failure: true
+
+  # Phase 2: Display Information
+  phase2_display_info:
+    name: "Phase 2 - Display Specifications"
+    description: "Retrieve and display screen specifications"
+    sequence: 2
+    depends_on: ["phase1_connection"]
+    steps:
+      - name: "step_2_1_get_display_info"
+        title: "Retrieve Display Information"
+        description: "Get display width, height, density, and orientation"
+        action:
+          script: ".claude/skills/moai-domain-adb/scripts/capture/get-display-info.py"
+          args: ["--device", "{{ parameters.device }}", "--format", "json"]
+          timeout_seconds: 10
+        outputs:
+          - name: display_width
+            type: integer
+            path: "$.display.width"
+          - name: display_height
+            type: integer
+            path: "$.display.height"
+          - name: display_density
+            type: integer
+            path: "$.display.density"
+          - name: display_orientation
+            type: string
+            path: "$.display.orientation"
+        validation:
+          exit_code: 0
+          output_contains: ["width", "height"]
+
+      - name: "step_2_2_display_specs_table"
+        title: "Display Screen Specifications Table"
+        description: "Format and display display specs in human-readable table"
+        action:
+          type: format_output
+          format: table
+          title: "Display Specifications"
+          fields:
+            - name: "Width"
+              source: "{{ phase2.outputs.display_width }} px"
+            - name: "Height"
+              source: "{{ phase2.outputs.display_height }} px"
+            - name: "Density"
+              source: "{{ phase2.outputs.display_density }} dpi"
+            - name: "Orientation"
+              source: "{{ phase2.outputs.display_orientation }}"
+
+    checkpoint: true
+
+  # Phase 3: Control Demo - Tap Simulation Loop
+  phase3_control_demo:
+    name: "Phase 3 - Interactive Control Demonstration"
+    description: "Demonstrate tap commands at various screen locations"
+    sequence: 3
+    depends_on: ["phase2_display_info"]
+    loop:
+      type: items
+      count: 3
+      items:
+        - id: tap_1
+          description: "Center Screen Tap"
+          x: 540
+          y: 960
+          coordinates_explanation: "Center of standard 1080x1920 display"
+        - id: tap_2
+          description: "Top-Left Corner Tap"
+          x: 200
+          y: 400
+          coordinates_explanation: "Upper left quadrant"
+        - id: tap_3
+          description: "Bottom-Right Corner Tap"
+          x: 880
+          y: 1520
+          coordinates_explanation: "Lower right quadrant"
+    loop_steps:
+      - name: "loop_tap_step"
+        title: "Execute Tap at {{ item.description }}"
+        description: "Tap at coordinates ({{ item.x }}, {{ item.y }})"
+        action:
+          script: ".claude/skills/moai-domain-adb/scripts/control/tap.py"
+          args:
+            - "--device"
+            - "{{ parameters.device }}"
+            - "--x"
+            - "{{ item.x }}"
+            - "--y"
+            - "{{ item.y }}"
+            - "--duration"
+            - "100"
+          timeout_seconds: 5
+        validation:
+          exit_code: 0
+        on_success:
+          log: "Tap {{ loop.index }}/{{ loop.total }} - {{ item.description }} successful at ({{ item.x }}, {{ item.y }})"
+        on_failure:
+          log: "Tap {{ loop.index }}/{{ loop.total }} failed, continuing..."
+          action: continue
+
+      - name: "loop_wait_between_taps"
+        title: "Wait Between Taps"
+        description: "Wait {{ parameters.tap_wait_duration }} second(s) before next tap"
+        action:
+          type: sleep
+          duration_seconds: "{{ parameters.tap_wait_duration }}"
+        condition: "{{ loop.index < loop.total }}"
+
+    checkpoint: true
+    metrics:
+      total_taps: "{{ loop.total }}"
+      successful_taps: "{{ loop.successful_count }}"
+      failed_taps: "{{ loop.failed_count }}"
+
+  # Phase 4: Screenshot Capture
+  phase4_screenshot_capture:
+    name: "Phase 4 - Screenshot Capture"
+    description: "Capture and save device screenshot"
+    sequence: 4
+    depends_on: ["phase3_control_demo"]
+    steps:
+      - name: "step_4_1_take_screenshot"
+        title: "Capture Device Screenshot"
+        description: "Take screenshot of current device screen"
+        action:
+          script: ".claude/skills/moai-domain-adb/scripts/capture/screenshot.py"
+          args:
+            - "--device"
+            - "{{ parameters.device }}"
+            - "--output"
+            - "{{ parameters.screenshot_dir }}/bluestacks-demo-{{ workflow.timestamp }}.png"
+            - "--format"
+            - "png"
+          timeout_seconds: 10
+        outputs:
+          - name: screenshot_path
+            type: string
+            path: "$.screenshot_file"
+          - name: screenshot_size
+            type: integer
+            path: "$.file_size_bytes"
+        validation:
+          exit_code: 0
+          output_contains: ["screenshot", "saved"]
+
+      - name: "step_4_2_verify_screenshot"
+        title: "Verify Screenshot File"
+        description: "Verify that screenshot file exists and is readable"
+        action:
+          type: file_check
+          path: "{{ phase4.outputs.screenshot_path }}"
+          checks:
+            - exists: true
+            - readable: true
+            - min_size_bytes: 1000
+
+      - name: "step_4_3_display_screenshot"
+        title: "Display Screenshot"
+        description: "Display captured screenshot in output"
+        action:
+          type: display_image
+          image_path: "{{ phase4.outputs.screenshot_path }}"
+          title: "Bluestacks Screenshot - Demo Phase 4"
+          width: 50
+          height: auto
+
+    checkpoint: true
+
+  # Phase 5: Swipe Demo Loop
+  phase5_swipe_demo:
+    name: "Phase 5 - Swipe Gesture Demonstration"
+    description: "Demonstrate swipe gestures in different directions"
+    sequence: 5
+    depends_on: ["phase4_screenshot_capture"]
+    loop:
+      type: items
+      count: 2
+      items:
+        - id: swipe_1
+          direction: "up"
+          start_y: 1400
+          end_y: 600
+          x_coordinate: 540
+          description: "Upward swipe (scroll down)"
+        - id: swipe_2
+          direction: "down"
+          start_y: 600
+          end_y: 1400
+          x_coordinate: 540
+          description: "Downward swipe (scroll up)"
+    loop_steps:
+      - name: "loop_swipe_step"
+        title: "Execute {{ item.direction | upcase }} Swipe"
+        description: "{{ item.description }}"
+        action:
+          script: ".claude/skills/moai-domain-adb/scripts/control/swipe.py"
+          args:
+            - "--device"
+            - "{{ parameters.device }}"
+            - "--direction"
+            - "{{ item.direction }}"
+            - "--x"
+            - "{{ item.x_coordinate }}"
+            - "--start-y"
+            - "{{ item.start_y }}"
+            - "--end-y"
+            - "{{ item.end_y }}"
+            - "--duration"
+            - "500"
+          timeout_seconds: 5
+        validation:
+          exit_code: 0
+        on_success:
+          log: "Swipe {{ loop.index }}/{{ loop.total }} - {{ item.direction | upcase }} successful"
+        on_failure:
+          log: "Swipe {{ loop.index }}/{{ loop.total }} - {{ item.direction | upcase }} failed"
+          action: continue
+
+      - name: "loop_wait_between_swipes"
+        title: "Wait Between Swipes"
+        description: "Wait {{ parameters.swipe_wait_duration }} second(s) before next swipe"
+        action:
+          type: sleep
+          duration_seconds: "{{ parameters.swipe_wait_duration }}"
+        condition: "{{ loop.index < loop.total }}"
+
+    checkpoint: true
+    metrics:
+      total_swipes: "{{ loop.total }}"
+      successful_swipes: "{{ loop.successful_count }}"
+      failed_swipes: "{{ loop.failed_count }}"
+
+  # Validation Section
+  validation:
+    conditions:
+      - name: "device_parameter_valid"
+        rule: "device parameter must match IP:port or serial format"
+        pattern: "^(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{4,5}|[a-zA-Z0-9-]+)$"
+        applies_to: "{{ parameters.device }}"
+
+      - name: "output_folder_exists"
+        rule: "output folder must be accessible and writable"
+        type: directory_check
+        path: "{{ parameters.screenshot_dir }}"
+        checks: [exists, writable]
+
+      - name: "all_phases_completed"
+        rule: "all 5 phases must complete successfully"
+        depends_on: [phase1, phase2, phase3, phase4, phase5]
+        check: "all_phases.status == 'success'"
+
+      - name: "minimum_phase_success_rate"
+        rule: "at least 80% of loop iterations must succeed"
+        applies_to: [phase3_control_demo, phase5_swipe_demo]
+        check: "success_rate >= 0.8"
+
+  # Recovery Section
+  recovery:
+    retry_strategy:
+      max_attempts: 3
+      backoff_multiplier: 1.5
+      initial_delay_seconds: 2
+      applies_to:
+        - phase1_connection
+        - phase2_display_info
+        - phase4_screenshot_capture
+
+    on_phase_failure:
+      phase1: "Reconnect to device and retry"
+      phase2: "Skip phase, continue to phase 3"
+      phase3: "Continue to next iteration or skip phase"
+      phase4: "Retry screenshot capture once, then continue"
+      phase5: "Continue to next iteration or skip phase"
+
+    cleanup_actions:
+      - name: "close_connection"
+        description: "Close ADB connection gracefully"
+        action:
+          script: ".claude/skills/moai-domain-adb/scripts/connection/disconnect.py"
+          args: ["--device", "{{ parameters.device }}"]
+        on_error: "log_warning"
+
+      - name: "cleanup_temp_files"
+        description: "Clean up temporary files if needed"
+        action:
+          type: file_cleanup
+          patterns: ["/tmp/bluestacks-demo-*.tmp"]
+          keep_recent: 3
+
+  # Outputs Section - Final Results
+  outputs:
+    summary:
+      type: object
+      structure:
+        demo_status: string
+        total_duration_seconds: integer
+        phases_completed: integer
+        overall_success_rate: number
+        demo_timestamp: string
+
+    phase_results:
+      phase1:
+        device_model: "{{ phase1.outputs.device_model }}"
+        android_version: "{{ phase1.outputs.android_version }}"
+        resolution: "{{ phase1.outputs.resolution }}"
+        manufacturer: "{{ phase1.outputs.manufacturer }}"
+        status: "{{ phase1.status }}"
+
+      phase2:
+        display_width: "{{ phase2.outputs.display_width }}"
+        display_height: "{{ phase2.outputs.display_height }}"
+        display_density: "{{ phase2.outputs.display_density }}"
+        display_orientation: "{{ phase2.outputs.display_orientation }}"
+        status: "{{ phase2.status }}"
+
+      phase3:
+        total_taps: "{{ phase3.metrics.total_taps }}"
+        successful_taps: "{{ phase3.metrics.successful_taps }}"
+        failed_taps: "{{ phase3.metrics.failed_taps }}"
+        success_rate: "{{ phase3.metrics.successful_taps / phase3.metrics.total_taps * 100 }}%"
+        status: "{{ phase3.status }}"
+
+      phase4:
+        screenshot_path: "{{ phase4.outputs.screenshot_path }}"
+        screenshot_size_bytes: "{{ phase4.outputs.screenshot_size }}"
+        status: "{{ phase4.status }}"
+
+      phase5:
+        total_swipes: "{{ phase5.metrics.total_swipes }}"
+        successful_swipes: "{{ phase5.metrics.successful_swipes }}"
+        failed_swipes: "{{ phase5.metrics.failed_swipes }}"
+        success_rate: "{{ phase5.metrics.successful_swipes / phase5.metrics.total_swipes * 100 }}%"
+        status: "{{ phase5.status }}"
+
+    demo_summary:
+      format: json
+      content:
+        workflow_name: "bluestacks-demo"
+        workflow_version: "1.0.0"
+        execution_date: "{{ workflow.timestamp }}"
+        target_device: "{{ parameters.device }}"
+        total_execution_time_seconds: "{{ workflow.duration }}"
+        phases_executed:
+          - name: "Connection and Device Info"
+            status: "{{ phase1.status }}"
+            duration: "{{ phase1.duration }}"
+          - name: "Display Specifications"
+            status: "{{ phase2.status }}"
+            duration: "{{ phase2.duration }}"
+          - name: "Tap Control Demo"
+            status: "{{ phase3.status }}"
+            duration: "{{ phase3.duration }}"
+            taps_executed: "{{ phase3.metrics.successful_taps }}/{{ phase3.metrics.total_taps }}"
+          - name: "Screenshot Capture"
+            status: "{{ phase4.status }}"
+            duration: "{{ phase4.duration }}"
+            screenshot_file: "{{ phase4.outputs.screenshot_path }}"
+          - name: "Swipe Gesture Demo"
+            status: "{{ phase5.status }}"
+            duration: "{{ phase5.duration }}"
+            swipes_executed: "{{ phase5.metrics.successful_swipes }}/{{ phase5.metrics.total_swipes }}"
+        overall_success: "{{ all_phases.successful }}"
+        notes: "Demonstration completed successfully. All ADB operations executed on Bluestacks emulator."
+
+  # Execution settings
+  settings:
+    standalone: true
+    web_bundle: false
+    parallel_phases: false
+    log_level: "info"
+    capture_metrics: true
+    generate_report: true
+    report_format: "markdown"
+    report_output: "{{ output_folder }}/bluestacks-demo-report-{{ workflow.timestamp }}.md"

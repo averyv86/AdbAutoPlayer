@@ -1,0 +1,219 @@
+name: Karrot Integrity Detection Check
+description: Test if Karrot app detects integrity bypass and emits detection warnings
+version: 1.0.0
+
+metadata:
+  category: security-testing
+  skill: adb-karrot
+  difficulty: intermediate
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  timeout:
+    type: integer
+    default: 30
+    description: Action timeout in seconds
+  check_warnings:
+    type: boolean
+    default: true
+    description: Check for app warning popups or messages
+
+phases:
+  - id: monitor_app_behavior
+    name: Monitor App Behavior for Detection
+    description: Watch for detection warning signs
+    steps:
+      - id: capture_initial_state
+        name: Capture Initial App State
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/detection_check_initial.png"
+        on_success: continue
+        on_failure: continue
+
+      - id: monitor_system_logs
+        name: Monitor System Logs for Integrity Errors
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "logcat -d | grep -i 'integrity\\|detection\\|safenet\\|play protect' | tail -50"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: check_app_crashes
+        name: Check for App Crashes or Restarts
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "logcat -d | grep 'FATAL\\|CRASH\\|ANR' | wc -l"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+  - id: check_warning_dialogs
+    name: Check for Warning Dialogs
+    description: Detect integrity warning popups
+    steps:
+      - id: check_visible_text
+        name: Check for Warning Text on Screen
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "경고|warning|부정|fraud|검증 실패|verification failed|보안"
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+      - id: capture_warning_if_present
+        name: Capture Warning Dialog
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/detection_warning.png"
+        on_success: continue
+        on_failure: skip
+
+      - id: detect_dialog_buttons
+        name: Detect Dialog Buttons
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "확인|OK|닫기|Close|계속|Continue"
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+  - id: analyze_network_traffic
+    name: Analyze Network Traffic
+    description: Check for integrity verification API calls
+    steps:
+      - id: get_network_stats
+        name: Get Network Activity Statistics
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "netstat -an | grep -i 'playinteg\\|googleapis\\|safenet' | wc -l"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: check_https_connections
+        name: Monitor HTTPS Connections
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "logcat -d | grep -i 'ssl\\|tls\\|certificate' | tail -20"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: check_play_services_calls
+        name: Check Google Play Services API Calls
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "pm list packages | grep com.google.android.gms"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: test_feature_restrictions
+    name: Test for Feature Restrictions
+    description: Check if features are blocked due to detection
+    steps:
+      - id: check_market_access
+        name: Check Market/Transaction Features
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "마켓|market|거래|transaction|구매|purchase"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: check_payment_methods
+        name: Check Payment Methods Available
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "결제|payment|카드|card|송금|transfer"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: verify_account_status
+        name: Verify Account Status
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "logcat -d | grep -i 'account\\|suspended\\|restricted' | tail -10"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: generate_detection_report
+    name: Generate Detection Report
+    description: Compile detection results
+    steps:
+      - id: analyze_all_logs
+        name: Analyze All Detection-Related Logs
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "logcat -d > /tmp/full_detection_log.txt 2>&1; grep -E '(INTEGRITY|DETECTION|SAFENET|VERIFICATION)' /tmp/full_detection_log.txt | wc -l"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: create_report
+        name: Create Detection Report
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/detection_report_final.png"
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: check_warning_dialogs
+    condition: "warning_detected == false"
+    on_failure: continue
+
+  - phase: test_feature_restrictions
+    condition: "features_accessible == true"
+    on_failure: continue
+
+  - phase: analyze_network_traffic
+    condition: "suspicious_calls == 0"
+    on_failure: continue
+
+recovery:
+  - on_error: monitor_system_logs
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: get_network_stats
+    action: skip
+    max_attempts: 1
+
+outputs:
+  - name: detection_status
+    format: json
+    description: Detection check results with timestamps
+
+  - name: warning_detected
+    format: table
+    description: List of warnings and detections found
+
+  - name: app_restrictions
+    format: text
+    description: Any feature restrictions or limitations detected

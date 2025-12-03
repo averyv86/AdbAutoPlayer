@@ -1,0 +1,238 @@
+# Karrot App Login Workflow
+# Purpose: Automate login to Karrot app with semantic UI detection
+# Duration: ~2-3 minutes
+# Requirements: Bypass workflow completed, valid credentials
+
+name: karrot_login_workflow
+version: 1.0.0
+type: automation
+target_app: com.nexon.karrot
+created_at: 2025-12-02T02:00:00Z
+
+# Workflow configuration
+config:
+  detection_method: hybrid  # semantic → template → ocr fallback
+  input_validation: true
+  screenshot_on_error: true
+
+# Input parameters (to be provided at runtime)
+inputs:
+  email:
+    type: string
+    required: true
+    description: "User email or account ID"
+    validation: "length >= 5"
+
+  password:
+    type: string
+    required: true
+    description: "User password"
+    validation: "length >= 6"
+
+  two_factor_enabled:
+    type: boolean
+    required: false
+    default: false
+    description: "Whether 2FA is enabled"
+
+  two_factor_code:
+    type: string
+    required: false
+    description: "2FA code (if 2FA enabled)"
+
+# Workflow stages
+stages:
+  verify_login_screen:
+    description: Verify we're on the login screen
+    duration_seconds: 10
+    critical: true
+
+  enter_credentials:
+    description: Enter email and password
+    duration_seconds: 30
+    critical: true
+
+  submit_login:
+    description: Submit login form
+    duration_seconds: 20
+    critical: true
+
+  handle_2fa:
+    description: Handle 2FA if required
+    duration_seconds: 60
+    critical: false
+    optional: true
+
+  verify_login_success:
+    description: Verify successful login
+    duration_seconds: 30
+    critical: true
+
+# Detailed steps for each stage
+steps:
+  verify_login_screen:
+    - name: check_login_button
+      type: ui_find
+      method: hybrid
+      target_text: "로그인"  # Login
+      timeout_seconds: 10
+      on_failure: "screenshot_and_alert"
+
+    - name: verify_email_field
+      type: ui_find
+      method: semantic
+      target_class: "android.widget.EditText"
+      timeout_seconds: 5
+
+  enter_credentials:
+    - name: find_email_input
+      type: ui_find
+      method: hybrid
+      target_text: "이메일"  # Email
+      timeout_seconds: 10
+
+    - name: tap_email_field
+      type: ui_tap
+      method: semantic
+      target_class: "android.widget.EditText"
+      index: 0
+      timeout_seconds: 5
+
+    - name: clear_email_field
+      type: ui_action
+      action: clear_field
+      timeout_seconds: 3
+
+    - name: type_email
+      type: ui_input
+      text: "{email}"
+      timeout_seconds: 5
+
+    - name: find_password_input
+      type: ui_find
+      method: semantic
+      target_text: "비밀번호"  # Password
+      timeout_seconds: 10
+
+    - name: tap_password_field
+      type: ui_tap
+      method: hybrid
+      target_class: "android.widget.EditText"
+      index: 1
+      timeout_seconds: 5
+
+    - name: type_password
+      type: ui_input
+      text: "{password}"
+      timeout_seconds: 5
+
+  submit_login:
+    - name: find_login_button
+      type: ui_find
+      method: hybrid
+      target_text: "로그인"  # Login
+      timeout_seconds: 10
+
+    - name: tap_login_button
+      type: ui_tap
+      method: semantic
+      target_text: "로그인"
+      timeout_seconds: 5
+
+    - name: wait_after_tap
+      type: delay
+      duration_seconds: 2
+
+  handle_2fa:
+    - name: check_2fa_required
+      type: ui_find
+      method: semantic
+      target_text: "인증코드"  # Verification code
+      timeout_seconds: 5
+      required: false  # Optional - may not appear
+
+    - name: tap_2fa_input
+      type: ui_tap
+      method: semantic
+      target_class: "android.widget.EditText"
+      index: 0
+      timeout_seconds: 5
+      condition: "inputs.two_factor_enabled"
+
+    - name: type_2fa_code
+      type: ui_input
+      text: "{two_factor_code}"
+      timeout_seconds: 5
+      condition: "inputs.two_factor_enabled"
+
+    - name: submit_2fa
+      type: ui_tap
+      method: semantic
+      target_text: "확인"  # Confirm
+      timeout_seconds: 5
+      condition: "inputs.two_factor_enabled"
+
+  verify_login_success:
+    - name: wait_home_screen
+      type: ui_wait
+      target_text: "홈"  # Home
+      timeout_seconds: 30
+      on_failure: "check_error_screen"
+
+    - name: verify_user_profile
+      type: ui_find
+      method: semantic
+      target_class: "android.widget.ImageButton"
+      timeout_seconds: 10
+
+    - name: capture_success_screenshot
+      type: screenshot
+      output: /sdcard/karrot_login_success.png
+      optional: true
+
+# Output parameters
+outputs:
+  login_successful: boolean
+  home_screen_reached: boolean
+  authentication_time_seconds: number
+  error_message: string
+  final_screenshot_path: string
+
+# Success criteria
+success_criteria:
+  - login_button_exists: true
+  - email_field_filled: true
+  - password_field_filled: true
+  - home_screen_accessible: true
+  - user_profile_visible: true
+
+# Error handling
+on_failure:
+  - action: take_screenshot
+    output: /sdcard/karrot_login_error.png
+
+  - action: check_error_message
+    patterns:
+      - "이메일 또는 비밀번호가 일치하지 않습니다"  # Email or password mismatch
+      - "계정을 찾을 수 없습니다"  # Account not found
+      - "로그인 횟수를 초과했습니다"  # Too many attempts
+
+  - action: alert
+    message: "Login failed. Check credentials and retry."
+
+# Timing and retry configuration
+timing:
+  total_timeout_seconds: 180
+  inter_step_delay_seconds: 1
+
+retry_policy:
+  max_attempts: 3
+  exponential_backoff: true
+  backoff_multiplier: 1.5
+
+# Logging configuration
+logging:
+  level: info
+  output_file: karrot_login_workflow.log
+  include_credentials: false  # Don't log passwords
+  include_timestamps: true

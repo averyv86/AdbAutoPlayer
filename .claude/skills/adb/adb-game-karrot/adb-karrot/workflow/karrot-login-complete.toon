@@ -1,0 +1,423 @@
+# Karrot Login Complete Workflow
+# TOON Format v1.1.0 - Comprehensive Login Automation
+# Last Updated: 2025-12-03
+
+name: Karrot Login Complete Workflow
+version: 1.1.0
+description: |
+  Complete login automation for Karrot (당근마켷) with LIAPP bypass.
+  Includes detection avoidance, human-like behavior, and error recovery.
+
+metadata:
+  app_name: Karrot
+  package_name: com.towneers.www
+  liapp_class: com.lockincomp.wfcwxdz
+  resolution: 1440x2560
+  emulator: BlueStacks Air
+  author: R2-D2 MoAI-ADK
+
+# =============================================================================
+# PARAMETERS
+# =============================================================================
+parameters:
+  # Device Configuration
+  device: "127.0.0.1:5555"
+
+  # User Credentials
+  phone_number: "01039705176"
+  country_code: "+82"
+
+  # Detection Avoidance Settings
+  random_delay:
+    min_ms: 500
+    max_ms: 2000
+    distribution: gaussian
+
+  tap_variance:
+    enabled: true
+    offset_px: 10
+
+  # Timeout Settings
+  screen_timeout_sec: 10
+  action_timeout_sec: 5
+
+  # Retry Settings
+  max_retries: 3
+  retry_delay_ms: 2000
+
+# =============================================================================
+# UI COORDINATES (1440x2560 Resolution)
+# =============================================================================
+coordinates:
+  # Welcome Screen
+  welcome:
+    get_started:
+      x: 720
+      y: 2374
+      description: "Orange 'Get started' button"
+    login_link:
+      x: 872
+      y: 2493
+      description: "Have an account? Log in"
+    country_dropdown:
+      x: 720
+      y: 785
+      description: "Korea country selector"
+
+  # Login Screen
+  login:
+    phone_input:
+      x: 410
+      y: 254
+      description: "Phone number input field"
+    phone_input_center:
+      x: 420
+      y: 254
+      description: "Center of phone input field"
+    confirm_button:
+      x: 720
+      y: 2520
+      description: "Confirm button (bottom)"
+    back_button:
+      x: 40
+      y: 56
+      description: "Back arrow (top left)"
+    country_code:
+      x: 70
+      y: 254
+      description: "+82 country code"
+
+  # Verification Screen
+  verification:
+    code_input:
+      x: 720
+      y: 400
+      description: "Verification code input"
+    resend_link:
+      x: 720
+      y: 500
+      description: "Resend code link"
+
+  # Common Elements
+  common:
+    screen_center:
+      x: 720
+      y: 1280
+      description: "Screen center for dismissing dialogs"
+    back_gesture:
+      start_x: 50
+      start_y: 1280
+      end_x: 700
+      end_y: 1280
+      description: "Swipe from left edge to go back"
+
+# =============================================================================
+# DETECTION AVOIDANCE CONFIG
+# =============================================================================
+detection_avoidance:
+  # Behavioral Settings
+  behavior:
+    human_like: true
+    random_delays: true
+    tap_variance: true
+    scroll_natural: true
+
+  # Log Monitoring
+  logcat:
+    enabled: true
+    keywords:
+      - "LIAPP"
+      - "security"
+      - "tamper"
+      - "integrity"
+      - "root"
+      - "magisk"
+      - "frida"
+      - "xposed"
+      - "hook"
+      - "detection"
+    interval_ms: 500
+    on_detect: pause_and_alert
+
+  # Session Management
+  session:
+    max_duration_min: 30
+    idle_variance_sec: 5
+    break_frequency: 10  # actions between breaks
+
+# =============================================================================
+# PHASES
+# =============================================================================
+phases:
+  # -------------------------------------------------------------------------
+  # Phase 1: Launch Application
+  # -------------------------------------------------------------------------
+  - id: launch
+    name: Launch Karrot Application
+    timeout_sec: 15
+    steps:
+      - action: force_stop
+        package: com.towneers.www
+        description: "Ensure clean state"
+
+      - action: delay
+        duration_ms: 1000
+        variance: true
+
+      - action: launch_app
+        method: monkey
+        package: com.towneers.www
+        category: android.intent.category.LAUNCHER
+        description: "Launch using monkey command"
+
+      - action: wait_for_screen
+        template: welcome_screen.png
+        timeout_sec: 10
+        fallback: check_any_screen
+
+    verification:
+      - check: screen_contains
+        element: karrot_logo
+
+    on_failure:
+      - action: retry
+        max_attempts: 3
+
+  # -------------------------------------------------------------------------
+  # Phase 2: Navigate to Login
+  # -------------------------------------------------------------------------
+  - id: navigate_login
+    name: Navigate to Login Screen
+    timeout_sec: 10
+    steps:
+      - action: random_delay
+        min_ms: 1000
+        max_ms: 2500
+        description: "Human-like wait before action"
+
+      - action: safe_tap
+        target: welcome.login_link
+        x: 872
+        y: 2493
+        variance_px: 10
+        description: "Tap 'Have an account? Log in'"
+
+      - action: wait_for_screen
+        template: login_screen.png
+        timeout_sec: 8
+        alt_check: phone_input_visible
+
+      - action: delay
+        duration_ms: 800
+        variance: true
+
+    verification:
+      - check: screen_contains
+        element: phone_input_field
+
+    on_failure:
+      - action: go_back
+      - action: retry
+
+  # -------------------------------------------------------------------------
+  # Phase 3: Enter Phone Number
+  # -------------------------------------------------------------------------
+  - id: enter_phone
+    name: Enter Phone Number
+    timeout_sec: 20
+    steps:
+      # Step 1: Tap on phone input field
+      - action: safe_tap
+        target: login.phone_input
+        x: 410
+        y: 254
+        variance_px: 5
+        description: "Focus on phone input field"
+
+      - action: delay
+        duration_ms: 500
+        variance: true
+
+      # Step 2: Clear any existing text
+      - action: clear_input
+        method: select_all_delete
+        description: "Clear any existing text"
+
+      - action: delay
+        duration_ms: 300
+
+      # Step 3: Enter phone number with human-like typing
+      - action: input_text
+        text: "{{ phone_number }}"
+        method: character_by_character
+        delay_per_char_ms: 80
+        variance_ms: 40
+        description: "Type phone number: 01039705176"
+
+      - action: delay
+        duration_ms: 1000
+        variance: true
+        description: "Wait for confirm button to activate"
+
+      # Step 4: Hide keyboard if visible
+      - action: hide_keyboard
+        method: back_key
+
+      - action: delay
+        duration_ms: 500
+
+    verification:
+      - check: input_value
+        field: phone_input
+        expected: "010 3970 5176"
+
+  # -------------------------------------------------------------------------
+  # Phase 4: Submit Phone Number
+  # -------------------------------------------------------------------------
+  - id: submit_phone
+    name: Submit Phone Number
+    timeout_sec: 15
+    steps:
+      - action: random_delay
+        min_ms: 800
+        max_ms: 1500
+        description: "Natural pause before confirm"
+
+      - action: safe_tap
+        target: login.confirm_button
+        x: 720
+        y: 2520
+        variance_px: 10
+        description: "Tap Confirm button"
+
+      - action: wait_for_screen
+        template: verification_screen.png
+        timeout_sec: 10
+        alt_check: sms_sent_indicator
+
+      - action: delay
+        duration_ms: 500
+
+    verification:
+      - check: screen_changed
+        from: login_screen
+        to: verification_screen
+
+    on_failure:
+      - action: capture_screen
+        save_as: submit_failure.png
+      - action: check_error_dialog
+      - action: retry
+
+  # -------------------------------------------------------------------------
+  # Phase 5: Wait for SMS Verification (Manual)
+  # -------------------------------------------------------------------------
+  - id: await_verification
+    name: Await SMS Verification Code
+    timeout_sec: 120
+    manual: true
+    steps:
+      - action: notify_user
+        message: "SMS verification code sent to {{ phone_number }}"
+        await_input: true
+
+      - action: monitor_screen
+        for_element: verification_complete
+        timeout_sec: 120
+
+    verification:
+      - check: login_complete
+        indicator: main_screen_visible
+
+# =============================================================================
+# ERROR HANDLERS
+# =============================================================================
+error_handlers:
+  - id: app_crash
+    trigger: process_not_running
+    priority: 1
+    actions:
+      - action: delay
+        duration_ms: 2000
+      - action: launch_app
+        package: com.towneers.www
+      - action: resume_from_phase
+        phase: launch
+
+  - id: dialog_popup
+    trigger: unexpected_dialog
+    priority: 2
+    actions:
+      - action: capture_screen
+        save_as: dialog_popup.png
+      - action: try_dismiss
+        methods:
+          - tap_outside
+          - tap_x_button
+          - back_key
+      - action: continue
+
+  - id: network_error
+    trigger: network_failure
+    priority: 3
+    actions:
+      - action: wait
+        duration_sec: 5
+      - action: retry_last_action
+        max_attempts: 3
+
+  - id: detection_alert
+    trigger: liapp_detection
+    priority: 0  # Highest priority
+    actions:
+      - action: pause_immediately
+      - action: capture_screen
+        save_as: detection_alert.png
+      - action: log_event
+        message: "LIAPP detection triggered"
+      - action: abort_workflow
+
+# =============================================================================
+# MONITORING
+# =============================================================================
+monitoring:
+  logcat:
+    enabled: true
+    filter: "LIAPP|security|tamper|detection|integrity"
+    on_match: pause_and_alert
+    log_file: /tmp/karrot_logcat.txt
+
+  screen:
+    capture_interval_sec: 5
+    save_dir: /tmp/karrot_screens/
+
+  performance:
+    track_action_times: true
+    report_slow_actions_ms: 5000
+
+# =============================================================================
+# RECOVERY
+# =============================================================================
+recovery:
+  on_error: retry_with_backoff
+  max_attempts: 3
+  backoff:
+    initial_ms: 1000
+    multiplier: 2
+    max_ms: 10000
+
+  checkpoint:
+    save_state: true
+    state_file: /tmp/karrot_workflow_state.json
+    resume_enabled: true
+
+# =============================================================================
+# POST-COMPLETION
+# =============================================================================
+on_complete:
+  - action: capture_screen
+    save_as: login_complete.png
+  - action: log_event
+    message: "Karrot login workflow completed successfully"
+  - action: notify_user
+    message: "Login complete!"

@@ -1,0 +1,199 @@
+{
+  "version": "1.0.0",
+  "description": "MoAI wrapper agent categories for macOS Resource Optimizer integration",
+  "managers": [
+    {
+      "name": "manager-resource-coordinator",
+      "category": "orchestration",
+      "python_target": "coordinator.py --analyze-all",
+      "description": "Orchestrate parallel analysis across all resource categories",
+      "capabilities": [
+        "parallel_execution",
+        "result_aggregation",
+        "error_handling",
+        "priority_scheduling"
+      ],
+      "delegation_pattern": "parallel",
+      "max_concurrent": 6
+    },
+    {
+      "name": "manager-resource-strategy",
+      "category": "planning",
+      "python_target": "coordinator.py --optimize",
+      "description": "Generate comprehensive resource optimization strategies",
+      "capabilities": [
+        "strategy_generation",
+        "recommendation_prioritization",
+        "impact_analysis",
+        "rollback_planning"
+      ],
+      "delegation_pattern": "sequential",
+      "max_concurrent": 1
+    }
+  ],
+  "experts": [
+    {
+      "name": "expert-cpu-optimizer",
+      "category": "cpu",
+      "python_target": "coordinator.py --analyze --category=cpu",
+      "description": "CPU-specific performance analysis and optimization",
+      "metrics": [
+        "usage_percent",
+        "user_percent",
+        "system_percent",
+        "idle_percent",
+        "process_count",
+        "top_consumers"
+      ],
+      "optimization_targets": [
+        "process_affinity",
+        "nice_values",
+        "thermal_throttling",
+        "turbo_boost"
+      ],
+      "timeout_seconds": 5,
+      "priority": "high"
+    },
+    {
+      "name": "expert-memory-optimizer",
+      "category": "memory",
+      "python_target": "coordinator.py --analyze --category=memory",
+      "description": "Memory management and swap optimization",
+      "metrics": [
+        "total_memory",
+        "used_memory",
+        "free_memory",
+        "swap_used",
+        "memory_pressure",
+        "page_faults"
+      ],
+      "optimization_targets": [
+        "swap_configuration",
+        "memory_compression",
+        "process_memory_limits",
+        "cache_management"
+      ],
+      "timeout_seconds": 5,
+      "priority": "high"
+    },
+    {
+      "name": "expert-disk-optimizer",
+      "category": "disk",
+      "python_target": "coordinator.py --analyze --category=disk",
+      "description": "Disk I/O performance and storage optimization",
+      "metrics": [
+        "read_bytes",
+        "write_bytes",
+        "read_time",
+        "write_time",
+        "disk_usage",
+        "iops"
+      ],
+      "optimization_targets": [
+        "io_scheduling",
+        "cache_tuning",
+        "file_system_optimization",
+        "trim_operations"
+      ],
+      "timeout_seconds": 10,
+      "priority": "medium"
+    },
+    {
+      "name": "expert-network-optimizer",
+      "category": "network",
+      "python_target": "coordinator.py --analyze --category=network",
+      "description": "Network performance and connection optimization",
+      "metrics": [
+        "bytes_sent",
+        "bytes_received",
+        "packets_sent",
+        "packets_received",
+        "connection_count",
+        "latency"
+      ],
+      "optimization_targets": [
+        "tcp_tuning",
+        "connection_pooling",
+        "dns_caching",
+        "bandwidth_shaping"
+      ],
+      "timeout_seconds": 10,
+      "priority": "medium"
+    },
+    {
+      "name": "expert-battery-optimizer",
+      "category": "battery",
+      "python_target": "coordinator.py --analyze --category=battery",
+      "description": "Battery efficiency and power management",
+      "metrics": [
+        "charge_percent",
+        "time_remaining",
+        "power_usage",
+        "cycle_count",
+        "health_status"
+      ],
+      "optimization_targets": [
+        "power_mode",
+        "display_brightness",
+        "background_apps",
+        "sleep_settings"
+      ],
+      "timeout_seconds": 15,
+      "priority": "low"
+    },
+    {
+      "name": "expert-thermal-optimizer",
+      "category": "thermal",
+      "python_target": "coordinator.py --analyze --category=thermal",
+      "description": "Thermal management and cooling optimization",
+      "metrics": [
+        "cpu_temperature",
+        "gpu_temperature",
+        "fan_speed",
+        "thermal_pressure"
+      ],
+      "optimization_targets": [
+        "fan_curves",
+        "thermal_throttling",
+        "process_scheduling",
+        "cooling_mode"
+      ],
+      "timeout_seconds": 15,
+      "priority": "low"
+    }
+  ],
+  "python_engine": {
+    "base_path": ".claude/skills/macos-resource-optimizer/.data/scripts/coordinator.py",
+    "total_agents": 50,
+    "agent_categories": [
+      "cpu",
+      "memory",
+      "disk",
+      "network",
+      "battery",
+      "thermal"
+    ],
+    "interface_version": "1.0",
+    "command_patterns": {
+      "analyze_single": "uv run coordinator.py --analyze --category={category}",
+      "analyze_all": "uv run coordinator.py --analyze-all",
+      "optimize": "uv run coordinator.py --optimize --categories={categories}",
+      "optimize_apply": "uv run coordinator.py --optimize --categories={categories} --apply"
+    }
+  },
+  "integration_strategy": {
+    "approach": "additive",
+    "python_modifications": "none",
+    "wrapper_layer": "async_subprocess",
+    "caching_strategy": "ttl_with_lru",
+    "parallel_execution": "asyncio.gather",
+    "error_handling": "graceful_degradation"
+  },
+  "performance_targets": {
+    "baseline_seconds": 2.5,
+    "target_seconds": 1.8,
+    "improvement_percent": 28,
+    "cache_hit_rate_target": 0.6,
+    "parallel_speedup_target": 6.0
+  }
+}

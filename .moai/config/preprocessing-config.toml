@@ -1,0 +1,333 @@
+# Phase 9b Workstream A: Image Preprocessing Configuration
+# Location: .moai/config/preprocessing-config.toml
+# Purpose: Centralized configuration for image preprocessing pipeline
+# Last Updated: 2025-12-02
+# Format: TOML (Token-Optimized Object Notation)
+
+[metadata]
+name = "Image Preprocessing Configuration"
+version = "1.0.0"
+phase = "9b"
+workstream = "A"
+created_date = "2025-12-02"
+description = "Configuration for CLAHE, morphological operations, edge detection, and grayscale conversion"
+
+# =============================================================================
+# SECTION 1: CLAHE (Contrast Limited Adaptive Histogram Equalization)
+# =============================================================================
+
+[clahe]
+# CLAHE enhances local contrast in images for better template matching
+enabled = true
+description = "Adaptive contrast enhancement for improved feature detection"
+
+# Clip limit: Controls the contrast amplification factor (typically 2.0-40.0)
+# Lower values (2-5): Subtle enhancement, preserves image naturalness
+# Higher values (20-40): Aggressive enhancement, better for low-contrast images
+clip_limit = 3.0
+
+# Tile grid size: Image is divided into tiles for adaptive processing
+# Larger tiles (32x32-64x64): Smoother results, less local variation
+# Smaller tiles (8x8-16x16): More aggressive local enhancement
+tile_grid_size = [8, 8]
+
+# Whether to apply CLAHE before other preprocessing steps
+order_priority = 1
+
+[clahe.presets]
+# Preset configurations for different scenarios
+aggressive = { clip_limit = 25.0, tile_grid_size = [8, 8] }
+moderate = { clip_limit = 3.0, tile_grid_size = [12, 12] }
+subtle = { clip_limit = 1.5, tile_grid_size = [16, 16] }
+dark_image = { clip_limit = 40.0, tile_grid_size = [8, 8] }
+
+# =============================================================================
+# SECTION 2: Morphological Operations (Erosion, Dilation)
+# =============================================================================
+
+[morphological_operations]
+# Morphological operations clean up images by removing noise and filling gaps
+enabled = true
+description = "Kernel-based morphological operations for image cleanup"
+
+# Available kernel sizes (in pixels)
+# 3x3: Minimal effect, for fine details
+# 5x5: Standard enhancement, removes small noise
+# 7x7: Stronger effect, may remove fine features
+kernel_sizes = [3, 5, 7]
+
+# Erosion: Removes small white regions (noise)
+[morphological_operations.erosion]
+enabled = true
+kernel_size = 5
+iterations = 1
+description = "Remove small white noise and thin features"
+
+# Dilation: Fills small black holes and connects nearby features
+[morphological_operations.dilation]
+enabled = true
+kernel_size = 5
+iterations = 1
+description = "Fill gaps and connect fragmented features"
+
+# Opening: Erosion followed by dilation (removes small noise)
+[morphological_operations.opening]
+enabled = true
+kernel_size = 5
+description = "Remove small objects while preserving large features"
+
+# Closing: Dilation followed by erosion (fills small holes)
+[morphological_operations.closing]
+enabled = true
+kernel_size = 5
+description = "Fill small holes while preserving object boundaries"
+
+# =============================================================================
+# SECTION 3: Edge Detection (Canny, Sobel)
+# =============================================================================
+
+[edge_detection]
+# Edge detection improves template matching in low-contrast regions
+enabled = true
+description = "Multi-method edge detection for robust feature matching"
+
+[edge_detection.canny]
+# Canny edge detection: Multi-stage process for optimal edges
+enabled = true
+description = "Optimal edge detection with gradient magnitude and direction"
+
+# Threshold values for Canny edge detection
+# Lower threshold: All edges above this value are kept
+# Upper threshold: All edges below this value are discarded
+# Range: 50-150 for lower, 150-300 for upper (typical)
+lower_threshold = 100
+upper_threshold = 200
+
+# Kernel size for Sobel derivatives in Canny
+# Must be odd value (3, 5, 7, etc.)
+sobel_kernel_size = 3
+
+# Gaussian blur kernel size for noise reduction before edge detection
+gaussian_kernel_size = 5
+
+[edge_detection.sobel]
+# Sobel edge detection: Gradient-based edge detection
+enabled = true
+description = "Gradient-based edge detection for directional edges"
+
+# Kernel size for Sobel operator
+sobel_kernel_size = 3
+
+# Compute horizontal edges (Sobel X)
+compute_x = true
+
+# Compute vertical edges (Sobel Y)
+compute_y = true
+
+# Compute magnitude and direction
+compute_magnitude = true
+
+# =============================================================================
+# SECTION 4: Grayscale Conversion Variants
+# =============================================================================
+
+[grayscale]
+# Grayscale conversion reduces color space, improving template matching speed
+enabled = true
+description = "Grayscale conversion variants for different use cases"
+
+# Standard weighted conversion: 0.299*R + 0.587*G + 0.114*B
+# Preserves human vision sensitivity to different colors
+standard = true
+
+# Luminosity preservation: Prioritizes overall brightness preservation
+luminosity = true
+
+# Lightness method: Average of max and min RGB values
+lightness = false
+
+# Average method: Simple (R+G+B)/3
+average = false
+
+# Selected variant for preprocessing pipeline
+selected_variant = "standard"
+
+# =============================================================================
+# SECTION 5: Cache Settings
+# =============================================================================
+
+[cache]
+# Preprocessing cache reduces redundant computation on repeated images
+enabled = true
+description = "In-memory and disk cache for preprocessing results"
+
+# Maximum cache size in megabytes
+# Larger sizes (500-1000 MB): More caching, faster repeated processing
+# Smaller sizes (50-100 MB): Lower memory usage, more cache misses
+max_size_mb = 250
+
+# Cache time-to-live in seconds
+# Values: 3600 (1 hour), 7200 (2 hours), 86400 (24 hours)
+ttl_seconds = 3600
+
+# Cache storage type: "memory" or "disk"
+storage_type = "memory"
+
+# Disk cache location (if storage_type = "disk")
+disk_path = ".moai/cache/preprocessing/"
+
+# Enable compression for disk cache
+compression_enabled = false
+
+# =============================================================================
+# SECTION 6: Device Profiles (Resolution-Specific Tuning)
+# =============================================================================
+
+[device_720p]
+# Device: 1280x720 (HD Ready)
+resolution = "1280x720"
+scale_factor = 1.0
+clahe_clip_limit = 2.5
+morphological_kernel = 5
+canny_lower_threshold = 80
+canny_upper_threshold = 180
+description = "Mobile phones, older tablets"
+
+[device_1080p]
+# Device: 1920x1080 (Full HD)
+resolution = "1920x1080"
+scale_factor = 1.5
+clahe_clip_limit = 3.0
+morphological_kernel = 5
+canny_lower_threshold = 100
+canny_upper_threshold = 200
+description = "Modern phones, standard tablets"
+
+[device_1440p]
+# Device: 2560x1440 (QHD)
+resolution = "2560x1440"
+scale_factor = 2.0
+clahe_clip_limit = 3.5
+morphological_kernel = 7
+canny_lower_threshold = 120
+canny_upper_threshold = 220
+description = "High-resolution phones"
+
+[device_2560p]
+# Device: 5120x2560 (4K)
+resolution = "5120x2560"
+scale_factor = 4.0
+clahe_clip_limit = 4.0
+morphological_kernel = 7
+canny_lower_threshold = 100
+canny_upper_threshold = 200
+description = "High-end tablets, displays"
+
+# =============================================================================
+# SECTION 7: Pipeline Order and Execution
+# =============================================================================
+
+[pipeline]
+# Step-by-step preprocessing pipeline execution
+description = "Ordered sequence of preprocessing operations"
+
+# Step 1: Grayscale conversion (if input is color)
+step_1_grayscale = true
+
+# Step 2: Apply CLAHE for contrast enhancement
+step_2_clahe = true
+
+# Step 3: Apply morphological operations (opens → closes)
+step_3_morphological = true
+
+# Step 4: Apply edge detection (Canny)
+step_4_edge_detection = true
+
+# Step 5: Optional post-processing normalization
+step_5_normalize = true
+
+# Skip preprocessing entirely (for debugging)
+bypass_all = false
+
+# =============================================================================
+# SECTION 8: Performance Options
+# =============================================================================
+
+[performance]
+# Performance tuning options for optimization
+description = "Performance-related settings for preprocessing"
+
+# GPU acceleration: Use CUDA/OpenCL if available
+gpu_acceleration = false
+
+# GPU device: "cuda" or "opencl"
+gpu_device = "cuda"
+
+# Number of CPU threads for parallel operations
+cpu_threads = 4
+
+# Batch processing: Process multiple images at once
+batch_processing = false
+batch_size = 8
+
+# Memory optimization: Trade quality for speed
+optimize_memory = false
+
+# Timeout for preprocessing (in seconds)
+preprocessing_timeout = 5.0
+
+# =============================================================================
+# SECTION 9: Logging and Diagnostics
+# =============================================================================
+
+[logging]
+# Logging configuration for preprocessing pipeline
+description = "Diagnostic and performance logging"
+
+# Enable detailed logging
+enabled = false
+
+# Log level: "debug", "info", "warning", "error"
+level = "info"
+
+# Log file location
+file_path = ".moai/logs/preprocessing.log"
+
+# Log performance metrics for each step
+log_metrics = false
+
+# Log intermediate images for debugging
+log_intermediate_images = false
+intermediate_image_path = ".moai/temp/preprocessing_debug/"
+
+# =============================================================================
+# SECTION 10: Quality Assurance
+# =============================================================================
+
+[quality_assurance]
+# Quality metrics and validation settings
+description = "Preprocessing quality validation"
+
+# Validate output after each step
+validation_enabled = true
+
+# Acceptable contrast levels (0-255 standard deviation)
+min_contrast = 10.0
+
+# Check for image corruption
+corruption_check = true
+
+# Store quality metrics
+store_metrics = false
+metrics_path = ".moai/cache/preprocessing_metrics.json"
+
+# =============================================================================
+# Configuration Notes:
+# =============================================================================
+# 1. Device profiles are auto-detected based on screen resolution
+# 2. All threshold values are adaptive and can be tuned per-game
+# 3. Cache is automatically cleared on config changes
+# 4. GPU acceleration requires OpenCV built with CUDA support
+# 5. Pipeline order cannot be changed; operations are interdependent
+# 6. For low-light environments, increase CLAHE clip_limit (10-25)
+# 7. For high-contrast images, decrease clip_limit (1-2)

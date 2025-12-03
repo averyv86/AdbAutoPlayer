@@ -1,0 +1,248 @@
+{
+  "timestamp": "2025-11-30T19:45:17.268277",
+  "total_scripts": 12,
+  "passed_scripts": 8,
+  "runs_per_script": 3,
+  "results": [
+    {
+      "script": "status.py",
+      "target": 0.5,
+      "runs": [
+        1.4933230876922607,
+        1.0915098190307617,
+        1.0600941181182861
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "avg": 1.2149756749471028,
+      "min": 1.0600941181182861,
+      "max": 1.4933230876922607,
+      "passed": false,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "analyze_cpu.py",
+      "target": 0.5,
+      "runs": [
+        2.072829246520996,
+        2.07289981842041,
+        2.0780951976776123
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "avg": 2.074608087539673,
+      "min": 2.072829246520996,
+      "max": 2.0780951976776123,
+      "passed": false,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "analyze_memory.py",
+      "target": 0.5,
+      "runs": [
+        0.11138606071472168,
+        0.10606694221496582,
+        0.1041569709777832
+      ],
+      "exit_codes": [
+        2,
+        2,
+        2
+      ],
+      "avg": 0.10720332463582356,
+      "min": 0.1041569709777832,
+      "max": 0.11138606071472168,
+      "passed": true,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "analyze_disk.py",
+      "target": 0.5,
+      "runs": [
+        0.0560150146484375,
+        0.05978512763977051,
+        0.06566905975341797
+      ],
+      "exit_codes": [
+        2,
+        2,
+        2
+      ],
+      "avg": 0.06048973401387533,
+      "min": 0.0560150146484375,
+      "max": 0.06566905975341797,
+      "passed": true,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "analyze_network.py",
+      "target": 0.5,
+      "runs": [
+        0.06700801849365234,
+        0.0524752140045166,
+        0.06458115577697754
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "avg": 0.06135479609171549,
+      "min": 0.0524752140045166,
+      "max": 0.06700801849365234,
+      "passed": true,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "analyze_battery.py",
+      "target": 0.5,
+      "runs": [
+        0.2228710651397705,
+        0.16819405555725098,
+        0.220595121383667
+      ],
+      "exit_codes": [
+        1,
+        1,
+        1
+      ],
+      "avg": 0.2038867473602295,
+      "min": 0.16819405555725098,
+      "max": 0.2228710651397705,
+      "passed": true,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "analyze_thermal.py",
+      "target": 0.5,
+      "runs": [
+        1.0834319591522217,
+        1.0711450576782227,
+        1.0757498741149902
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "avg": 1.0767756303151448,
+      "min": 1.0711450576782227,
+      "max": 1.0834319591522217,
+      "passed": false,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "analyze_all.py",
+      "target": 2.5,
+      "runs": [
+        2.142843008041382,
+        2.1457440853118896,
+        2.146178960800171
+      ],
+      "exit_codes": [
+        2,
+        2,
+        2
+      ],
+      "avg": 2.1449220180511475,
+      "min": 2.142843008041382,
+      "max": 2.146178960800171,
+      "passed": true,
+      "critical": true,
+      "special": null
+    },
+    {
+      "script": "optimize.py",
+      "target": 3.0,
+      "runs": [
+        2.3025460243225098,
+        2.2531208992004395,
+        2.2402780055999756
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "avg": 2.265314976374308,
+      "min": 2.2402780055999756,
+      "max": 2.3025460243225098,
+      "passed": true,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "report.py",
+      "target": 2.0,
+      "runs": [
+        0.15727710723876953,
+        0.10990023612976074,
+        0.10785412788391113
+      ],
+      "exit_codes": [
+        2,
+        2,
+        2
+      ],
+      "avg": 0.12501049041748047,
+      "min": 0.10785412788391113,
+      "max": 0.15727710723876953,
+      "passed": true,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "cache.py",
+      "target": 0.2,
+      "runs": [
+        0.11544179916381836,
+        0.08949685096740723,
+        0.05767989158630371
+      ],
+      "exit_codes": [
+        2,
+        2,
+        2
+      ],
+      "avg": 0.0875395139058431,
+      "min": 0.05767989158630371,
+      "max": 0.11544179916381836,
+      "passed": true,
+      "critical": false,
+      "special": null
+    },
+    {
+      "script": "monitor.py",
+      "target": 10.0,
+      "runs": [
+        15.006397008895874,
+        15.005775928497314,
+        15.005733013153076
+      ],
+      "exit_codes": [
+        -1,
+        -1,
+        -1
+      ],
+      "avg": 15.005968650182089,
+      "min": 15.005733013153076,
+      "max": 15.006397008895874,
+      "passed": false,
+      "critical": false,
+      "special": "10s execution"
+    }
+  ]
+}

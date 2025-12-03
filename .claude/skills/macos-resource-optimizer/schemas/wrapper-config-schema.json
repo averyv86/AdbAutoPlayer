@@ -1,0 +1,289 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PythonEngineWrapper Configuration Schema",
+  "description": "Configuration schema for macOS Resource Optimizer wrapper layer",
+  "type": "object",
+  "required": [
+    "engine_path",
+    "timeout_seconds",
+    "cache_ttl_seconds"
+  ],
+  "properties": {
+    "engine_path": {
+      "type": "string",
+      "description": "Path to coordinator.py Python engine",
+      "default": ".claude/skills/macos-resource-optimizer/.data/scripts/coordinator.py",
+      "examples": [
+        ".claude/skills/macos-resource-optimizer/.data/scripts/coordinator.py",
+        "/absolute/path/to/coordinator.py"
+      ]
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "description": "Subprocess execution timeout in seconds",
+      "minimum": 1,
+      "maximum": 60,
+      "default": 10
+    },
+    "retry_attempts": {
+      "type": "integer",
+      "description": "Number of retry attempts on failure",
+      "minimum": 0,
+      "maximum": 5,
+      "default": 3
+    },
+    "retry_backoff": {
+      "type": "number",
+      "description": "Exponential backoff multiplier for retries",
+      "minimum": 0.1,
+      "maximum": 10.0,
+      "default": 1.0
+    },
+    "cache_ttl_seconds": {
+      "type": "integer",
+      "description": "Cache time-to-live in seconds",
+      "minimum": 10,
+      "maximum": 600,
+      "default": 30
+    },
+    "cache_max_size": {
+      "type": "integer",
+      "description": "Maximum number of cache entries",
+      "minimum": 10,
+      "maximum": 500,
+      "default": 50
+    },
+    "cache_stale_threshold_seconds": {
+      "type": "integer",
+      "description": "Stale cache availability threshold in seconds",
+      "minimum": 60,
+      "maximum": 3600,
+      "default": 300
+    },
+    "parallel_agents": {
+      "type": "integer",
+      "description": "Maximum concurrent parallel agents",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 6
+    },
+    "performance_target_seconds": {
+      "type": "number",
+      "description": "Target analysis duration in seconds",
+      "minimum": 0.5,
+      "maximum": 10.0,
+      "default": 1.8
+    },
+    "category_timeouts": {
+      "type": "object",
+      "description": "Category-specific timeout overrides",
+      "properties": {
+        "cpu": {
+          "$ref": "#/definitions/categoryConfig"
+        },
+        "memory": {
+          "$ref": "#/definitions/categoryConfig"
+        },
+        "disk": {
+          "$ref": "#/definitions/categoryConfig"
+        },
+        "network": {
+          "$ref": "#/definitions/categoryConfig"
+        },
+        "battery": {
+          "$ref": "#/definitions/categoryConfig"
+        },
+        "thermal": {
+          "$ref": "#/definitions/categoryConfig"
+        }
+      },
+      "additionalProperties": false
+    },
+    "monitoring": {
+      "type": "object",
+      "description": "Performance monitoring configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "metrics_retention": {
+          "type": "integer",
+          "description": "Number of metrics to retain",
+          "minimum": 10,
+          "maximum": 10000,
+          "default": 1000
+        },
+        "performance_warnings": {
+          "type": "boolean",
+          "description": "Enable performance warnings",
+          "default": true
+        },
+        "warn_threshold_seconds": {
+          "type": "number",
+          "description": "Threshold for performance warnings",
+          "minimum": 1.0,
+          "maximum": 30.0,
+          "default": 2.5
+        }
+      }
+    },
+    "error_handling": {
+      "type": "object",
+      "description": "Error handling configuration",
+      "properties": {
+        "graceful_degradation": {
+          "type": "boolean",
+          "description": "Enable graceful degradation on errors",
+          "default": true
+        },
+        "use_stale_cache_on_timeout": {
+          "type": "boolean",
+          "description": "Use stale cache when analysis times out",
+          "default": true
+        },
+        "partial_results_acceptable": {
+          "type": "boolean",
+          "description": "Accept partial results when some categories fail",
+          "default": true
+        },
+        "log_errors": {
+          "type": "boolean",
+          "description": "Log errors to file",
+          "default": true
+        },
+        "error_log_path": {
+          "type": "string",
+          "description": "Path to error log file",
+          "default": ".moai/logs/macos-optimizer-errors.log"
+        }
+      }
+    },
+    "optimization": {
+      "type": "object",
+      "description": "Optimization execution configuration",
+      "properties": {
+        "dry_run_default": {
+          "type": "boolean",
+          "description": "Default to dry-run mode for safety",
+          "default": true
+        },
+        "require_confirmation": {
+          "type": "boolean",
+          "description": "Require user confirmation before applying",
+          "default": true
+        },
+        "backup_before_apply": {
+          "type": "boolean",
+          "description": "Backup settings before applying optimizations",
+          "default": true
+        },
+        "rollback_on_error": {
+          "type": "boolean",
+          "description": "Auto-rollback on optimization error",
+          "default": true
+        }
+      }
+    }
+  },
+  "definitions": {
+    "categoryConfig": {
+      "type": "object",
+      "description": "Category-specific configuration",
+      "properties": {
+        "priority": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Category execution priority"
+        },
+        "timeout": {
+          "type": "integer",
+          "description": "Category-specific timeout in seconds",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "cache_ttl": {
+          "type": "integer",
+          "description": "Category-specific cache TTL in seconds",
+          "minimum": 10,
+          "maximum": 600
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable/disable category analysis",
+          "default": true
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "engine_path": ".claude/skills/macos-resource-optimizer/.data/scripts/coordinator.py",
+      "timeout_seconds": 10,
+      "retry_attempts": 3,
+      "retry_backoff": 1.0,
+      "cache_ttl_seconds": 30,
+      "cache_max_size": 50,
+      "cache_stale_threshold_seconds": 300,
+      "parallel_agents": 6,
+      "performance_target_seconds": 1.8,
+      "category_timeouts": {
+        "cpu": {
+          "priority": "high",
+          "timeout": 5,
+          "cache_ttl": 20,
+          "enabled": true
+        },
+        "memory": {
+          "priority": "high",
+          "timeout": 5,
+          "cache_ttl": 20,
+          "enabled": true
+        },
+        "disk": {
+          "priority": "medium",
+          "timeout": 10,
+          "cache_ttl": 30,
+          "enabled": true
+        },
+        "network": {
+          "priority": "medium",
+          "timeout": 10,
+          "cache_ttl": 30,
+          "enabled": true
+        },
+        "battery": {
+          "priority": "low",
+          "timeout": 15,
+          "cache_ttl": 60,
+          "enabled": true
+        },
+        "thermal": {
+          "priority": "low",
+          "timeout": 15,
+          "cache_ttl": 60,
+          "enabled": true
+        }
+      },
+      "monitoring": {
+        "enabled": true,
+        "metrics_retention": 1000,
+        "performance_warnings": true,
+        "warn_threshold_seconds": 2.5
+      },
+      "error_handling": {
+        "graceful_degradation": true,
+        "use_stale_cache_on_timeout": true,
+        "partial_results_acceptable": true,
+        "log_errors": true,
+        "error_log_path": ".moai/logs/macos-optimizer-errors.log"
+      },
+      "optimization": {
+        "dry_run_default": true,
+        "require_confirmation": true,
+        "backup_before_apply": true,
+        "rollback_on_error": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,209 @@
+# Command 0: init
+
+Initialize and verify macOS Resource Optimizer setup.
+
+## Syntax
+
+```bash
+/macos-resource-optimizer:0-init [options]
+```
+
+## Description
+
+The init command performs initial setup and validation:
+
+- Verifies Python environment
+- Checks dependencies
+- Validates configuration
+- Tests expert modules
+- Reports system information
+
+## Basic Usage
+
+```bash
+# Initialize system
+/macos-resource-optimizer:0-init
+```
+
+Expected output:
+```
+Initializing macOS Resource Optimizer v7.0...
+✓ Python environment verified (3.11.x)
+✓ Dependencies installed and valid
+✓ Configuration loaded successfully
+✓ Expert modules tested
+✓ System ready for optimization
+
+Status: success
+Execution Time: 1.2 seconds
+```
+
+## Options
+
+### Validation Options
+
+```bash
+# Validate configuration syntax
+/macos-resource-optimizer:0-init --validate-config
+
+# Run full diagnostic
+/macos-resource-optimizer:0-init --diagnose
+
+# Check dependencies
+/macos-resource-optimizer:0-init --check-deps
+```
+
+### Configuration Options
+
+```bash
+# Reset to default configuration
+/macos-resource-optimizer:0-init --reset-config
+
+# Use specific configuration file
+/macos-resource-optimizer:0-init --config /path/to/config.json
+
+# Load configuration profile
+/macos-resource-optimizer:0-init --profile production
+```
+
+### Output Options
+
+```bash
+# Verbose output
+/macos-resource-optimizer:0-init --verbose
+
+# JSON output
+/macos-resource-optimizer:0-init --json
+
+# Quiet mode
+/macos-resource-optimizer:0-init --quiet
+```
+
+## Output Format
+
+### JSON Output
+
+```json
+{
+  "status": "success",
+  "execution_time_seconds": 1.2,
+  "system": {
+    "os": "macOS 14.1.1",
+    "python_version": "3.11.6",
+    "moai_version": "0.30.2"
+  },
+  "validation": {
+    "environment": "valid",
+    "dependencies": "all_installed",
+    "configuration": "valid",
+    "experts": "all_available"
+  },
+  "warnings": []
+}
+```
+
+## Use Cases
+
+### First-Time Setup
+
+After installation, run init to verify everything works:
+
+```bash
+/macos-resource-optimizer:0-init
+```
+
+### Troubleshooting
+
+If issues occur, run diagnostic mode:
+
+```bash
+/macos-resource-optimizer:0-init --diagnose
+```
+
+### Configuration Changes
+
+After modifying configuration, validate:
+
+```bash
+/macos-resource-optimizer:0-init --validate-config
+```
+
+### Environment Changes
+
+After Python or dependency updates:
+
+```bash
+/macos-resource-optimizer:0-init --check-deps
+```
+
+## Error Handling
+
+### Common Errors
+
+**Error: Python version incompatible**
+```
+Status: error
+Error: Python 3.8 found, 3.9+ required
+Solution: Upgrade Python to 3.9 or later
+```
+
+**Error: Missing dependencies**
+```
+Status: error
+Error: Module 'asyncio' not found
+Solution: Run: uv pip install -r requirements.txt
+```
+
+**Error: Invalid configuration**
+```
+Status: error
+Error: Configuration file syntax error at line 12
+Solution: Review configuration JSON syntax
+```
+
+## Exit Codes
+
+- **0**: Success - system initialized and validated
+- **1**: Error - validation failed
+- **2**: Warning - setup complete with warnings
+- **3**: Configuration error - invalid configuration
+
+## Performance
+
+- **Execution time**: 1.0-1.5 seconds
+- **System impact**: Minimal (read-only operations)
+- **No data changes**: Safe to run anytime
+
+## Dependencies Checked
+
+- Python 3.9+
+- asyncio
+- metrics collectors
+- expert modules
+- configuration parsers
+
+## Configuration Validation
+
+Checks for:
+- Valid JSON syntax
+- Required configuration keys
+- Proper value types
+- Compatible settings
+- Resource constraints
+
+## Next Steps
+
+After successful initialization:
+
+1. Run [analyze](/commands/analyze) to get baseline metrics
+2. Review [configuration](/getting-started/configuration)
+3. Explore [commands](/commands/index)
+
+## Related Commands
+
+- [analyze](/commands/analyze) - Get system metrics
+- [optimize](/commands/optimize) - Apply optimizations
+
+## Troubleshooting
+
+For init command issues, see [Troubleshooting Guide](/guides/troubleshooting)

@@ -1,0 +1,70 @@
+id: adb-connect
+name: Connect to ADB Device
+description: Establish ADB connection to device over TCP/IP or USB
+category: connection
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: "127.0.0.1:5555"
+    description: "Device IP and port (e.g., '192.168.1.100:5555') or serial number"
+    required: true
+  - name: timeout
+    type: integer
+    default: 10
+    description: "Connection timeout in seconds"
+    required: false
+  - name: port
+    type: integer
+    default: 5555
+    description: "ADB port for TCP/IP connection"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/connection/connect.py
+  args: ["--device", "{{ device }}", "--timeout", "{{ timeout }}", "--port", "{{ port }}"]
+  timeout_seconds: 30
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Connected successfully"
+    - "device connected"
+  output_patterns:
+    - "^\d+\.\d+\.\d+\.\d+:\d+\s+device"
+
+error_handling:
+  retry: true
+  max_retries: 3
+  retry_delay: 2
+  retry_backoff: 1.5
+  on_error:
+    - exit_code: 1
+      action: "Check device IP address and port"
+    - exit_code: 2
+      action: "Verify network connectivity"
+    - exit_code: 3
+      action: "Check ADB daemon status"
+
+outputs:
+  - name: device_id
+    type: string
+    description: "Connected device identifier"
+  - name: connection_status
+    type: string
+    description: "Status of connection (connected/offline/error)"
+  - name: device_model
+    type: string
+    description: "Device model name"
+  - name: android_version
+    type: string
+    description: "Android OS version"
+
+validation:
+  - name: device_format
+    rule: "device must match IP:port or device serial format"
+  - name: timeout_range
+    rule: "timeout must be between 5 and 60 seconds"
+  - name: port_valid
+    rule: "port must be between 1024 and 65535"

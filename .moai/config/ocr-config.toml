@@ -1,0 +1,507 @@
+# Phase 9b Workstream C: OCR (Optical Character Recognition) Configuration
+# Location: .moai/config/ocr-config.toml
+# Purpose: Centralized configuration for OCR engine selection, language support, and recognition settings
+# Last Updated: 2025-12-02
+# Format: TOML (Token-Optimized Object Notation)
+
+[metadata]
+name = "OCR Configuration"
+version = "1.0.0"
+phase = "9b"
+workstream = "C"
+created_date = "2025-12-02"
+description = "Configuration for OCR engine selection, language preferences, confidence thresholds, and preprocessing integration"
+
+# =============================================================================
+# SECTION 1: Engine Selection and Auto-Detection
+# =============================================================================
+
+[engine]
+# OCR engine selection and fallback strategy
+description = "OCR engine configuration with auto-detection and fallback"
+
+# Primary engine: "auto", "tesseract", "paddle"
+# "auto": Automatically select best available engine
+# "tesseract": Use Tesseract OCR (lightweight, CPU-based)
+# "paddle": Use PaddleOCR (more accurate, GPU-capable)
+primary_engine = "auto"
+
+# Fallback engine if primary is unavailable
+fallback_engine = "tesseract"
+
+# Tertiary fallback (lowest priority)
+tertiary_fallback_engine = "paddle"
+
+# Engine detection order (for "auto" mode)
+# Tries engines in this order until one is available
+auto_detection_order = ["paddle", "tesseract"]
+
+# Verify engine availability on startup
+verify_on_startup = true
+
+# Engine path configuration (if non-standard installation)
+[engine.paths]
+tesseract_path = ""  # Leave empty for system PATH
+paddle_model_path = ".moai/cache/paddle_models/"
+
+# =============================================================================
+# SECTION 2: Language Preferences and Support
+# =============================================================================
+
+[language]
+# Language configuration for OCR recognition
+description = "Language support and auto-detection"
+
+# Default language
+default_language = "eng"
+
+# Language auto-detection
+# "disabled": Use only specified language
+# "auto": Automatically detect language
+# "priority": Use specified language, fall back to auto-detect
+auto_detect_mode = "priority"
+
+# Supported languages (ISO 639-3 codes)
+# Each language can have language-specific thresholds
+supported_languages = ["eng", "chi_sim", "chi_tra", "jpn", "kor"]
+
+# Language detection model
+# "tesseract": Built-in Tesseract language detection
+# "fasttext": Facebook's fastText language detection
+language_detection_model = "tesseract"
+
+# =============================================================================
+# SECTION 2.1: Language Profiles
+# =============================================================================
+
+[language.eng]
+# English language profile
+name = "English"
+code = "eng"
+tesseract_traindata = "eng"
+paddle_lang_code = "en"
+confidence_threshold = 0.7
+enable_preprocessing = true
+preprocessing_profile = "standard"
+
+[language.chi_sim]
+# Simplified Chinese language profile
+name = "Simplified Chinese"
+code = "chi_sim"
+tesseract_traindata = "chi_sim"
+paddle_lang_code = "ch"
+confidence_threshold = 0.65
+enable_preprocessing = true
+preprocessing_profile = "high_contrast"
+
+[language.chi_tra]
+# Traditional Chinese language profile
+name = "Traditional Chinese"
+code = "chi_tra"
+tesseract_traindata = "chi_tra"
+paddle_lang_code = "ch"
+confidence_threshold = 0.65
+enable_preprocessing = true
+preprocessing_profile = "high_contrast"
+
+[language.jpn]
+# Japanese language profile
+name = "Japanese"
+code = "jpn"
+tesseract_traindata = "jpn"
+paddle_lang_code = "ja"
+confidence_threshold = 0.68
+enable_preprocessing = true
+preprocessing_profile = "standard"
+
+[language.kor]
+# Korean language profile
+name = "Korean"
+code = "kor"
+tesseract_traindata = "kor"
+paddle_lang_code = "ko"
+confidence_threshold = 0.70
+enable_preprocessing = true
+preprocessing_profile = "standard"
+
+# =============================================================================
+# SECTION 3: Confidence Thresholds
+# =============================================================================
+
+[confidence]
+# Recognition confidence thresholds per stage
+description = "Multi-stage confidence filtering"
+
+# Stage 1: Character-level confidence
+# Individual character must exceed this threshold
+character_level = 0.60
+
+# Stage 2: Word-level confidence
+# Average confidence of all characters in a word
+word_level = 0.65
+
+# Stage 3: Line-level confidence
+# Average confidence of all words in a line
+line_level = 0.70
+
+# Stage 4: Block-level confidence
+# Average confidence of all lines in a text block
+block_level = 0.72
+
+# Stage 5: Page-level confidence
+# Average confidence of all blocks on the page
+page_level = 0.75
+
+# Minimum overall confidence for accepting OCR result
+minimum_overall = 0.65
+
+# Low confidence fallback strategy
+# "retry": Retry with different preprocessing
+# "fallback_engine": Use fallback engine
+# "manual": Requires manual verification
+low_confidence_strategy = "retry"
+
+# =============================================================================
+# SECTION 4: Region of Interest (ROI) Configuration
+# =============================================================================
+
+[roi]
+# Region of Interest settings for OCR processing
+description = "Configurable ROI for efficient OCR"
+
+# Enable ROI processing (process only specific image region)
+enabled = true
+
+# ROI definition method
+# "none": Process entire image
+# "manual": Use predefined ROI coordinates
+# "auto": Automatically detect text regions
+roi_method = "auto"
+
+# Manual ROI coordinates (if roi_method = "manual")
+# Format: [x_start, y_start, x_end, y_end] (pixels)
+# Example: Battle status at bottom-right of screen
+[roi.manual_regions]
+battle_status = [640, 500, 1280, 720]
+quest_title = [100, 50, 1180, 150]
+character_names = [50, 200, 1230, 400]
+
+# Auto ROI detection threshold
+# Minimum text block area to consider (pixels²)
+auto_roi_min_area = 100
+
+# Padding around detected ROI (pixels)
+auto_roi_padding = 10
+
+# =============================================================================
+# SECTION 5: Cache Settings
+# =============================================================================
+
+[cache]
+# OCR result caching to avoid reprocessing identical images
+enabled = true
+description = "In-memory and disk cache for OCR results"
+
+# Cache type: "memory", "disk", or "hybrid"
+cache_type = "memory"
+
+# Maximum cache size
+# Memory: In megabytes
+# Disk: In megabytes
+max_size_mb = 200
+
+# Cache time-to-live (seconds)
+# How long to keep cached results
+ttl_seconds = 3600
+
+# Cache invalidation strategy
+# "time": Invalidate after TTL
+# "size": Invalidate when cache full (LRU)
+# "both": Both time and size based
+invalidation_strategy = "both"
+
+# Image hashing for cache key generation
+# "perceptual": Hash based on image content
+# "exact": Exact image matching
+hash_method = "perceptual"
+
+# Disk cache location (if cache_type = "disk" or "hybrid")
+disk_path = ".moai/cache/ocr_results/"
+
+# Cache statistics tracking
+track_stats = false
+stats_path = ".moai/cache/ocr_cache_stats.json"
+
+# =============================================================================
+# SECTION 6: Preprocessing Integration
+# =============================================================================
+
+[preprocessing]
+# Integration with image preprocessing pipeline
+description = "Preprocessing options for improved OCR accuracy"
+
+# Enable preprocessing before OCR
+enabled = true
+
+# Preprocessing profile to use
+# "standard": Default preprocessing
+# "aggressive": Maximum enhancement
+# "light": Minimal preprocessing
+# "high_contrast": For low-contrast text
+profile = "standard"
+
+# Specific preprocessing steps
+[preprocessing.steps]
+grayscale = true
+clahe = true
+morphological = true
+edge_detection = false
+normalize = true
+
+# CLAHE settings (if enabled)
+[preprocessing.clahe]
+clip_limit = 2.5
+tile_grid_size = [8, 8]
+
+# Morphological settings (if enabled)
+[preprocessing.morphological]
+kernel_size = 5
+erosion = true
+dilation = true
+
+# Image normalization (contrast and brightness)
+[preprocessing.normalize]
+contrast_factor = 1.2
+brightness_factor = 0.9
+
+# =============================================================================
+# SECTION 7: GPU Acceleration (PaddleOCR)
+# =============================================================================
+
+[gpu]
+# GPU acceleration settings for PaddleOCR
+description = "GPU configuration for faster OCR processing"
+
+# Enable GPU acceleration
+enabled = false
+
+# GPU device type: "cuda", "opencl", "hip"
+device_type = "cuda"
+
+# GPU device index (if multiple GPUs available)
+device_index = 0
+
+# GPU memory allocation (percentage of total GPU memory)
+memory_fraction = 0.5
+
+# Enable TensorRT optimization (NVIDIA GPUs)
+tensorrt_enabled = false
+
+# Enable ONNX runtime optimization
+onnx_enabled = true
+
+# =============================================================================
+# SECTION 8: Batch Processing
+# =============================================================================
+
+[batch]
+# Batch OCR processing for multiple images
+description = "Batch processing configuration"
+
+# Enable batch processing
+enabled = false
+
+# Batch size (number of images to process at once)
+batch_size = 4
+
+# Maintain batch consistency (process images in order)
+maintain_order = true
+
+# Timeout for batch completion (seconds)
+batch_timeout_seconds = 30
+
+# =============================================================================
+# SECTION 9: Text Filtering and Post-Processing
+# =============================================================================
+
+[text_filtering]
+# Post-processing of OCR results
+description = "Text cleaning and validation"
+
+# Remove special characters
+remove_special_chars = false
+
+# Remove numbers
+remove_numbers = false
+
+# Convert to lowercase
+lowercase = false
+
+# Trim whitespace
+trim_whitespace = true
+
+# Remove duplicate characters (e.g., "aaa" -> "a")
+remove_duplicates = false
+
+# Spell checking and correction
+spell_check = false
+spell_check_language = "eng"
+
+# Dictionary validation
+# Only accept words in dictionary
+dictionary_validation = false
+dictionary_language = "eng"
+
+# =============================================================================
+# SECTION 10: Performance Tuning
+# =============================================================================
+
+[performance]
+# Performance optimization settings
+description = "Speed vs accuracy trade-offs"
+
+# Processing timeout (seconds)
+timeout_seconds = 10
+
+# Maximum image size to process
+# Larger images are automatically downscaled
+max_image_width = 1920
+max_image_height = 1080
+
+# Image downscaling factor
+# 0.5 = 50% of original, 1.0 = full size
+downscale_factor = 1.0
+
+# Multi-threading
+num_threads = 4
+
+# OCR model quality level
+# "fast": Quick processing, lower accuracy
+# "balanced": Default
+# "accurate": Maximum accuracy, slower
+quality_level = "balanced"
+
+# =============================================================================
+# SECTION 11: Device-Specific Profiles
+# =============================================================================
+
+[device_720p]
+# 1280x720 resolution profile
+resolution = "1280x720"
+downscale_factor = 0.8
+timeout_seconds = 8
+confidence_threshold = 0.68
+preprocessing_profile = "standard"
+
+[device_1080p]
+# 1920x1080 resolution profile
+resolution = "1920x1080"
+downscale_factor = 1.0
+timeout_seconds = 10
+confidence_threshold = 0.70
+preprocessing_profile = "standard"
+
+[device_1440p]
+# 2560x1440 resolution profile
+resolution = "2560x1440"
+downscale_factor = 0.8
+timeout_seconds = 12
+confidence_threshold = 0.72
+preprocessing_profile = "aggressive"
+
+[device_2560p]
+# 5120x2560 resolution profile
+resolution = "5120x2560"
+downscale_factor = 0.5
+timeout_seconds = 15
+confidence_threshold = 0.75
+preprocessing_profile = "aggressive"
+
+# =============================================================================
+# SECTION 12: Logging and Diagnostics
+# =============================================================================
+
+[logging]
+# OCR logging configuration
+description = "Diagnostic logging for OCR operations"
+
+# Enable detailed logging
+enabled = false
+
+# Log level: "debug", "info", "warning", "error"
+level = "info"
+
+# Log file location
+file_path = ".moai/logs/ocr.log"
+
+# Log OCR results (can be verbose)
+log_results = false
+
+# Log preprocessing steps
+log_preprocessing = false
+
+# Log recognition confidence scores
+log_confidence = false
+
+# Log engine selection and fallback attempts
+log_engine_selection = false
+
+# =============================================================================
+# SECTION 13: Quality Assurance
+# =============================================================================
+
+[quality_assurance]
+# OCR quality metrics and validation
+description = "Quality control and validation"
+
+# Track OCR accuracy metrics
+track_metrics = false
+metrics_path = ".moai/cache/ocr_metrics.json"
+
+# Verify recognized text against known patterns
+pattern_validation = true
+
+# Store OCR results for analysis
+store_results = false
+results_path = ".moai/cache/ocr_results.jsonl"
+
+# Sample rate for detailed logging (0.0-1.0)
+# 0.0 = never, 1.0 = always, 0.1 = 10% of results
+sample_rate = 0.1
+
+# =============================================================================
+# SECTION 14: Fallback and Error Handling
+# =============================================================================
+
+[fallback]
+# Fallback strategies when OCR fails
+description = "Error handling and recovery strategies"
+
+# Fallback image preprocessing if confidence too low
+enable_preprocessing_fallback = true
+
+# Fallback engine if primary fails
+enable_engine_fallback = true
+
+# Maximum fallback attempts per image
+max_fallback_attempts = 3
+
+# Return empty string if all fallbacks fail
+return_empty_on_failure = false
+
+# Return original image data if OCR fails
+return_image_data = false
+
+# =============================================================================
+# Configuration Notes:
+# =============================================================================
+# 1. Language codes must match available traindata for your OCR engine
+# 2. Confidence thresholds should be adjusted based on your game's text
+# 3. ROI processing significantly improves speed (5-10x faster)
+# 4. Cache requires writable .moai/cache/ directory
+# 5. GPU acceleration requires CUDA-enabled GPU and proper drivers
+# 6. For Chinese/Japanese: Use preprocessing_profile = "high_contrast"
+# 7. Batch processing is beneficial when processing 10+ images at once
+# 8. Dictionary validation requires language-specific dictionaries
+# 9. Text filtering should be conservative to avoid removing game text
+# 10. For real-time OCR: Use downscale_factor < 1.0 and timeout < 5s

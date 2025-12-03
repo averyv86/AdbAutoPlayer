@@ -1,0 +1,36 @@
+# Simple Implementation Workflow Template (1-3 files)
+# Sequential execution, single agent (manager-tdd)
+# Use when: Bug fixes, small enhancements, single-file modifications
+
+@metadata[1]{template_id,name,complexity,file_count,agent_count}:
+SIMPLE-IMPL,Simple Implementation,simple,1-3,1
+
+@phases[2]{id,agent,mode,deps,description}:
+1,manager-tdd,sequential,[],"TDD implementation cycle (RED-GREEN-REFACTOR)"
+2,manager-git,sequential,[1],"Git operations and commit"
+
+@agent_pool[1]{agent,domain,priority,workload}:
+manager-tdd,testing-implementation,critical,100
+
+@exec_strategy[1]{mode,parallel_max,dynamic_adjust,resource_monitoring}:
+sequential,1,false,false
+
+@file_patterns[3]{pattern,agent,priority}:
+**/*.py,manager-tdd,high
+**/test_*.py,manager-tdd,critical
+**/*.md,manager-tdd,low
+
+@quality_gates[2]{gate_id,validator,threshold,required}:
+1,syntax-check,100,true
+2,test-coverage,85,true
+
+@example_files[3]{path,agent,operation}:
+src/module.py,manager-tdd,modify
+tests/test_module.py,manager-tdd,create
+docs/API.md,manager-tdd,update
+
+# Template Usage:
+# builder-workflow detects 1-3 files in SPEC
+# Automatically assigns manager-tdd for all files
+# Executes sequential TDD cycle
+# Minimal overhead, fast execution (~5-15 min)

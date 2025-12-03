@@ -1,0 +1,7 @@
+LICENSE
+README.md
+pyproject.toml
+src/adb_auto_player.egg-info/PKG-INFO
+src/adb_auto_player.egg-info/SOURCES.txt
+src/adb_auto_player.egg-info/dependency_links.txt
+src/adb_auto_player.egg-info/top_level.txt

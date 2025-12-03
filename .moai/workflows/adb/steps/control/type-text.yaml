@@ -1,0 +1,74 @@
+id: adb-type-text
+name: Type Text Input
+description: Send text input to device via ADB shell input command
+category: control
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = default device)"
+    required: false
+  - name: text
+    type: string
+    default: ""
+    description: "Text to type (special characters will be escaped)"
+    required: true
+  - name: delay
+    type: integer
+    default: 50
+    description: "Delay between characters in milliseconds"
+    required: false
+  - name: clear_field
+    type: boolean
+    default: false
+    description: "Clear existing text field before typing"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/control/type_text.py
+  args: ["--device", "{{ device }}", "--text", "{{ text }}", "--delay", "{{ delay }}", "--clear-field", "{{ clear_field }}"]
+  timeout_seconds: 20
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Text input successful"
+    - "text sent"
+  output_patterns:
+    - "Typed .+ characters"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 1
+  on_error:
+    - exit_code: 1
+      action: "Device not found or offline"
+    - exit_code: 2
+      action: "Text input field not focused"
+    - exit_code: 3
+      action: "Invalid text encoding"
+
+outputs:
+  - name: input_status
+    type: string
+    description: "Status of text input operation"
+  - name: characters_sent
+    type: integer
+    description: "Number of characters successfully sent"
+  - name: text_sent
+    type: string
+    description: "Actual text that was sent to device"
+  - name: duration_ms
+    type: integer
+    description: "Total operation duration in milliseconds"
+
+validation:
+  - name: text_not_empty
+    rule: "text parameter must not be empty"
+  - name: delay_range
+    rule: "delay must be between 0 and 500 milliseconds"
+  - name: text_length
+    rule: "text must not exceed 10000 characters"

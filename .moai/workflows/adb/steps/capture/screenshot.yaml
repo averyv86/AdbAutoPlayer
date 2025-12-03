@@ -1,0 +1,83 @@
+id: adb-screenshot
+name: Capture Screenshot
+description: Capture device screen screenshot and optionally save to file
+category: capture
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = default device)"
+    required: false
+  - name: output_path
+    type: string
+    default: ""
+    description: "Path to save screenshot (empty = temporary file)"
+    required: false
+  - name: format
+    type: string
+    default: "png"
+    description: "Image format: png, jpg, webp"
+    required: false
+  - name: quality
+    type: integer
+    default: 95
+    description: "Image quality for lossy formats (0-100)"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/capture/screenshot.py
+  args: ["--device", "{{ device }}", "--output-path", "{{ output_path }}", "--format", "{{ format }}", "--quality", "{{ quality }}"]
+  timeout_seconds: 30
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Screenshot captured"
+    - "screenshot saved"
+  output_patterns:
+    - "Saved to .+"
+    - "Screenshot \d+x\d+"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 2
+  on_error:
+    - exit_code: 1
+      action: "Device not found or offline"
+    - exit_code: 2
+      action: "Failed to capture screenshot, check device permissions"
+    - exit_code: 3
+      action: "Invalid output path or insufficient disk space"
+
+outputs:
+  - name: screenshot_status
+    type: string
+    description: "Status of screenshot operation"
+  - name: file_path
+    type: string
+    description: "Path to saved screenshot file"
+  - name: file_size_bytes
+    type: integer
+    description: "Size of screenshot file in bytes"
+  - name: resolution
+    type: object
+    description: "Screen resolution"
+    properties:
+      width:
+        type: integer
+      height:
+        type: integer
+  - name: capture_timestamp
+    type: string
+    description: "Timestamp when screenshot was captured"
+
+validation:
+  - name: valid_format
+    rule: "format must be one of: png, jpg, webp"
+  - name: quality_range
+    rule: "quality must be between 0 and 100"
+  - name: output_path_valid
+    rule: "output_path if provided must be a valid writable path"

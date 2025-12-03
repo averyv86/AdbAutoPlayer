@@ -1,0 +1,289 @@
+# Guides Overview
+
+Comprehensive guides for getting the most out of macOS Resource Optimizer.
+
+## Available Guides
+
+### Performance Tuning
+
+Learn advanced optimization strategies:
+- Custom configuration
+- Optimization levels
+- Component-specific tuning
+- Benchmarking improvements
+
+[Read Performance Tuning →](/guides/performance-tuning)
+
+### Troubleshooting
+
+Solve common issues:
+- Initialization problems
+- Analysis errors
+- Optimization failures
+- Monitoring issues
+- Permission errors
+
+[Read Troubleshooting →](/guides/troubleshooting)
+
+### FAQ
+
+Frequently asked questions:
+- How often to run optimization?
+- Is optimization safe?
+- How to reverse changes?
+- System requirements
+- Compatibility questions
+
+[Read FAQ →](/guides/faq)
+
+## Quick Problem Solver
+
+### Slow Performance
+
+1. Run analysis: `/macos-resource-optimizer:1-analyze`
+2. Check recommendations
+3. Apply optimizations: `/macos-resource-optimizer:2-optimize`
+4. Monitor results: `/macos-resource-optimizer:3-monitor`
+
+### High Memory Usage
+
+```bash
+# Analyze memory
+/macos-resource-optimizer:1-analyze --category memory
+
+# Optimize memory
+/macos-resource-optimizer:2-optimize --component memory
+```
+
+### Thermal Issues
+
+```bash
+# Check thermal status
+/macos-resource-optimizer:1-analyze --category thermal
+
+# Apply thermal optimizations
+/macos-resource-optimizer:2-optimize --component thermal
+```
+
+### Battery Drain
+
+```bash
+# Analyze battery
+/macos-resource-optimizer:1-analyze --category battery
+
+# Optimize battery
+/macos-resource-optimizer:2-optimize --component battery
+```
+
+## Optimization Workflows
+
+### Daily Optimization
+
+```bash
+# Daily check and optimize
+/macos-resource-optimizer:1-analyze && \
+/macos-resource-optimizer:2-optimize --strategy conservative
+```
+
+### Weekly Performance Review
+
+```bash
+# Comprehensive analysis
+/macos-resource-optimizer:1-analyze --detailed && \
+/macos-resource-optimizer:4-report --period week
+```
+
+### Monthly Deep Dive
+
+```bash
+# Full analysis and optimization
+/macos-resource-optimizer:1-analyze --very-detailed && \
+/macos-resource-optimizer:2-optimize --strategy balanced && \
+/macos-resource-optimizer:4-report --period month --format html
+```
+
+## Best Practices
+
+### Regular Monitoring
+
+- Check daily: `analyze`
+- Optimize weekly: `optimize`
+- Review monthly: `report`
+
+### Safe Optimization
+
+- Start conservative
+- Monitor improvements
+- Adjust as needed
+- Revert if issues occur
+
+### Documentation
+
+- Save reports regularly
+- Track improvements
+- Document changes
+- Maintain baseline
+
+### Maintenance
+
+- Keep optimizer updated
+- Review logs regularly
+- Archive old reports
+- Clean up temporary data
+
+## System Specific
+
+### MacBook Air (M1/M2)
+
+Recommended settings:
+- Level: Balanced
+- Interval: Daily
+- Focus: Battery, Thermal
+
+### MacBook Pro
+
+Recommended settings:
+- Level: Aggressive
+- Interval: Daily
+- Focus: CPU, Memory
+
+### Mac Studio
+
+Recommended settings:
+- Level: Aggressive
+- Interval: Weekly
+- Focus: CPU, Thermal
+
+### Mac Mini
+
+Recommended settings:
+- Level: Balanced
+- Interval: Weekly
+- Focus: Memory, Disk
+
+## Pro Tips
+
+### Tip 1: Baseline First
+
+Always establish baseline before optimizing:
+```bash
+/macos-resource-optimizer:1-analyze > baseline.json
+```
+
+### Tip 2: Conservative Start
+
+Start with conservative strategy:
+```bash
+/macos-resource-optimizer:2-optimize --strategy conservative
+```
+
+### Tip 3: Monitor Changes
+
+Monitor after optimization:
+```bash
+/macos-resource-optimizer:3-monitor --duration 3600
+```
+
+### Tip 4: Schedule Runs
+
+Use cron to schedule regular runs:
+```bash
+# Daily at 2 AM
+0 2 * * * /macos-resource-optimizer:1-analyze
+```
+
+### Tip 5: Export Data
+
+Export metrics for analysis:
+```bash
+/macos-resource-optimizer:4-report --format csv --output metrics.csv
+```
+
+## Common Scenarios
+
+### Before Important Meeting
+
+```bash
+# Quick optimization
+/macos-resource-optimizer:2-optimize --strategy conservative
+```
+
+### Before Video Call
+
+```bash
+# Optimize for network
+/macos-resource-optimizer:2-optimize --component network
+```
+
+### Development Session
+
+```bash
+# Start monitoring
+/macos-resource-optimizer:3-monitor --component cpu --component memory
+```
+
+### Gaming Session
+
+```bash
+# Optimize for gaming
+/macos-resource-optimizer:2-optimize --strategy aggressive
+```
+
+### Long Work Session
+
+```bash
+# Monitor and auto-optimize
+/macos-resource-optimizer:3-monitor --duration 28800 --auto-optimize
+```
+
+## Integration Examples
+
+### With cron
+
+Schedule regular optimizations:
+
+```bash
+# Edit crontab
+crontab -e
+
+# Add daily optimization (2 AM)
+0 2 * * * /macos-resource-optimizer:1-analyze && /macos-resource-optimizer:2-optimize
+```
+
+### With shell scripts
+
+Create optimization scripts:
+
+```bash
+#!/bin/bash
+echo "Starting daily optimization..."
+/macos-resource-optimizer:0-init
+/macos-resource-optimizer:1-analyze
+/macos-resource-optimizer:2-optimize
+/macos-resource-optimizer:4-report
+echo "Done!"
+```
+
+### With Docker
+
+Run in container:
+
+```bash
+docker run -it macos-optimizer:7.0 /macos-resource-optimizer:1-analyze
+```
+
+## Next Steps
+
+- Choose a guide above
+- Implement best practices
+- Schedule regular runs
+- Track improvements
+
+## Additional Resources
+
+- [Commands Reference](/commands/index) - All available commands
+- [Architecture Overview](/architecture/overview) - System design
+- [API Reference](/api/index) - Python API
+- [Getting Started](/getting-started/index) - Installation and setup
+
+Need help? Check [Troubleshooting](/guides/troubleshooting) or submit [feedback](/commands/feedback).

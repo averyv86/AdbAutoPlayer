@@ -1,0 +1,501 @@
+# Zygisk Verification and Recovery - TOON Workflow Definition
+# YAML-based workflow for Zygisk status verification and error recovery
+# Version: 1.0.0
+# Last Updated: 2025-12-02
+
+name: zygisk-verification
+title: "Zygisk Verification and Recovery"
+description: "Verify Zygisk installation status, diagnose issues, and recover from errors independently or as final step of Magisk installation"
+author: "MoAI-ADK"
+category: "zygisk-management"
+version: "1.0.0"
+
+# Configuration references
+config_source: "{project-root}/.moai/config/config.json"
+output_folder: "{config_source}:settings.output_folder"
+user_name: "{config_source}:user.name"
+communication_language: "{config_source}:language.conversation_language"
+
+# Project context
+project_context: "**/CLAUDE.md"
+
+# Workflow installation path
+installed_path: "{project-root}/.claude/skills/adb/adb-game-magisk/adb-magisk/workflows/zygisk-verification"
+instructions: "{installed_path}/instructions.md"
+checklist: "{installed_path}/checklist.md"
+
+# Execution settings
+standalone: true
+web_bundle: false
+estimated_duration_minutes: "2-5"
+complexity_level: "medium"
+requires_device_connection: true
+risk_level: "low"
+can_run_independently: true
+can_run_as_final_step: true
+
+# Metadata
+tags:
+  - zygisk
+  - verification
+  - diagnostics
+  - recovery
+  - post-installation
+  - troubleshooting
+
+# Prerequisites
+prerequisites:
+  - magisk_installed: "Magisk installed on device"
+  - device_connected: "USB-connected Android device"
+  - adb_enabled: "ADB debugging enabled on device"
+  - root_available: "Device has root access (Magisk)"
+
+# Success criteria
+success_criteria:
+  - magisk_detected: "Magisk installation confirmed on device"
+  - zygisk_status_ok: "zygisk-status command executes successfully"
+  - zygisk_hooks_loaded: "Zygisk hooks are loaded in running processes"
+  - no_hook_errors: "No hook loading errors reported"
+  - zygisk_fully_functional: "All Zygisk module functions working"
+
+# Failure conditions
+failure_conditions:
+  - magisk_not_found: "Magisk app or framework not detected"
+  - zygisk_not_installed: "Zygisk module not found in Magisk"
+  - zygisk_disabled: "Zygisk module is disabled"
+  - hook_loading_failed: "Zygisk hooks failed to load in processes"
+  - permission_denied: "Root permissions not available"
+
+# Decision tree for conditional logic
+decision_tree:
+  step_1_magisk_check:
+    check: "Is Magisk installed and accessible?"
+    options:
+      magisk_found:
+        description: "Magisk detected on device"
+        condition: "Magisk app responsive and framework loaded"
+        next_step: "step_2"
+      magisk_not_found:
+        description: "Magisk not found on device"
+        condition: "Magisk app missing or not accessible"
+        action: "Reinstall Magisk or troubleshoot root access"
+        user_intervention: true
+
+  step_2_zygisk_status:
+    check: "What is the current Zygisk status?"
+    options:
+      zygisk_enabled:
+        description: "Zygisk module is enabled"
+        condition: "Zygisk appears in Magisk modules list and is toggled ON"
+        next_step: "step_3"
+      zygisk_disabled:
+        description: "Zygisk module is disabled"
+        condition: "Zygisk module exists but is toggled OFF"
+        action: "Enable Zygisk module and verify"
+        user_intervention: true
+        next_step: "step_3"
+      zygisk_not_installed:
+        description: "Zygisk module not installed"
+        condition: "Zygisk not found in Magisk modules"
+        action: "Install Zygisk module from Magisk manager"
+        user_intervention: true
+        next_step: "step_3"
+
+  step_3_hook_verification:
+    check: "Are Zygisk hooks properly loaded?"
+    options:
+      hooks_loaded:
+        description: "Hooks loaded and functional"
+        condition: "zygisk-status reports all hooks loaded successfully"
+        next_step: "step_5"
+      hooks_failed:
+        description: "Hook loading failed"
+        condition: "zygisk-status reports hook load errors"
+        action: "Run error recovery diagnostics"
+        next_step: "step_4"
+      hooks_partial:
+        description: "Some hooks loaded, some failed"
+        condition: "Mixed success/failure in hook loading"
+        action: "Review failing modules and disable if necessary"
+        next_step: "step_4"
+
+  step_4_error_recovery:
+    check: "What type of error occurred?"
+    options:
+      module_conflict:
+        description: "Module conflicts detected"
+        condition: "Multiple modules attempting same function"
+        action: "Disable conflicting modules"
+        recovery_step: "step_4_recovery_conflict"
+      permission_error:
+        description: "Permission or SELinux denial"
+        condition: "Hook blocked by permissions"
+        action: "Check SELinux policy and permissions"
+        recovery_step: "step_4_recovery_permissions"
+      system_incompatibility:
+        description: "System version incompatibility"
+        condition: "Android version not supported"
+        action: "Check Zygisk compatibility matrix"
+        recovery_step: "step_4_recovery_incompatibility"
+
+  step_4_recovery_conflict:
+    action: "Disable conflicting modules one-by-one"
+    command: "Magisk manager: Modules > Toggle OFF conflicting module"
+    retry_step: "step_3"
+
+  step_4_recovery_permissions:
+    action: "Review SELinux denial logs"
+    command: "adb shell 'dmesg | grep -i denied'"
+    retry_step: "step_3"
+
+  step_4_recovery_incompatibility:
+    action: "Check Zygisk version compatibility"
+    command: "adb shell 'zygisk-status' or check Magisk logs"
+    retry_step: "step_5"
+
+  step_5_final_verification:
+    check: "Final Zygisk functionality status"
+    options:
+      fully_functional:
+        description: "All systems operational"
+        condition: "zygisk-status reports success and no errors"
+        action: "Report success and provide diagnostics"
+        next_step: "complete"
+      partially_functional:
+        description: "Some functionality working"
+        condition: "Core features work but some modules have issues"
+        action: "Document limitations and recommend next steps"
+        next_step: "complete"
+      non_functional:
+        description: "Zygisk not functional"
+        condition: "Major failures or unable to recover"
+        action: "Provide troubleshooting guide"
+        next_step: "complete"
+
+# Micro-file steps (5 steps)
+steps:
+  - name: "Step 1 - Magisk Installation Check"
+    file: "{installed_path}/step-01-magisk-check.md"
+    checkpoint: true
+    estimated_time: "30-45 seconds"
+    description: "Verify Magisk is properly installed and accessible"
+    checks:
+      - magisk_app_visible: "Magisk app appears in app drawer"
+      - magisk_responds: "Magisk app launches without crashes"
+      - magisk_root_available: "Magisk grants root access to shell"
+      - magisk_version_supported: "Magisk version is 26.0+ (Zygisk compatible)"
+    failure_action: "Reinstall Magisk APK or troubleshoot root access"
+
+  - name: "Step 2 - Zygisk Module Status"
+    file: "{installed_path}/step-02-zygisk-status.md"
+    checkpoint: true
+    estimated_time: "30-45 seconds"
+    description: "Check if Zygisk module is installed and enabled"
+    checks:
+      - zygisk_module_exists: "Zygisk module found in Magisk modules list"
+      - zygisk_module_enabled: "Zygisk module is toggled ON"
+      - zygisk_module_responsive: "Zygisk module loads without errors"
+    failure_action: "Enable Zygisk module or reinstall if missing"
+    recovery_options:
+      - "Enable module: Magisk Manager > Modules > Zygisk > Toggle ON"
+      - "Reinstall module: Download latest Zygisk from repository"
+      - "Clear cache: Magisk Manager > Settings > Clear cache"
+
+  - name: "Step 3 - Hook Loading Verification"
+    file: "{installed_path}/step-03-hook-verification.md"
+    checkpoint: true
+    estimated_time: "45 seconds - 1 minute"
+    description: "Verify Zygisk hooks are loading in running processes"
+    checks:
+      - zygisk_status_runs: "zygisk-status command executes without errors"
+      - hooks_found_in_processes: "Zygisk hooks detected in running processes"
+      - hook_count_positive: "One or more hooks successfully loaded"
+      - no_critical_errors: "No critical errors in hook loading"
+    failure_action: "Run error diagnostics and attempt recovery"
+    diagnostic_commands:
+      - "adb shell zygisk-status"
+      - "adb shell su -c 'zygisk-status'"
+      - "adb shell ps -A | grep zygisk"
+    timeout_seconds: 30
+
+  - name: "Step 4 - Error Diagnosis and Recovery"
+    file: "{installed_path}/step-04-error-recovery.md"
+    checkpoint: false
+    estimated_time: "1-2 minutes"
+    description: "Diagnose specific errors and attempt recovery"
+    checks:
+      - error_type_identified: "Error cause identified from logs"
+      - recovery_attempted: "Appropriate recovery action executed"
+      - error_resolved: "Error no longer present"
+    failure_action: "Document error and provide manual recovery steps"
+    recovery_procedures:
+      - name: "Module Conflict Resolution"
+        trigger: "Hook load failures with permission denials"
+        action: "Disable conflicting modules one by one"
+      - name: "Permission/SELinux Recovery"
+        trigger: "Permission denied in logs"
+        action: "Check SELinux policy, check Magisk logs"
+      - name: "System Incompatibility Recovery"
+        trigger: "Unsupported Android version errors"
+        action: "Verify Android version compatibility with Zygisk"
+      - name: "Cache Clearing"
+        trigger: "General module loading issues"
+        action: "Clear Magisk cache and module data"
+      - name: "Module Reinstallation"
+        trigger: "Persistent module loading failures"
+        action: "Uninstall and reinstall Zygisk module"
+
+  - name: "Step 5 - Final Status Report"
+    file: "{installed_path}/step-05-final-report.md"
+    checkpoint: false
+    estimated_time: "30-45 seconds"
+    description: "Generate final verification report and status"
+    checks:
+      - verification_complete: "All verification checks completed"
+      - status_determined: "Final status clearly determined"
+      - report_generated: "Verification report created"
+      - recommendations_provided: "Next steps documented if needed"
+    output_files:
+      - "zygisk-verification-report.md"
+      - "zygisk-diagnostics.log"
+      - "recovery-actions-log.md"
+
+# Checkpoints for recovery
+checkpoints:
+  checkpoint_1:
+    step: 1
+    name: "Magisk Verified"
+    description: "Magisk installation confirmed and responding"
+    resume_from: "Step 2 - Zygisk Module Status"
+    state_file: "{output_folder}/zygisk-verification/checkpoint-step-1.json"
+
+  checkpoint_2:
+    step: 2
+    name: "Zygisk Status Checked"
+    description: "Zygisk module status determined (enabled/disabled/missing)"
+    resume_from: "Step 3 - Hook Loading Verification"
+    state_file: "{output_folder}/zygisk-verification/checkpoint-step-2.json"
+
+  checkpoint_3:
+    step: 3
+    name: "Hooks Verified"
+    description: "Zygisk hooks loading status determined"
+    resume_from: "Step 4 - Error Diagnosis and Recovery"
+    state_file: "{output_folder}/zygisk-verification/checkpoint-step-3.json"
+
+# Error handling branches
+error_handling:
+  device_disconnected:
+    condition: "Device loses USB connection"
+    action: "Pause workflow and prompt for reconnection"
+    recovery: "Reconnect device and resume from last checkpoint"
+    user_intervention: true
+
+  magisk_not_responding:
+    condition: "Magisk app doesn't respond to commands"
+    action: "Force close Magisk and restart"
+    recovery: "Restart Magisk app, retry current step"
+    auto_recovery: true
+    retry_count: 2
+
+  zygisk_status_timeout:
+    condition: "zygisk-status command times out"
+    action: "Assume partial load failure"
+    recovery: "Run error diagnostics"
+    timeout_seconds: 30
+
+  hook_load_failure:
+    condition: "Zygisk hooks fail to load"
+    action: "Run diagnostic to identify cause"
+    recovery: "Attempt appropriate recovery for identified issue"
+    auto_recovery: false
+    user_intervention: true
+
+  permission_denied:
+    condition: "Permission denied when accessing zygisk-status"
+    action: "Attempt with root access via su"
+    recovery: "Use adb shell su -c 'zygisk-status'"
+    auto_recovery: true
+
+# Status outcome branches
+status_outcomes:
+  outcome_success:
+    name: "Zygisk Fully Functional"
+    condition: "All checks passed, hooks loaded, no errors"
+    description: "Zygisk is properly installed and all functions are working"
+    next_action: "Proceed to application testing"
+    recommended_next: "Run game-specific verification tests"
+
+  outcome_working_with_limitations:
+    name: "Zygisk Partially Functional"
+    condition: "Core functions work but some modules have issues"
+    description: "Zygisk is operational but some functionality limited"
+    next_action: "Identify and disable conflicting modules"
+    recommended_next: "Re-run verification after module adjustment"
+
+  outcome_disabled:
+    name: "Zygisk Disabled but Installed"
+    condition: "Zygisk module present but toggled OFF"
+    description: "Zygisk is installed but not active"
+    next_action: "Enable Zygisk module and re-verify"
+    recommended_next: "Re-run full verification workflow"
+
+  outcome_not_installed:
+    name: "Zygisk Not Installed"
+    condition: "Zygisk module not found in Magisk"
+    description: "Zygisk needs to be installed"
+    next_action: "Install Zygisk from Magisk repository"
+    recommended_next: "Run magisk-installation.toon workflow"
+
+  outcome_broken:
+    name: "Zygisk Non-Functional"
+    condition: "Multiple errors or unable to recover"
+    description: "Zygisk requires major troubleshooting or reinstallation"
+    next_action: "Review detailed error logs and troubleshooting guide"
+    recommended_next: "Reinstall Magisk or contact developer support"
+
+# Output structure
+outputs:
+  verification_report:
+    file: "{output_folder}/zygisk-verification/verification-report.md"
+    description: "Complete verification report with status and findings"
+    format: "Markdown"
+
+  diagnostics_log:
+    file: "{output_folder}/zygisk-verification/diagnostics.log"
+    description: "Detailed diagnostic output from all checks"
+    format: "Text log"
+
+  checkpoint_states:
+    directory: "{output_folder}/zygisk-verification/checkpoints/"
+    description: "JSON state files for each checkpoint"
+    format: "JSON"
+
+  recovery_actions_log:
+    file: "{output_folder}/zygisk-verification/recovery-actions.md"
+    description: "Log of all recovery actions attempted"
+    format: "Markdown"
+
+# Dependencies
+dependencies:
+  - skill: "adb-magisk"
+    required_for: "Magisk-specific operations"
+
+  - skill: "adb-foundation"
+    required_for: "ADB device communication"
+
+  - external_tool: "adb"
+    version: "35.0.0+"
+    description: "Android Debug Bridge for device control"
+
+# Integration points
+integrations:
+  parent_workflow: "magisk-installation.toon"
+  parent_workflow_description: "Can run as final step of Magisk installation"
+
+  prerequisite_workflow: "magisk-full-installation"
+  prerequisite_workflow_description: "Requires completed Magisk installation"
+
+  sibling_workflows:
+    - "magisk-module-management.toon"
+    - "magisk-uninstall.toon"
+
+# Execution modes
+execution_modes:
+  standalone:
+    name: "Standalone Verification"
+    description: "Run independently at any time to verify Zygisk status"
+    use_case: "Periodic verification, troubleshooting"
+    estimated_time: "2-5 minutes"
+
+  final_step:
+    name: "As Final Installation Step"
+    description: "Run immediately after magisk-installation.toon completes"
+    use_case: "Installation verification workflow"
+    estimated_time: "2-5 minutes"
+    previous_workflow: "magisk-installation.toon"
+
+# Estimated timeline
+timeline:
+  step_1: "30-45 sec"
+  step_2: "30-45 sec"
+  step_3: "45 sec - 1 min"
+  step_4: "1-2 min"
+  step_5: "30-45 sec"
+  total_minimum: "2 minutes"
+  total_maximum: "5 minutes"
+  average_execution: "3-4 minutes"
+
+# Risk assessment
+risk_assessment:
+  overall_risk: "low"
+  read_only_operations: true
+  no_device_modifications: true
+  no_bootloop_risk: true
+  reversible: true
+  recovery_available: true
+
+# Notifications
+notifications:
+  on_step_complete:
+    enabled: true
+    format: "Progress update"
+
+  on_error_detected:
+    enabled: true
+    format: "Error notification with recovery options"
+
+  on_status_determined:
+    enabled: true
+    format: "Final status report"
+
+# Validation rules
+validation:
+  on_checkpoint:
+    - verify_device_connectivity
+    - verify_adb_responsiveness
+
+  on_step_completion:
+    - log_step_completion
+    - update_checkpoint_state
+
+# Decision table for automated responses
+decision_table:
+  magisk_check_result:
+    found_and_responsive:
+      next: "proceed_to_zygisk_status"
+      confidence: "high"
+    found_but_unresponsive:
+      action: "restart_magisk"
+      retry: true
+    not_found:
+      next: "manual_intervention"
+      user_action: "reinstall_magisk"
+
+  zygisk_module_result:
+    enabled:
+      next: "proceed_to_hook_verification"
+      confidence: "high"
+    disabled:
+      action: "suggest_enable"
+      user_intervention: true
+    missing:
+      action: "suggest_install"
+      user_intervention: true
+
+  hook_loading_result:
+    all_loaded:
+      status: "success"
+      next: "final_report"
+    partial_loaded:
+      action: "run_diagnostics"
+      next: "error_recovery"
+    none_loaded:
+      action: "run_full_diagnostics"
+      next: "error_recovery"
+
+---
+
+# End of TOON Workflow Definition
+# Status: Ready for execution
+# Last validated: 2025-12-02

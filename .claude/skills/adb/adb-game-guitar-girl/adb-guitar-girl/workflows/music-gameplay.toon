@@ -1,0 +1,191 @@
+name: Guitar Girl Music Gameplay Automation
+description: Automate music gameplay with note detection and rhythm timing
+version: 1.0.0
+metadata:
+  game: guitar-girl
+  workflow_type: music-gameplay
+  difficulty: advanced
+parameters:
+  device: 127.0.0.1:5555
+  difficulty_level: normal
+  song_pattern: auto-detect
+  timing_tolerance: 50
+  performance_optimization: true
+phases:
+- id: select_song
+  name: Select Song
+  description: Choose music track
+  steps:
+  - id: select_song_step1
+    name: Select Song - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: select_song_step2
+    name: Select Song - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: select_song_step3
+    name: Select Song - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: detect_notes
+  name: Detect Notes
+  description: Analyze note patterns
+  steps:
+  - id: detect_notes_step1
+    name: Detect Notes - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: detect_notes_step2
+    name: Detect Notes - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: detect_notes_step3
+    name: Detect Notes - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: detect_notes_step4
+    name: Detect Notes - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: play_song
+  name: Play Song
+  description: Execute note hits with timing
+  steps:
+  - id: play_song_step1
+    name: Play Song - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: play_song_step2
+    name: Play Song - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: play_song_step3
+    name: Play Song - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: play_song_step4
+    name: Play Song - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: play_song_step5
+    name: Play Song - Step 5
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: play_song_step6
+    name: Play Song - Step 6
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: play_song_step7
+    name: Play Song - Step 7
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: score_calculation
+  name: Calculate Score
+  description: Determine performance rating
+  steps:
+  - id: score_calculation_step1
+    name: Calculate Score - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: score_calculation_step2
+    name: Calculate Score - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+validation:
+- phase: phase_1
+  condition: phase_1_complete == true
+  on_failure: continue
+- phase: phase_2
+  condition: phase_2_complete == true
+  on_failure: continue
+- phase: phase_3
+  condition: phase_3_complete == true
+  on_failure: continue
+- phase: phase_4
+  condition: phase_4_complete == true
+  on_failure: abort
+recovery:
+- on_error: any
+  action: retry
+  max_attempts: 3
+- on_error: timeout
+  action: reset_and_retry
+  max_attempts: 2
+- on_error: device_disconnected
+  action: abort
+  max_attempts: 1
+outputs:
+- name: music-gameplay_status
+  format: json
+  description: Workflow execution status
+- name: music-gameplay_log
+  format: text
+  description: Detailed execution log
+- name: music-gameplay_metrics
+  format: table
+  description: Performance metrics

@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-11-30T23:06:08.817823",
+  "browsers_analyzed": 4,
+  "consolidation_targets": [
+    {
+      "browser": "arc",
+      "total_helpers": 52,
+      "max_helpers": 30,
+      "excess_helpers": 22,
+      "helper_breakdown": {
+        "renderer": 46,
+        "gpu": 1,
+        "network": 1,
+        "other": 4,
+        "total_helpers": 52
+      },
+      "total_memory_gb": 12.3,
+      "helpers_memory_gb": 11.07,
+      "potential_savings_gb": 1.87,
+      "severity": "high",
+      "priority": "high"
+    }
+  ],
+  "total_browsers_exceeding_limit": 1,
+  "total_potential_savings_gb": 1.87,
+  "recommendations": [
+    {
+      "priority": "high",
+      "action": "consolidate_tab_renderers",
+      "browser": "arc",
+      "description": "Consolidate 46 renderer helpers by closing/suspending tabs",
+      "target_reduction": 22,
+      "expected_savings_gb": 1.87,
+      "strategy": "tab_management"
+    }
+  ]
+}

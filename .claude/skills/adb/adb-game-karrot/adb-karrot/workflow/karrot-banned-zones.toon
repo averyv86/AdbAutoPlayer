@@ -1,0 +1,196 @@
+# Karrot Banned Zones Configuration
+# Auto-updated TOON - DO NOT click these areas
+# Last Updated: 2024-12-03
+
+name: Karrot Banned Zones
+version: 1.2.0
+description: Banned click zones to prevent misclicks and ad interactions
+
+# Screen Resolution
+screen:
+  width: 1440
+  height: 2560
+  emulator: BlueStacks Air
+
+# User Configuration
+user:
+  neighborhood: "서초동"
+  phone: "01039705176"
+  country: "Korea"
+
+# BANNED ZONES - NEVER CLICK HERE
+banned_zones:
+  # BlueStacks Game Banner Ads (Bottom)
+  - id: bluestacks_game_banner
+    description: "BlueStacks POPULAR GAMES TO PLAY banner"
+    reason: "Opens Google Play Store, exits Karrot app"
+    bounds:
+      y_min: 2187
+      y_max: 2560
+      x_min: 0
+      x_max: 1440
+    detected_at: "2024-12-03"
+    misclick_count: 3
+    packages_opened:
+      - com.android.vending  # Google Play Store
+      - com.uncube.launcher3  # BlueStacks Launcher
+
+  # BlueStacks Ad Container (Right Side)
+  - id: bluestacks_ad_container
+    description: "BlueStacks side ad container"
+    reason: "Ad overlay that intercepts taps"
+    bounds:
+      y_min: 162
+      y_max: 2422
+      x_min: 840
+      x_max: 1440
+    detected_at: "2024-12-03"
+    misclick_count: 1
+
+  # BlueStacks Search Bar Area (Top)
+  - id: bluestacks_search
+    description: "BlueStacks Search for games & apps"
+    reason: "Opens BlueStacks launcher search"
+    bounds:
+      y_min: 178
+      y_max: 258
+      x_min: 240
+      x_max: 1200
+    detected_at: "2024-12-03"
+    packages_opened:
+      - com.uncube.launcher3
+
+# SAFE ZONES - OK to click
+safe_zones:
+  # Karrot Welcome Screen
+  - id: karrot_welcome_get_started
+    description: "Get started button on welcome screen"
+    bounds:
+      y_min: 2322
+      y_max: 2426
+      x_min: 32
+      x_max: 1408
+    safe_tap_point:
+      x: 720
+      y: 2350  # Upper part of button to avoid ad overlay
+    activity: "com.towneers.www/.launcher.LauncherActivity"
+
+  - id: karrot_welcome_login
+    description: "Log in link on welcome screen"
+    bounds:
+      y_min: 2466
+      y_max: 2520
+      x_min: 827
+      x_max: 917
+    safe_tap_point:
+      x: 872
+      y: 2493
+    # WARNING: Close to banned zone, use with caution
+
+  # Karrot Neighborhood Selection
+  - id: karrot_neighborhood_search
+    description: "Search by neighborhood field"
+    bounds:
+      y_min: 56
+      y_max: 152
+      x_min: 108
+      x_max: 1404
+    safe_tap_point:
+      x: 756
+      y: 104
+    activity: "neighborhood_selection"
+
+  - id: karrot_find_nearby
+    description: "Find nearby neighborhoods button"
+    bounds:
+      y_min: 168
+      y_max: 264
+      x_min: 32
+      x_max: 1408
+    safe_tap_point:
+      x: 720
+      y: 216
+
+  # Karrot Verify Button
+  - id: karrot_verify_now
+    description: "Verify now (30 sec) button"
+    bounds:
+      y_min: 2432
+      y_max: 2536
+      x_min: 112
+      x_max: 1328
+    safe_tap_point:
+      x: 720
+      y: 2484
+    activity: "identity_verification"
+
+# RECOVERY ACTIONS - What to do after misclick
+recovery:
+  on_play_store_open:
+    steps:
+      - action: press_back
+        times: 2
+        delay_ms: 500
+      - action: relaunch_app
+        package: com.towneers.www
+        activity: .launcher.LauncherActivity
+        delay_ms: 3000
+      - action: wait_for_ui
+        timeout_sec: 10
+
+  on_bluestacks_launcher:
+    steps:
+      - action: force_stop
+        package: com.uncube.launcher3
+      - action: relaunch_app
+        package: com.towneers.www
+        activity: .launcher.LauncherActivity
+        delay_ms: 3000
+
+  on_app_crash:
+    steps:
+      - action: wait
+        delay_ms: 2000
+      - action: relaunch_app
+        package: com.towneers.www
+        activity: .launcher.LauncherActivity
+        delay_ms: 5000
+
+# TAP VALIDATION RULES
+tap_rules:
+  # Before any tap, check:
+  pre_tap_checks:
+    - check_current_package  # Must be com.towneers.www
+    - check_not_in_banned_zone
+    - check_ui_ready
+
+  # Safe tap configuration
+  safe_tap:
+    variance_px: 5  # Random offset +-5px
+    min_delay_ms: 300
+    max_delay_ms: 800
+    double_check_zone: true  # Re-verify zone before tap
+
+  # If tap would hit banned zone:
+  on_banned_zone_tap:
+    action: abort
+    log: "BLOCKED: Attempted tap in banned zone"
+    alternative: find_safe_point
+
+# AUTO-UPDATE SETTINGS
+auto_update:
+  enabled: true
+  on_misclick: true  # Update zones when misclick detected
+  on_new_package: true  # Update when unexpected package opens
+  log_file: "/tmp/karrot-misclick-log.json"
+
+# PACKAGE MONITORING
+package_monitor:
+  target_package: com.towneers.www
+  alert_packages:
+    - com.android.vending
+    - com.uncube.launcher3
+    - com.google.android.gms
+  on_alert:
+    action: recover
+    log: true

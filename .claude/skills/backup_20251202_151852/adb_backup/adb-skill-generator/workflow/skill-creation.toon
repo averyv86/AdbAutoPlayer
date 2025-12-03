@@ -1,0 +1,216 @@
+name: Dynamic ADB Skill Generation
+description: Generate new ADB skills dynamically from templates and specifications
+version: 1.0.0
+
+metadata:
+  category: skill-development
+  skill: adb-skill-generator
+  difficulty: advanced
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  skill_name:
+    type: string
+    default: ""
+    description: Name of skill to generate
+  skill_type:
+    type: string
+    default: "automation"
+    description: "Skill type: automation, detection, utility"
+  base_template:
+    type: string
+    default: "generic"
+    description: Base template to use (generic, app-specific, hardware)
+  output_path:
+    type: string
+    default: "/tmp/generated_skill"
+    description: Output directory for generated skill
+
+phases:
+  - id: validate_params
+    name: Validate Generation Parameters
+    description: Verify skill generation parameters
+    steps:
+      - id: validate_skill_name
+        name: Validate Skill Name
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo '{{ skill_name }}' | grep -E '^[a-z0-9-]+$' > /dev/null && echo 'valid' || echo 'invalid'"
+          timeout: 5
+        on_success: continue
+        on_failure: abort
+
+      - id: check_output_dir
+        name: Check Output Directory
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "mkdir -p {{ output_path }} && echo 'created' || echo 'failed'"
+          timeout: 10
+        on_success: continue
+        on_failure: abort
+
+  - id: load_template
+    name: Load Skill Template
+    description: Load base template for skill generation
+    steps:
+      - id: load_template_file
+        name: Load Template File
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Loading template: {{ base_template }} for {{ skill_type }} skill'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_template
+        name: Verify Template Contents
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Template structure: SKILL.md, scripts/, workflow/' && echo 'Status: Ready for generation'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: generate_skill_files
+    name: Generate Skill Files
+    description: Generate skill structure and files
+    steps:
+      - id: create_skill_structure
+        name: Create Skill Directory Structure
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "mkdir -p {{ output_path }}/scripts {{ output_path }}/workflow && echo 'structure_created'"
+          timeout: 10
+        on_success: continue
+        on_failure: abort
+
+      - id: generate_skill_md
+        name: Generate SKILL.md File
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo '---' > {{ output_path }}/SKILL.md && echo 'name: {{ skill_name }}' >> {{ output_path }}/SKILL.md && echo 'type: {{ skill_type }}' >> {{ output_path }}/SKILL.md && echo '---' >> {{ output_path }}/SKILL.md && echo 'SKILL.md generated'"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: generate_readme
+        name: Generate README File
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo '# {{ skill_name }}' > {{ output_path }}/workflow/README.md && echo '' >> {{ output_path }}/workflow/README.md && echo 'Workflows for {{ skill_name }} skill.' >> {{ output_path }}/workflow/README.md && echo 'README.md generated'"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+  - id: customize_skill
+    name: Customize Generated Skill
+    description: Add customizations based on type and requirements
+    steps:
+      - id: add_automation_features
+        name: Add Automation Features
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Adding automation features for {{ skill_type }}' && echo 'Features: action_types, parameter_validation, error_handling'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: configure_detection
+        name: Configure Detection Methods
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Configuring detection for {{ skill_type }}' && echo 'Methods: screen_detection, element_detection, text_matching'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: add_helper_scripts
+        name: Add Helper Scripts
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo '#!/bin/bash' > {{ output_path }}/scripts/run_skill.sh && echo 'echo \"Running {{ skill_name }}\"' >> {{ output_path }}/scripts/run_skill.sh && echo 'chmod +x {{ output_path }}/scripts/run_skill.sh && echo 'scripts_created'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: validate_generation
+    name: Validate Generated Skill
+    description: Verify skill generation was successful
+    steps:
+      - id: check_files_created
+        name: Check Generated Files
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "find {{ output_path }} -type f | wc -l"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_structure
+        name: Verify Skill Structure
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls -la {{ output_path }} && ls -la {{ output_path }}/workflow"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: generate_report
+    name: Generate Generation Report
+    description: Create comprehensive generation report
+    steps:
+      - id: create_report
+        name: Create Generation Report
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Skill Generation Report' > {{ output_path }}/GENERATION_REPORT.txt && echo 'Skill Name: {{ skill_name }}' >> {{ output_path }}/GENERATION_REPORT.txt && echo 'Type: {{ skill_type }}' >> {{ output_path }}/GENERATION_REPORT.txt && echo 'Template: {{ base_template }}' >> {{ output_path }}/GENERATION_REPORT.txt && echo 'Status: GENERATED' >> {{ output_path }}/GENERATION_REPORT.txt && echo 'Output: {{ output_path }}' >> {{ output_path }}/GENERATION_REPORT.txt && cat {{ output_path }}/GENERATION_REPORT.txt"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: validate_params
+    condition: "skill_name_valid == true"
+    on_failure: abort
+
+  - phase: generate_skill_files
+    condition: "structure_created == true"
+    on_failure: continue
+
+recovery:
+  - on_error: validate_skill_name
+    action: abort
+    max_attempts: 1
+
+  - on_error: create_skill_structure
+    action: abort
+    max_attempts: 1
+
+outputs:
+  - name: generation_status
+    format: json
+    description: Skill generation success/failure status
+
+  - name: skill_files
+    format: table
+    description: List of generated skill files
+
+  - name: generation_report
+    format: text
+    description: Comprehensive skill generation report

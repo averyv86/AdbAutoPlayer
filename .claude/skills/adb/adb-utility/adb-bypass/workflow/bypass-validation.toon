@@ -1,0 +1,167 @@
+name: PlayIntegrityFork Bypass Validation
+description: Verify PlayIntegrityFork installation and validate bypass status on target device
+version: 1.0.0
+
+metadata:
+  category: security-validation
+  skill: adb-bypass
+  difficulty: intermediate
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  timeout:
+    type: integer
+    default: 30
+    description: Action timeout in seconds
+  verify_signature:
+    type: boolean
+    default: true
+    description: Verify device signature spoofing capability
+
+phases:
+  - id: check_installation
+    name: Check PlayIntegrityFork Installation
+    description: Verify PIF module is installed and active
+    steps:
+      - id: check_magisk_status
+        name: Verify Magisk Installation
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "pm list packages | grep com.topjohnwu.magisk"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: abort
+
+      - id: check_pif_module
+        name: Check PIF Module Status
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls -la /data/adb/modules/playintegrityfix 2>/dev/null || echo 'not_found'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: verify_pif_active
+        name: Verify PIF Module Active
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "cat /data/adb/modules/playintegrityfix/disable 2>/dev/null | wc -l"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+  - id: validate_bypass
+    name: Validate Bypass Functionality
+    description: Test that integrity checks are bypassed
+    steps:
+      - id: capture_device_props
+        name: Capture Device Properties
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "getprop ro.build.fingerprint && getprop ro.product.cpu.abi"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: check_selinux_status
+        name: Check SELinux Status
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "getenforce"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: verify_magisk_hide
+        name: Verify Magisk Hide Status
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "magisk --version 2>/dev/null | head -1"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+  - id: run_integrity_tests
+    name: Run Integrity API Tests
+    description: Test against Google Play Services integrity checks
+    steps:
+      - id: check_google_play_services
+        name: Verify Google Play Services
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "pm list packages | grep com.google.android.gms"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: launch_play_store
+        name: Launch Play Store
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "am start -n com.android.vending/.IntentHandlerActivity 2>/dev/null || echo 'play_store_error'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: generate_report
+    name: Generate Validation Report
+    description: Create validation summary and status
+    steps:
+      - id: collect_results
+        name: Collect Validation Results
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/bypass_validation_report.png"
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: check_installation
+    condition: "magisk_status == 'found' AND pif_status == 'active'"
+    on_failure: continue
+
+  - phase: validate_bypass
+    condition: "device_props != 'empty' AND selinux_status == 'enforcing'"
+    on_failure: continue
+
+  - phase: run_integrity_tests
+    condition: "google_play_services == 'installed'"
+    on_failure: continue
+
+recovery:
+  - on_error: check_magisk_status
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: verify_pif_active
+    action: retry
+    max_attempts: 2
+
+  - on_error: launch_play_store
+    action: skip
+    max_attempts: 1
+
+outputs:
+  - name: bypass_status
+    format: json
+    description: Overall bypass validation status with timestamps
+
+  - name: device_properties
+    format: table
+    description: Device properties and fingerprint information
+
+  - name: validation_report
+    format: text
+    description: Human-readable validation summary

@@ -1,0 +1,432 @@
+---
+# Multi-Game Automation Workflows
+# TOON Format: Token-efficient workflow definitions for AdbAutoPlayer
+# Demonstrates cross-game orchestration with checkpoints, YOLO, and action recording
+
+workflows:
+  # ==================== GUITAR GIRL WORKFLOWS ====================
+
+  guitar_girl_solo_session:
+    id: gg-solo-001
+    name: "Guitar Girl Solo Session"
+    description: "Complete Guitar Girl session with checkpoints and recording"
+    game: guitar_girl
+    duration_estimate: "2-3 hours"
+
+    stages:
+      initialize:
+        - task: "startup"
+          params:
+            device_streaming: true
+            yolo_model: "yolov8n.pt"
+            enable_recording: true
+        - task: "init_checkpoint_system"
+          params:
+            checkpoint_dir: "~/.guitar_girl_checkpoints"
+
+      play_song:
+        - task: "record_checkpoint"
+          params:
+            checkpoint_id: "before_song_1"
+            description: "Before Song 1"
+
+        - task: "loop"
+          iterations: 3000
+          steps:
+            - task: "detect_and_record_note"
+              params:
+                note_class: "small_note"
+            - task: "tap_and_record"
+              params:
+                x: "{{ note.x }}"
+                y: "{{ note.y }}"
+                duration: 0.1
+
+        - task: "save_checkpoint"
+          params:
+            checkpoint_id: "after_song_1"
+            description: "After Song 1 Complete"
+
+      level_up:
+        - task: "level_up_and_record"
+          params:
+            character: "guitar_girl"
+            levels: 1
+
+        - task: "use_skill_and_record"
+          params:
+            skill_name: "power_chord"
+            skill_id: 1
+
+      save_session:
+        - task: "save_session"
+          params:
+            recording_path: "sessions/guitar_girl_{{ timestamp }}.yaml"
+
+        - task: "report_comprehensive_performance"
+
+      error_recovery:
+        - task: "on_error"
+          handler: "error_recovery_with_checkpoint"
+          params:
+            error_msg: "{{ error }}"
+
+    success_criteria:
+      - "3000 iterations completed"
+      - "At least 2 checkpoints saved"
+      - "Session recorded and saved"
+
+    rollback_strategy: "restore_from_checkpoint"
+
+  # ==================== AFKJOURNEY WORKFLOWS ====================
+
+  afkjourney_solo_session:
+    id: afk-solo-001
+    name: "AFKJourney Solo Session"
+    description: "Complete AFKJourney automation with full features"
+    game: afk_journey
+    duration_estimate: "4-6 hours"
+
+    stages:
+      initialize:
+        - task: "startup"
+          params:
+            device_streaming: true
+            yolo_model: "yolov8n.pt"
+            enable_recording: true
+        - task: "init_checkpoint_system"
+          params:
+            checkpoint_dir: "~/.afk_journey_checkpoints"
+
+      afk_stages:
+        - task: "record_checkpoint"
+          params:
+            checkpoint_id: "before_stages"
+            description: "Before AFK Stages"
+
+        - task: "loop"
+          iterations: 10000
+          steps:
+            - task: "detect_and_record_hero"
+            - task: "tap_and_record"
+              params:
+                x: "{{ hero.x }}"
+                y: "{{ hero.y }}"
+                duration: 0.1
+            - task: "record_detection"
+              params:
+                detection_type: "yolo"
+                class_name: "hero"
+
+      battle_mechanics:
+        - task: "detect_and_record_battle_button"
+        - task: "tap_and_record"
+          params:
+            x: "{{ button.x }}"
+            y: "{{ button.y }}"
+
+        - task: "wait_and_record"
+          params:
+            duration: 5.0
+            condition: "battle_result"
+
+      save_progress:
+        - task: "save_checkpoint"
+          params:
+            checkpoint_id: "stages_complete"
+            description: "AFK Stages Complete"
+
+        - task: "save_session"
+          params:
+            recording_path: "sessions/afk_journey_{{ timestamp }}.yaml"
+
+    monitoring:
+      check_interval: 300  # Every 5 minutes
+      metrics:
+        - "detection_success_rate"
+        - "yolo_performance"
+        - "checkpoint_count"
+        - "session_duration"
+
+      alert_thresholds:
+        detection_success_rate: 0.85
+        yolo_performance: 0.20  # seconds
+
+  # ==================== CROSS-GAME WORKFLOWS ====================
+
+  multi_game_daily_routine:
+    id: multi-game-daily-001
+    name: "Multi-Game Daily Routine"
+    description: "Orchestrate both Guitar Girl and AFKJourney in optimal sequence"
+    games: ["guitar_girl", "afk_journey"]
+    duration_estimate: "6-8 hours"
+
+    phases:
+      morning_ritual:
+        order: 1
+        description: "Morning game automation session"
+
+        guitar_girl_morning:
+          - task: "switch_game"
+            params:
+              game: "guitar_girl"
+          - task: "startup"
+            params:
+              enable_recording: true
+          - task: "run_workflow"
+            params:
+              workflow_id: "gg-solo-001"
+              duration_limit: 1800  # 30 minutes
+          - task: "save_session"
+            params:
+              session_name: "guitar_girl_morning"
+          - task: "cleanup"
+
+        afkjourney_morning:
+          - task: "switch_game"
+            params:
+              game: "afk_journey"
+          - task: "startup"
+            params:
+              enable_recording: true
+          - task: "run_workflow"
+            params:
+              workflow_id: "afk-solo-001"
+              duration_limit: 2400  # 40 minutes
+          - task: "save_session"
+            params:
+              session_name: "afk_journey_morning"
+
+      afternoon_grind:
+        order: 2
+        description: "Afternoon extended play sessions"
+        parallel: false
+
+        steps:
+          - task: "switch_game"
+            params:
+              game: "afk_journey"
+          - task: "run_extended_session"
+            params:
+              duration: 7200  # 2 hours
+              checkpoint_interval: 600  # Every 10 minutes
+          - task: "analyze_performance"
+          - task: "optimize_settings"
+
+      evening_wrap_up:
+        order: 3
+        description: "Evening summary and recovery"
+
+        steps:
+          - task: "switch_game"
+            params:
+              game: "guitar_girl"
+          - task: "short_session"
+            params:
+              duration: 600  # 10 minutes
+          - task: "generate_daily_report"
+          - task: "backup_all_sessions"
+
+    error_handling:
+      strategy: "checkpoint_recovery_then_continue"
+      max_recovery_attempts: 3
+      notify_on_failure: true
+
+    performance_targets:
+      guitar_girl_success_rate: 0.90
+      afkjourney_detection_accuracy: 0.92
+      system_uptime: 0.99
+
+  cross_game_checkpoint_recovery:
+    id: recovery-001
+    name: "Cross-Game Checkpoint Recovery"
+    description: "Recover from errors and resume from last checkpoint in either game"
+
+    workflow:
+      trigger: "on_error"
+
+      steps:
+        - task: "detect_game"
+          params:
+            identify_current_game: true
+
+        - task: "conditional"
+          condition: "current_game == 'guitar_girl'"
+          true_path:
+            - task: "load_game"
+              params:
+                game: "guitar_girl"
+            - task: "list_checkpoints"
+            - task: "load_checkpoint"
+              params:
+                checkpoint_id: "{{ latest_checkpoint }}"
+            - task: "resume_from_checkpoint"
+          false_path:
+            - task: "load_game"
+              params:
+                game: "afk_journey"
+            - task: "list_checkpoints"
+            - task: "load_checkpoint"
+              params:
+                checkpoint_id: "{{ latest_checkpoint }}"
+            - task: "resume_from_checkpoint"
+
+        - task: "replay_session"
+          params:
+            resume_point: "checkpoint"
+            adaptive_timing: true
+
+  # ==================== ANALYSIS WORKFLOWS ====================
+
+  session_analysis_workflow:
+    id: analysis-001
+    name: "Session Analysis and Reporting"
+    description: "Analyze recorded sessions across multiple games"
+
+    workflow:
+      input:
+        session_path: "sessions/"
+        game_filter: "both"
+
+      steps:
+        # Guitar Girl Analysis
+        - task: "load_recording"
+          params:
+            game: "guitar_girl"
+            path: "{{ session_path }}/guitar_girl_*.yaml"
+
+        - task: "analyze_recording"
+          params:
+            metrics:
+              - "total_taps"
+              - "note_detections"
+              - "yolo_success_rate"
+              - "avg_detection_time"
+              - "session_duration"
+
+        - task: "generate_report"
+          params:
+            game: "guitar_girl"
+            format: "markdown"
+            output: "reports/guitar_girl_analysis_{{ date }}.md"
+
+        # AFKJourney Analysis
+        - task: "load_recording"
+          params:
+            game: "afk_journey"
+            path: "{{ session_path }}/afk_journey_*.yaml"
+
+        - task: "analyze_recording"
+          params:
+            metrics:
+              - "total_actions"
+              - "detection_accuracy"
+              - "yolo_vs_template"
+              - "checkpoint_usage"
+              - "recovery_events"
+
+        - task: "generate_report"
+          params:
+            game: "afk_journey"
+            format: "markdown"
+            output: "reports/afk_journey_analysis_{{ date }}.md"
+
+        # Combined Analysis
+        - task: "comparative_analysis"
+          params:
+            compare:
+              - "yolo_performance_comparison"
+              - "detection_speed_comparison"
+              - "error_recovery_comparison"
+            output: "reports/comparative_analysis_{{ date }}.md"
+
+# ==================== CONFIGURATION ====================
+
+global_config:
+  checkpoint_strategy: "auto_save_interval"
+  checkpoint_interval: 600  # Every 10 minutes
+  recording_enabled: true
+  yolo_model: "yolov8n.pt"
+  device: "emulator-5554"
+
+  error_handling:
+    max_retries: 3
+    retry_delay: 5  # seconds
+    fallback_strategy: "checkpoint_recovery"
+
+  monitoring:
+    enabled: true
+    alert_interval: 300  # Every 5 minutes
+    metrics:
+      - "cpu_usage"
+      - "memory_usage"
+      - "detection_performance"
+      - "error_rate"
+
+  cleanup:
+    auto_cleanup_old_checkpoints: true
+    keep_checkpoint_count: 10
+    auto_backup_sessions: true
+    backup_location: "backup/"
+
+# ==================== HOOKS & TRIGGERS ====================
+
+hooks:
+  on_start:
+    - "initialize_systems"
+    - "load_latest_checkpoint"
+    - "verify_game_state"
+
+  on_error:
+    - "log_error"
+    - "attempt_recovery"
+    - "notify_user"
+
+  on_checkpoint:
+    - "update_stats"
+    - "check_system_health"
+    - "backup_checkpoint"
+
+  on_session_end:
+    - "save_final_checkpoint"
+    - "generate_report"
+    - "cleanup_temp_files"
+    - "backup_all_data"
+
+# ==================== VARIABLES & TEMPLATES ====================
+
+variables:
+  timestamp: "{{ now | format_datetime('%Y%m%d_%H%M%S') }}"
+  date: "{{ now | format_date('%Y-%m-%d') }}"
+
+  guitar_girl_targets:
+    session_duration: 3600  # 1 hour
+    songs_per_session: 10
+    level_ups_per_session: 5
+
+  afkjourney_targets:
+    session_duration: 7200  # 2 hours
+    detection_accuracy: 0.95
+    checkpoint_interval: 600
+
+  performance_thresholds:
+    yolo_detection_time: 0.020  # 20ms
+    template_fallback_time: 0.100  # 100ms
+    hybrid_detection_time: 0.025  # 25ms
+    min_detection_accuracy: 0.85
+
+# ==================== NOTIFICATIONS ====================
+
+notifications:
+  enabled: true
+  channels:
+    - type: "log"
+      level: "info"
+      events: ["workflow_start", "workflow_complete", "error"]
+
+    - type: "console"
+      level: "warning"
+      events: ["checkpoint_saved", "error", "recovery_attempt"]
+
+# End of workflow definitions
+...

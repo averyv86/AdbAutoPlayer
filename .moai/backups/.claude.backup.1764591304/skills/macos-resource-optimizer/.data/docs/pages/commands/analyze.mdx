@@ -1,0 +1,333 @@
+# Command 1: analyze
+
+Analyze current system state and collect performance metrics.
+
+## Syntax
+
+```bash
+/macos-resource-optimizer:1-analyze [options]
+```
+
+## Description
+
+The analyze command:
+- Collects metrics from all system components
+- Performs system analysis
+- Generates recommendations
+- Returns comprehensive status report
+- No system modifications
+
+## Basic Usage
+
+```bash
+# Analyze system
+/macos-resource-optimizer:1-analyze
+```
+
+Expected output:
+```json
+{
+  "status": "success",
+  "execution_time_seconds": 1.8,
+  "timestamp": "2024-01-15T10:30:00Z",
+  "categories": {
+    "cpu": {"usage_percent": 45.2, "status": "normal"},
+    "memory": {"usage_percent": 75.0, "status": "high"},
+    "disk": {"usage_percent": 65.0, "status": "normal"},
+    "battery": {"percentage": 87, "status": "good"},
+    "thermal": {"max_temperature": 68.0, "status": "normal"},
+    "network": {"connection_quality": "excellent"}
+  },
+  "recommendations": ["Consider closing unused applications"]
+}
+```
+
+## Analysis Components
+
+### CPU Analysis
+
+Metrics collected:
+- CPU usage percentage
+- Core temperatures
+- Frequency scaling status
+- Load average
+- Thermal status
+
+### Memory Analysis
+
+Metrics collected:
+- Memory usage percentage
+- Free memory available
+- Swap usage
+- Memory compression status
+- Cache sizes
+
+### Disk Analysis
+
+Metrics collected:
+- Disk usage percentage
+- Free space available
+- I/O performance
+- Cache sizes
+- Fragmentation status
+
+### Battery Analysis
+
+Metrics collected:
+- Battery percentage
+- Charging status
+- Battery health
+- Time remaining
+- Power consumption
+
+### Thermal Analysis
+
+Metrics collected:
+- CPU temperatures
+- GPU temperatures
+- Thermal status
+- Fan speed
+- Throttle status
+
+### Network Analysis
+
+Metrics collected:
+- Connection quality
+- Bandwidth available
+- DNS response time
+- Latency
+- Connection stability
+
+## Options
+
+### Detail Level
+
+```bash
+# Quick analysis (fast, less detail)
+/macos-resource-optimizer:1-analyze --quick
+
+# Standard analysis (balanced)
+/macos-resource-optimizer:1-analyze
+
+# Detailed analysis (comprehensive)
+/macos-resource-optimizer:1-analyze --detailed
+
+# Very detailed (all metrics)
+/macos-resource-optimizer:1-analyze --very-detailed
+```
+
+### Output Format
+
+```bash
+# JSON output (default)
+/macos-resource-optimizer:1-analyze --json
+
+# Human-readable output
+/macos-resource-optimizer:1-analyze --human
+
+# CSV output
+/macos-resource-optimizer:1-analyze --csv
+
+# HTML report
+/macos-resource-optimizer:1-analyze --html
+```
+
+### Specific Categories
+
+```bash
+# Analyze specific component
+/macos-resource-optimizer:1-analyze --category cpu
+
+# Multiple categories
+/macos-resource-optimizer:1-analyze --category cpu --category memory
+
+# All categories
+/macos-resource-optimizer:1-analyze --all-categories
+```
+
+### Analysis Scope
+
+```bash
+# Dry run (no caching)
+/macos-resource-optimizer:1-analyze --dry-run
+
+# Use cached data
+/macos-resource-optimizer:1-analyze --use-cache
+
+# Force fresh analysis
+/macos-resource-optimizer:1-analyze --fresh
+```
+
+## Comprehensive Output Example
+
+```json
+{
+  "status": "success",
+  "execution_time_seconds": 1.8,
+  "timestamp": "2024-01-15T10:30:00Z",
+  "system_info": {
+    "os": "macOS 14.1.1",
+    "os_version": "14.1.1",
+    "machine": "MacBook Pro",
+    "processor": "Apple M3 Pro",
+    "cores": 12,
+    "ram_gb": 16
+  },
+  "categories": {
+    "cpu": {
+      "usage_percent": 45.2,
+      "temperature_celsius": 65.5,
+      "frequency_ghz": 3.2,
+      "status": "normal",
+      "details": {
+        "p_cores_active": 4,
+        "e_cores_active": 8,
+        "thermal_headroom": "good"
+      }
+    },
+    "memory": {
+      "usage_percent": 75.0,
+      "used_gb": 6.0,
+      "available_gb": 2.0,
+      "status": "high",
+      "details": {
+        "swap_used_gb": 0.5,
+        "cache_pressure": "moderate",
+        "compression_active": true
+      }
+    },
+    "disk": {
+      "usage_percent": 65.0,
+      "used_gb": 325,
+      "free_gb": 175,
+      "status": "normal",
+      "details": {
+        "read_speed_mbps": 2500,
+        "write_speed_mbps": 1800,
+        "io_wait_percent": 2.1
+      }
+    },
+    "battery": {
+      "percentage": 87,
+      "charging": true,
+      "health": "good",
+      "status": "normal",
+      "details": {
+        "time_remaining_hours": 12,
+        "power_draw_watts": 25
+      }
+    },
+    "thermal": {
+      "max_temperature": 68.0,
+      "average_temperature": 45.0,
+      "status": "normal",
+      "details": {
+        "fan_speed_percent": 35,
+        "throttle_active": false
+      }
+    },
+    "network": {
+      "connection_quality": "excellent",
+      "bandwidth_available": true,
+      "status": "normal",
+      "details": {
+        "dns_latency_ms": 15,
+        "connection_type": "WiFi",
+        "signal_strength": -45
+      }
+    }
+  },
+  "summary": {
+    "overall_status": "good",
+    "components_healthy": 5,
+    "components_with_issues": 1,
+    "optimization_opportunities": 3
+  },
+  "recommendations": [
+    "Memory usage is higher than recommended (75%)",
+    "Consider closing unused applications",
+    "Disk usage nearing recommended threshold"
+  ],
+  "trend_analysis": {
+    "cpu_trend": "stable",
+    "memory_trend": "increasing",
+    "disk_trend": "stable",
+    "thermal_trend": "stable"
+  }
+}
+```
+
+## Status Indicators
+
+### Status Levels
+
+- **normal**: Component performing well
+- **good**: Component above average
+- **fair**: Component acceptable, watch for issues
+- **high**: Component elevated, consider optimization
+- **critical**: Component needs attention
+
+### Color Coding (human output)
+
+- Green: Normal/Good
+- Yellow: Fair/Monitor
+- Red: High/Critical
+
+## Use Cases
+
+### Baseline Establishment
+
+Get initial metrics:
+```bash
+/macos-resource-optimizer:1-analyze
+```
+
+### Problem Diagnosis
+
+Identify bottlenecks:
+```bash
+/macos-resource-optimizer:1-analyze --detailed
+```
+
+### Performance Comparison
+
+Track improvements over time:
+```bash
+/macos-resource-optimizer:1-analyze > metrics-before.json
+# ... run optimizations ...
+/macos-resource-optimizer:1-analyze > metrics-after.json
+```
+
+### Monitoring
+
+Regular check-ups:
+```bash
+/macos-resource-optimizer:1-analyze --quick
+```
+
+## Performance
+
+- **Execution time**: 1.5-2.0 seconds
+- **System impact**: Minimal (read-only)
+- **CPU usage**: < 5% during analysis
+- **Memory usage**: ~50MB
+
+## Next Steps
+
+After analyzing, you can:
+
+1. Review recommendations
+2. Run [optimize](/commands/optimize) if issues found
+3. Generate [report](/commands/report) for documentation
+4. Start [monitor](/commands/monitor) for continuous tracking
+
+## Related Commands
+
+- [init](/commands/init) - Initialize system
+- [optimize](/commands/optimize) - Apply optimizations
+- [monitor](/commands/monitor) - Continuous monitoring
+- [report](/commands/report) - Generate reports
+
+## Troubleshooting
+
+For analysis issues, see [Troubleshooting Guide](/guides/troubleshooting)

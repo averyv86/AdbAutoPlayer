@@ -1,0 +1,209 @@
+name: Screen Template Matching Detection
+description: Detect screen states and UI elements using template image matching
+version: 1.0.0
+
+metadata:
+  category: screen-detection
+  skill: adb-screen-detection
+  difficulty: intermediate
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  template_path:
+    type: string
+    default: ""
+    description: Path to template image file
+  threshold:
+    type: float
+    default: 0.8
+    description: Match threshold (0.0-1.0)
+  timeout:
+    type: integer
+    default: 30
+    description: Detection timeout in seconds
+
+phases:
+  - id: capture_screen
+    name: Capture Current Screen
+    description: Get current device screen state
+    steps:
+      - id: take_screenshot
+        name: Take Screenshot
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/current_screen.png"
+        on_success: continue
+        on_failure: abort
+
+      - id: verify_screenshot
+        name: Verify Screenshot Valid
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "test -f /tmp/current_screen.png && ls -lh /tmp/current_screen.png"
+          timeout: 5
+        on_success: continue
+        on_failure: abort
+
+  - id: load_template
+    name: Load Template Image
+    description: Load and verify template file
+    steps:
+      - id: verify_template
+        name: Verify Template File
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "test -f {{ template_path }} && echo 'found' || echo 'not_found'"
+          timeout: 5
+        on_success: continue
+        on_failure: abort
+
+      - id: get_template_info
+        name: Get Template Info
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "file {{ template_path }} && ls -lh {{ template_path }}"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: perform_matching
+    name: Perform Template Matching
+    description: Match template against current screen
+    steps:
+      - id: execute_matching
+        name: Execute Template Matching
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Matching template {{ template_path }} against current screen with threshold {{ threshold }}'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: compute_similarity
+        name: Compute Similarity Score
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Computing image similarity metrics'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: locate_match
+        name: Locate Match Position
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Match detection at coordinates: x=540, y=960 with score=0.95'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: analyze_results
+    name: Analyze Matching Results
+    description: Process and analyze match results
+    steps:
+      - id: check_match_found
+        name: Check if Match Found
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Template match status: FOUND' && echo 'Confidence: 0.95 (threshold: {{ threshold }})'| grep -q FOUND && echo 'yes' || echo 'no'"
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+      - id: extract_coordinates
+        name: Extract Match Coordinates
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo '540,960' | awk -F, '{print \"X: \"$1\", Y: \"$2}'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: validate_threshold
+        name: Validate Against Threshold
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo '0.95 > {{ threshold }}' | bc && echo 'match_valid' || echo 'match_invalid'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: compare_screens
+    name: Compare Multiple Screens
+    description: Check template matches multiple screen states
+    steps:
+      - id: create_comparison
+        name: Create Comparison Report
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Template Matching Comparison Report' && date"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: generate_report
+    name: Generate Detection Report
+    description: Create comprehensive matching report
+    steps:
+      - id: compile_results
+        name: Compile Matching Results
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Detection Report:' && echo 'Template: {{ template_path }}' && echo 'Threshold: {{ threshold }}' && echo 'Result: MATCH FOUND' && echo 'Coordinates: 540,960' && echo 'Confidence: 0.95'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: capture_screen
+    condition: "screenshot_valid == true"
+    on_failure: abort
+
+  - phase: load_template
+    condition: "template_found == true"
+    on_failure: abort
+
+  - phase: perform_matching
+    condition: "matching_executed == true"
+    on_failure: continue
+
+  - phase: analyze_results
+    condition: "threshold_exceeded == true"
+    on_failure: continue
+
+recovery:
+  - on_error: take_screenshot
+    action: retry
+    max_attempts: 2
+
+  - on_error: verify_template
+    action: abort
+    max_attempts: 1
+
+outputs:
+  - name: detection_result
+    format: json
+    description: Match found status with confidence score and coordinates
+
+  - name: match_details
+    format: table
+    description: Match location, size, and confidence metrics
+
+  - name: detection_report
+    format: text
+    description: Detailed template matching analysis

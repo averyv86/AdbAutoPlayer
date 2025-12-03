@@ -1,0 +1,347 @@
+# Karrot Signup Flow - State Transitions and Actions
+# Version: 1.0.0
+# Last Updated: 2025-12-03
+# Purpose: Define state transition graph and automation actions for Karrot signup
+
+flow:
+  start: welcome
+  goal: home
+  max_iterations: 50
+  timeout_seconds: 300
+
+  metadata:
+    flow_name: "Karrot Signup Automation"
+    description: "Complete signup flow from welcome screen to home screen"
+    target_app: "com.towneers.www"
+    min_android_version: 23
+    recommended_android_version: 29
+
+transitions:
+  welcome_to_neighborhood:
+    from: welcome
+    to: neighborhood
+    description: "Navigate from welcome screen to neighborhood selection"
+    action:
+      type: "keyevent_sequence"
+      keys:
+        - "TAB"
+        - "TAB"
+        - "ENTER"
+      delays_ms: [500, 500, 1000]
+    alternative_action:
+      type: "tap_sequence"
+      coordinates:
+        - {x: 540, y: 1800}
+      delays_ms: [1000]
+    wait_after_ms: 5000
+    verification:
+      expected_state: "neighborhood"
+      timeout_ms: 10000
+      retry_on_fail: true
+      max_retries: 2
+    metadata:
+      critical: false
+      skip_allowed: false
+
+  neighborhood_to_verification:
+    from: neighborhood
+    to: verification
+    description: "Trigger identity verification from neighborhood screen"
+    action:
+      type: "keyevent_sequence"
+      keys:
+        - "DPAD_DOWN"
+        - "ENTER"
+      delays_ms: [800, 1000]
+    alternative_action:
+      type: "tap_sequence"
+      coordinates:
+        - {x: 540, y: 1600}
+      delays_ms: [1000]
+    wait_after_ms: 3000
+    verification:
+      expected_state: "verification"
+      timeout_ms: 8000
+      retry_on_fail: true
+      max_retries: 2
+    metadata:
+      critical: true
+      skip_allowed: false
+
+  verification_to_phone_entry:
+    from: verification
+    to: phone_entry
+    description: "Proceed from verification prompt to phone entry"
+    action:
+      type: "keyevent_sequence"
+      keys:
+        - "TAB"
+        - "TAB"
+        - "TAB"
+        - "TAB"
+        - "TAB"
+        - "ENTER"
+      delays_ms: [300, 300, 300, 300, 300, 1000]
+    alternative_action:
+      type: "tap_sequence"
+      coordinates:
+        - {x: 540, y: 1700}
+      delays_ms: [1000]
+    wait_after_ms: 5000
+    verification:
+      expected_state: "phone_entry"
+      timeout_ms: 10000
+      retry_on_fail: true
+      max_retries: 3
+    metadata:
+      critical: true
+      skip_allowed: false
+
+  phone_entry_to_sms_code:
+    from: phone_entry
+    to: sms_code
+    description: "Submit phone number and proceed to SMS verification"
+    action:
+      type: "input_and_submit"
+      input_type: "phone"
+      phone_number: "01039705176"
+      input_method: "keyevent"
+      keys_after_input:
+        - "TAB"
+        - "ENTER"
+      delays_ms: [500, 1000]
+    alternative_action:
+      type: "tap_and_text"
+      tap_coordinates: {x: 540, y: 900}
+      text: "01039705176"
+      submit_coordinates: {x: 540, y: 1700}
+      delays_ms: [500, 500, 1000]
+    wait_after_ms: 5000
+    verification:
+      expected_state: "sms_code"
+      timeout_ms: 15000
+      retry_on_fail: true
+      max_retries: 2
+    metadata:
+      critical: true
+      skip_allowed: false
+      requires_external_input: false
+
+  sms_code_to_home:
+    from: sms_code
+    to: home
+    description: "Submit SMS verification code and complete signup"
+    action:
+      type: "input_and_submit"
+      input_type: "sms_code"
+      code_source: "manual"
+      input_method: "wait_for_manual"
+      timeout_ms: 60000
+      keys_after_input:
+        - "ENTER"
+      delays_ms: [1000]
+    alternative_action:
+      type: "auto_detect_sms"
+      wait_for_sms_ms: 30000
+      auto_submit: true
+    wait_after_ms: 5000
+    verification:
+      expected_state: "home"
+      timeout_ms: 20000
+      retry_on_fail: true
+      max_retries: 1
+    metadata:
+      critical: true
+      skip_allowed: false
+      requires_external_input: true
+      manual_intervention_allowed: true
+
+  loading_to_any:
+    from: loading
+    to: "*"
+    description: "Wait for loading to complete and detect next state"
+    action:
+      type: "wait"
+      duration_ms: 2000
+    wait_after_ms: 1000
+    verification:
+      expected_state: "auto_detect"
+      timeout_ms: 30000
+      retry_on_fail: false
+    metadata:
+      critical: false
+      skip_allowed: true
+      passive: true
+
+  error_generic_retry:
+    from: error_generic
+    to: "previous"
+    description: "Retry from error state"
+    action:
+      type: "keyevent"
+      key: "ENTER"
+      delay_ms: 1000
+    alternative_action:
+      type: "tap"
+      coordinates: {x: 540, y: 1500}
+      delay_ms: 1000
+    wait_after_ms: 3000
+    verification:
+      expected_state: "auto_detect"
+      timeout_ms: 10000
+      retry_on_fail: true
+      max_retries: 3
+    metadata:
+      critical: false
+      skip_allowed: false
+      recovery_action: true
+
+recovery:
+  crashed:
+    description: "Recover from app crash"
+    action:
+      type: "restart_app"
+      package: "com.towneers.www"
+      activity: ".GuideActivity"
+      wait_after_ms: 8000
+    return_to: welcome
+    max_recovery_attempts: 3
+    recovery_delay_ms: 5000
+    metadata:
+      critical: true
+      escalate_on_fail: true
+
+  stuck_state:
+    description: "Handle stuck in same state for too long"
+    trigger:
+      same_state_duration_ms: 30000
+    action:
+      type: "keyevent"
+      key: "BACK"
+      delay_ms: 2000
+    fallback_action:
+      type: "restart_app"
+      package: "com.towneers.www"
+      wait_after_ms: 8000
+    return_to: "previous"
+    max_recovery_attempts: 2
+    metadata:
+      critical: false
+      escalate_on_fail: true
+
+  timeout_recovery:
+    description: "Handle overall flow timeout"
+    trigger:
+      total_duration_ms: 300000
+    action:
+      type: "abort"
+      reason: "Flow timeout exceeded"
+      save_state: true
+      screenshot: true
+    metadata:
+      critical: true
+      manual_intervention_required: true
+
+state_expectations:
+  welcome:
+    next_states: ["neighborhood", "loading"]
+    blocked_states: ["home", "sms_code"]
+
+  neighborhood:
+    next_states: ["verification", "loading"]
+    blocked_states: ["home", "sms_code"]
+
+  verification:
+    next_states: ["phone_entry", "loading"]
+    blocked_states: ["home", "neighborhood"]
+
+  phone_entry:
+    next_states: ["sms_code", "loading", "error_generic"]
+    blocked_states: ["home", "welcome"]
+
+  sms_code:
+    next_states: ["home", "loading", "error_generic"]
+    blocked_states: ["welcome", "neighborhood"]
+
+  home:
+    next_states: []
+    blocked_states: ["welcome", "verification", "phone_entry"]
+
+  loading:
+    next_states: ["*"]
+    blocked_states: []
+
+action_library:
+  keyevent_sequence:
+    description: "Execute sequence of key events"
+    parameters:
+      - keys: list[str]
+      - delays_ms: list[int]
+    execution: "sequential"
+
+  tap_sequence:
+    description: "Execute sequence of taps"
+    parameters:
+      - coordinates: list[dict]
+      - delays_ms: list[int]
+    execution: "sequential"
+
+  input_and_submit:
+    description: "Input text and submit"
+    parameters:
+      - input_type: str
+      - input_method: str
+      - keys_after_input: list[str]
+    execution: "sequential"
+
+  tap_and_text:
+    description: "Tap input field and enter text"
+    parameters:
+      - tap_coordinates: dict
+      - text: str
+      - submit_coordinates: dict
+    execution: "sequential"
+
+  wait:
+    description: "Wait for specified duration"
+    parameters:
+      - duration_ms: int
+    execution: "blocking"
+
+  restart_app:
+    description: "Force stop and restart application"
+    parameters:
+      - package: str
+      - activity: str
+      - wait_after_ms: int
+    execution: "blocking"
+
+execution_config:
+  parallel_actions: false
+  screenshot_on_transition: true
+  activity_dump_on_transition: false
+  retry_failed_transitions: true
+  max_transition_retries: 3
+  abort_on_critical_failure: true
+  save_progress: true
+  progress_checkpoint_interval: 5
+
+monitoring:
+  enabled: true
+  metrics:
+    - state_transitions
+    - action_execution_time
+    - detection_accuracy
+    - error_rate
+    - recovery_success_rate
+  screenshot_interval_ms: 5000
+  activity_poll_interval_ms: 1000
+  log_level: "DEBUG"
+  report_location: ".moai/logs/karrot/flow_reports/"
+
+validation:
+  strict_state_validation: true
+  allow_unexpected_states: false
+  auto_adapt_on_failure: false
+  require_manual_approval: false
+  dry_run_mode: false

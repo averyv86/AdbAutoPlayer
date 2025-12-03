@@ -1,0 +1,402 @@
+name: Karrot Login Workflow
+description: "AI-powered login flow with detection avoidance and hybrid element detection"
+version: 1.0.0
+
+metadata:
+  game: karrot
+  workflow_type: login
+  difficulty: advanced
+  tags: [login, ai-vision, detection-avoidance, 2fa]
+  author: AdbAutoPlayer
+  created: 2025-12-03
+
+parameters:
+  device: "127.0.0.1:5555"
+  phone_number: "01039705176"
+  neighborhood: "서초동"
+  country: "Korea"
+  timeout: 60
+  max_retries: 3
+  human_simulation: true
+
+detection:
+  method: hybrid  # uiautomator -> ai_vision fallback
+  ai_confidence_threshold: 0.85
+  backoff: exponential
+  max_attempts: 10
+  timeout_sec: 30
+  retry_delay_min: 2.0
+  retry_delay_max: 5.0
+
+human_simulation:
+  enabled: true
+  tap_delay_min: 0.8
+  tap_delay_max: 2.5
+  swipe_duration_min: 300
+  swipe_duration_max: 800
+  typing_speed_min: 0.1
+  typing_speed_max: 0.3
+
+phases:
+  - id: launch_app
+    name: Launch Karrot App
+    description: Start the Karrot application and wait for initial screen
+    retry_on_failure: true
+    timeout: 30
+    steps:
+      - id: launch_app_step1
+        name: Launch Karrot Package
+        action: adb-launch
+        params:
+          device: "{{ device }}"
+          package: "com.towneers.www"
+          activity: ".MainActivity"
+          timeout: 15
+        on_success: continue
+        on_failure: retry
+
+      - id: launch_app_step2
+        name: Wait for App Ready
+        action: wait-state
+        params:
+          device: "{{ device }}"
+          state: "app_ready"
+          timeout: 10
+          method: hybrid
+        on_success: continue
+        on_failure: retry
+
+      - id: launch_app_step3
+        name: Detect Welcome Screen
+        action: ai-detect-screen
+        params:
+          device: "{{ device }}"
+          expected_screens: ["welcome", "login", "main_feed"]
+          confidence: 0.85
+        on_success: continue
+        on_failure: retry
+
+      - id: launch_app_step4
+        name: Handle Play Store Redirect
+        action: conditional-check
+        params:
+          device: "{{ device }}"
+          condition: "current_screen == 'play_store'"
+          true_action: "press_back"
+          false_action: "continue"
+        on_success: continue
+        on_failure: abort
+
+  - id: navigate_to_login
+    name: Navigate to Login Screen
+    description: Click through welcome screen to reach login
+    retry_on_failure: true
+    timeout: 20
+    steps:
+      - id: navigate_login_step1
+        name: Detect Get Started Button
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Get Started button"
+          method: hybrid
+          confidence: 0.85
+          fallback_coordinates: [540, 1800]
+        on_success: continue
+        on_failure: continue
+
+      - id: navigate_login_step2
+        name: Human-like Delay
+        action: delay
+        params:
+          min: 1.2
+          max: 2.8
+        on_success: continue
+        on_failure: continue
+
+      - id: navigate_login_step3
+        name: Detect Login Link
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Log in link"
+          method: hybrid
+          confidence: 0.85
+          search_region: "bottom_half"
+        on_success: continue
+        on_failure: retry
+
+      - id: navigate_login_step4
+        name: Wait for Phone Input Screen
+        action: wait-state
+        params:
+          device: "{{ device }}"
+          state: "phone_input"
+          timeout: 10
+          method: hybrid
+        on_success: continue
+        on_failure: abort
+
+  - id: enter_phone_number
+    name: Enter Phone Number
+    description: Input phone number with human-like typing
+    retry_on_failure: true
+    timeout: 25
+    steps:
+      - id: enter_phone_step1
+        name: Tap Phone Input Field
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Phone number input field"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: retry
+
+      - id: enter_phone_step2
+        name: Clear Existing Text
+        action: adb-command
+        params:
+          device: "{{ device }}"
+          command: "shell input keyevent KEYCODE_MOVE_END"
+          repeat: 3
+        on_success: continue
+        on_failure: continue
+
+      - id: enter_phone_step3
+        name: Type Phone Number
+        action: input-text
+        params:
+          device: "{{ device }}"
+          text: "{{ phone_number }}"
+          typing_mode: human_simulation
+          char_delay_min: 0.1
+          char_delay_max: 0.3
+        on_success: continue
+        on_failure: retry
+
+      - id: enter_phone_step4
+        name: Random Delay
+        action: delay
+        params:
+          min: 0.8
+          max: 1.5
+        on_success: continue
+        on_failure: continue
+
+      - id: enter_phone_step5
+        name: Tap Next Button
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Next button"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: abort
+
+  - id: handle_verification
+    name: Handle 2FA Verification
+    description: Wait for and handle SMS verification code
+    retry_on_failure: true
+    timeout: 90
+    steps:
+      - id: verify_step1
+        name: Wait for Verification Screen
+        action: wait-state
+        params:
+          device: "{{ device }}"
+          state: "verification_code"
+          timeout: 60
+          method: hybrid
+        on_success: continue
+        on_failure: retry
+
+      - id: verify_step2
+        name: Wait for SMS
+        action: wait-sms
+        params:
+          device: "{{ device }}"
+          timeout: 60
+          pattern: "\\d{6}"
+          auto_detect: true
+        on_success: continue
+        on_failure: manual_input
+
+      - id: verify_step3
+        name: Input Verification Code
+        action: input-text
+        params:
+          device: "{{ device }}"
+          text: "{{ verification_code }}"
+          typing_mode: human_simulation
+          char_delay_min: 0.15
+          char_delay_max: 0.35
+        on_success: continue
+        on_failure: retry
+
+      - id: verify_step4
+        name: Confirm Verification
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Confirm button"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: abort
+
+  - id: select_neighborhood
+    name: Select Neighborhood
+    description: Choose neighborhood location
+    retry_on_failure: true
+    timeout: 20
+    steps:
+      - id: neighborhood_step1
+        name: Wait for Location Screen
+        action: wait-state
+        params:
+          device: "{{ device }}"
+          state: "location_selection"
+          timeout: 10
+          method: hybrid
+        on_success: continue
+        on_failure: skip_phase
+
+      - id: neighborhood_step2
+        name: Search Neighborhood
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "Search location input"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: retry
+
+      - id: neighborhood_step3
+        name: Type Neighborhood
+        action: input-text
+        params:
+          device: "{{ device }}"
+          text: "{{ neighborhood }}"
+          typing_mode: human_simulation
+        on_success: continue
+        on_failure: retry
+
+      - id: neighborhood_step4
+        name: Select First Result
+        action: ai-tap
+        params:
+          device: "{{ device }}"
+          target: "First search result"
+          method: hybrid
+          confidence: 0.85
+        on_success: continue
+        on_failure: abort
+
+  - id: complete_login
+    name: Complete Login
+    description: Verify successful login and reach main feed
+    retry_on_failure: false
+    timeout: 20
+    steps:
+      - id: complete_step1
+        name: Wait for Main Feed
+        action: wait-state
+        params:
+          device: "{{ device }}"
+          state: "main_feed"
+          timeout: 15
+          method: hybrid
+        on_success: continue
+        on_failure: retry
+
+      - id: complete_step2
+        name: Verify Login Success
+        action: ai-detect-screen
+        params:
+          device: "{{ device }}"
+          expected_screens: ["main_feed", "home"]
+          confidence: 0.90
+        on_success: continue
+        on_failure: abort
+
+      - id: complete_step3
+        name: Capture Final State
+        action: screenshot
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/karrot_login_success.png"
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: launch_app
+    condition: "app_launched == true"
+    on_failure: abort
+
+  - phase: navigate_to_login
+    condition: "phone_input_visible == true"
+    on_failure: retry
+
+  - phase: enter_phone_number
+    condition: "phone_entered == true"
+    on_failure: retry
+
+  - phase: handle_verification
+    condition: "verification_complete == true"
+    on_failure: abort
+
+  - phase: complete_login
+    condition: "main_feed_visible == true"
+    on_failure: abort
+
+recovery:
+  - on_error: play_store_redirect
+    action: back_and_retry
+    max_attempts: 3
+
+  - on_error: timeout
+    action: reset_and_retry
+    max_attempts: 2
+
+  - on_error: detection_failed
+    action: fallback_to_coordinates
+    max_attempts: 3
+
+  - on_error: device_disconnected
+    action: abort
+    max_attempts: 1
+
+  - on_error: verification_timeout
+    action: manual_input
+    max_attempts: 1
+
+outputs:
+  - name: login_status
+    format: json
+    description: Login workflow execution status
+    fields:
+      - success: boolean
+      - phase_completed: string
+      - time_elapsed: float
+      - retries_used: int
+
+  - name: login_log
+    format: text
+    description: Detailed execution log with timestamps
+
+  - name: login_metrics
+    format: table
+    description: Performance metrics per phase
+    columns:
+      - phase_name
+      - duration_sec
+      - success_rate
+      - retry_count
+
+  - name: screenshots
+    format: image_list
+    description: Screenshots captured during workflow

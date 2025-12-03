@@ -1,0 +1,54 @@
+# Medium Feature Workflow Template (4-7 files)
+# Mixed sequential + parallel execution
+# Use when: New features spanning 2-3 domains, moderate complexity
+
+@metadata[1]{template_id,name,complexity,file_count,agent_count}:
+MED-FEAT,Medium Feature,medium,4-7,2-3
+
+@phases[3]{id,agents,mode,deps,max_parallel,description}:
+1,manager-strategy,sequential,[],1,"SPEC analysis and implementation strategy"
+2,"expert-backend|expert-frontend",parallel,[1],2,"Parallel implementation (backend + frontend)"
+3,manager-quality,sequential,[2],1,"Quality validation and TRUST 5 compliance"
+
+@agent_pool[4]{agent,domain,priority,parallel_group}:
+manager-strategy,analysis,critical,0
+expert-backend,backend,high,1
+expert-frontend,frontend,high,1
+manager-quality,validation,high,0
+
+@exec_strategy[1]{mode,parallel_default,dynamic_adjust,max_concurrent}:
+mixed,2,true,2
+
+@file_patterns[8]{pattern,agent,priority}:
+**/backend/**/*.py,expert-backend,critical
+**/api/**/*.py,expert-backend,critical
+**/models/**/*.py,expert-backend,high
+**/frontend/**/*.{ts,tsx},expert-frontend,critical
+**/components/**/*.tsx,expert-frontend,critical
+**/pages/**/*.tsx,expert-frontend,high
+**/test_*.py,manager-tdd,high
+**/*.md,manager-docs,low
+
+@quality_gates[3]{gate_id,validator,threshold,required}:
+1,architecture-clarity,90,true
+2,test-coverage,85,true
+3,trust-5-compliance,100,true
+
+@resource_limits[1]{cpu_threshold,memory_threshold,token_threshold}:
+70,65,120000
+
+@example_files[6]{path,agent,operation}:
+src/backend/api.py,expert-backend,create
+src/backend/models.py,expert-backend,create
+src/frontend/components.tsx,expert-frontend,create
+tests/test_api.py,manager-tdd,create
+tests/test_ui.py,manager-tdd,create
+docs/FEATURE.md,manager-docs,create
+
+# Template Usage:
+# builder-workflow detects 4-7 files in SPEC
+# Analyzes file patterns to detect backend + frontend work
+# Phase 1: Strategy analysis (sequential)
+# Phase 2: Backend and Frontend parallel implementation
+# Phase 3: Quality validation (sequential)
+# Moderate complexity, ~1-2 hour execution

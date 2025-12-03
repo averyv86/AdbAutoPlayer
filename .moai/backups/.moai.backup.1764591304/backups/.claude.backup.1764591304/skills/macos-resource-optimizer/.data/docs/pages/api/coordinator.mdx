@@ -1,0 +1,402 @@
+# Coordinator API
+
+Main entry point for macOS Resource Optimizer operations.
+
+## Overview
+
+The Coordinator manages:
+- Command parsing and routing
+- Expert orchestration
+- Response formatting
+- Error handling
+- Configuration management
+
+## Class Definition
+
+```python
+from macos_optimizer.coordinator import Coordinator
+
+class Coordinator:
+    """Main orchestrator for system optimization"""
+
+    def __init__(self, config: Optional[Dict] = None):
+        """Initialize coordinator with optional config"""
+        pass
+```
+
+## Core Methods
+
+### init()
+
+Initialize and validate the system.
+
+```python
+result = coordinator.init()
+```
+
+Returns:
+```json
+{
+  "status": "success",
+  "execution_time_seconds": 1.2,
+  "system": {
+    "os": "macOS 14.1.1",
+    "python_version": "3.11.6",
+    "moai_version": "0.30.2"
+  }
+}
+```
+
+### analyze(options: Dict = None) → Dict
+
+Collect and analyze system metrics.
+
+```python
+# Basic analysis
+results = coordinator.analyze()
+
+# With options
+results = coordinator.analyze({
+    'verbose': True,
+    'category': 'cpu',
+    'use_cache': False
+})
+```
+
+Returns:
+```json
+{
+  "status": "success",
+  "execution_time_seconds": 1.8,
+  "categories": {
+    "cpu": {...},
+    "memory": {...},
+    "disk": {...}
+  }
+}
+```
+
+### optimize(strategy: str = 'balanced', options: Dict = None) → Dict
+
+Apply optimizations based on strategy.
+
+```python
+# Balanced optimization (default)
+result = coordinator.optimize()
+
+# Aggressive optimization
+result = coordinator.optimize(strategy='aggressive')
+
+# With options
+result = coordinator.optimize(
+    strategy='balanced',
+    options={'dry_run': True}
+)
+```
+
+Strategies:
+- `'conservative'`: Minimal, safe changes
+- `'balanced'`: Recommended, moderate changes
+- `'aggressive'`: Maximum performance changes
+
+Returns:
+```json
+{
+  "status": "success",
+  "optimizations_applied": 12,
+  "estimated_improvement_percent": 18
+}
+```
+
+### monitor(duration: int = 3600, interval: int = 5, options: Dict = None) → Iterator
+
+Continuous performance monitoring.
+
+```python
+# Monitor for 1 hour
+monitor = coordinator.monitor(duration=3600, interval=5)
+for metrics in monitor:
+    print(f"CPU: {metrics['cpu']['usage_percent']}%")
+
+# Monitor indefinitely
+monitor = coordinator.monitor(duration=None)
+for metrics in monitor:
+    # Process metrics
+    pass
+```
+
+Parameters:
+- `duration`: Seconds to monitor (None for indefinite)
+- `interval`: Update interval in seconds
+- `options`: Additional options dict
+
+Yields:
+```json
+{
+  "timestamp": "2024-01-15T10:30:00Z",
+  "cpu": {...},
+  "memory": {...},
+  "disk": {...}
+}
+```
+
+### report(report_type: str = 'summary', options: Dict = None) → Dict
+
+Generate analysis report.
+
+```python
+# Summary report
+report = coordinator.report()
+
+# Detailed report
+report = coordinator.report(report_type='detailed')
+
+# With format option
+report = coordinator.report(
+    report_type='comparison',
+    options={'format': 'html', 'output': 'report.html'}
+)
+```
+
+Report types:
+- `'summary'`: High-level overview
+- `'detailed'`: Comprehensive analysis
+- `'comparison'`: Before/after metrics
+- `'trend'`: Historical trends
+- `'executive'`: Management summary
+
+Returns:
+```json
+{
+  "status": "success",
+  "report": {
+    "title": "Analysis Report",
+    "summary": {...},
+    "metrics": {...}
+  }
+}
+```
+
+### feedback(message: str, options: Dict = None) → Dict
+
+Submit feedback or bug report.
+
+```python
+# Submit general feedback
+result = coordinator.feedback("Great tool!")
+
+# Submit bug report
+result = coordinator.feedback(
+    "Bug: Analyzer fails on M1 Mac",
+    options={'type': 'bug', 'priority': 'high'}
+)
+
+# With system info
+result = coordinator.feedback(
+    "Issue description",
+    options={'include_system_info': True}
+)
+```
+
+Returns:
+```json
+{
+  "status": "success",
+  "feedback_id": "FB-2024-001234"
+}
+```
+
+## Async Methods
+
+All methods have async variants:
+
+```python
+# Async analysis
+result = await coordinator.analyze_async()
+
+# Async optimization
+result = await coordinator.optimize_async(strategy='balanced')
+
+# Async monitoring
+async for metrics in coordinator.monitor_async():
+    print(metrics)
+```
+
+## Error Handling
+
+### Exception Types
+
+```python
+from macos_optimizer.errors import (
+    OptimizerError,
+    AnalysisError,
+    OptimizationError,
+    PermissionError
+)
+
+try:
+    coordinator.analyze()
+except AnalysisError as e:
+    print(f"Analysis failed: {e.message}")
+except PermissionError as e:
+    print(f"Permission denied: {e.message}")
+except OptimizerError as e:
+    print(f"Error: {e.message} (Code: {e.error_code})")
+```
+
+## Configuration
+
+### Custom Configuration
+
+```python
+config = {
+    'system': {
+        'optimization_level': 'aggressive',
+        'auto_optimize': True
+    },
+    'cpu': {'enabled': True, 'strategy': 'aggressive'},
+    'memory': {'enabled': True, 'strategy': 'balanced'},
+    'monitoring': {
+        'metrics_interval': 5,
+        'log_level': 'INFO'
+    }
+}
+
+coordinator = Coordinator(config=config)
+```
+
+### Load Configuration from File
+
+```python
+import json
+
+with open('.claude/skills/macos-resource-optimizer/.data/config.json') as f:
+    config = json.load(f)
+
+coordinator = Coordinator(config=config)
+```
+
+## Caching
+
+### Cache Control
+
+```python
+# Use cached results
+results = coordinator.analyze(use_cache=True)
+
+# Force fresh analysis
+results = coordinator.analyze(use_cache=False)
+
+# Clear cache
+coordinator.clear_cache()
+
+# Get cache status
+status = coordinator.cache_status()
+```
+
+## Examples
+
+### Complete Workflow
+
+```python
+from macos_optimizer import Coordinator
+
+# Initialize
+coordinator = Coordinator()
+coordinator.init()
+
+# Analyze
+analysis = coordinator.analyze()
+print(f"CPU Usage: {analysis['cpu']['usage_percent']}%")
+
+# Plan optimization
+if analysis['memory']['usage_percent'] > 75:
+    # Optimize memory
+    result = coordinator.optimize(strategy='aggressive')
+    print(f"Applied {result['optimizations_applied']} optimizations")
+
+# Monitor improvements
+monitor = coordinator.monitor(duration=300, interval=10)
+for metrics in monitor:
+    print(f"Current memory: {metrics['memory']['usage_percent']}%")
+
+# Generate report
+report = coordinator.report(report_type='comparison')
+print(report['report']['summary'])
+```
+
+### Error Handling Example
+
+```python
+from macos_optimizer import Coordinator
+from macos_optimizer.errors import OptimizerError
+
+coordinator = Coordinator()
+
+try:
+    result = coordinator.analyze()
+except OptimizerError as e:
+    print(f"Error: {e.message}")
+    # Handle error appropriately
+    if e.error_code == 'PERMISSION_DENIED':
+        print("Please run with appropriate permissions")
+    elif e.error_code == 'INVALID_SYSTEM':
+        print("System not supported")
+```
+
+### Batch Analysis
+
+```python
+coordinator = Coordinator()
+
+# Analyze multiple times
+for i in range(5):
+    results = coordinator.analyze()
+    print(f"Run {i+1}: CPU {results['cpu']['usage_percent']}%")
+
+    # Wait between runs
+    import time
+    time.sleep(60)
+```
+
+## Performance Metrics
+
+```python
+# Get execution time
+result = coordinator.analyze()
+exec_time = result['execution_time_seconds']
+
+# Profile operations
+coordinator.enable_profiling()
+result = coordinator.optimize()
+profile = coordinator.get_profile()
+```
+
+## Logging
+
+### Configure Logging
+
+```python
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+coordinator = Coordinator()
+# Logging now active for coordinator operations
+```
+
+## Next Steps
+
+- Learn [Strategy API](/api/strategy)
+- Explore [Experts API](/api/experts)
+- Review [Commands Reference](/commands/index)
+- See [Examples](/getting-started/index)
+
+## See Also
+
+- [Coordinator Class](source_code_link)
+- [Error Handling](error_handling_link)
+- [Configuration Guide](/getting-started/configuration)

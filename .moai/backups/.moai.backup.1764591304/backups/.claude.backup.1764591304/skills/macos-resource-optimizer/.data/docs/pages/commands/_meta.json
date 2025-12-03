@@ -1,0 +1,9 @@
+{
+  "index": "Commands Overview",
+  "init": "Command 0: init",
+  "analyze": "Command 1: analyze",
+  "optimize": "Command 2: optimize",
+  "monitor": "Command 3: monitor",
+  "report": "Command 4: report",
+  "feedback": "Command 9: feedback"
+}

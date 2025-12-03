@@ -1,0 +1,210 @@
+# Configuration Guide
+
+Configure macOS Resource Optimizer for your specific system and preferences.
+
+## Configuration File
+
+The main configuration file is located at:
+
+```
+.claude/skills/macos-resource-optimizer/.data/config.json
+```
+
+## Basic Configuration
+
+### System Settings
+
+```json
+{
+  "system": {
+    "optimization_level": "balanced",
+    "auto_optimize": true,
+    "monitor_interval_seconds": 30,
+    "enable_notifications": true
+  }
+}
+```
+
+### Optimization Levels
+
+- **aggressive** - Maximum optimization, may impact performance
+- **balanced** - Recommended for most users
+- **conservative** - Minimal changes, maximum compatibility
+
+## Component-Specific Settings
+
+### CPU Optimizer
+
+```json
+{
+  "cpu": {
+    "enabled": true,
+    "target_temperature": 75,
+    "thermal_threshold": 85,
+    "throttle_threshold": 90
+  }
+}
+```
+
+### Memory Optimizer
+
+```json
+{
+  "memory": {
+    "enabled": true,
+    "target_usage_percent": 70,
+    "min_free_mb": 1024,
+    "swap_compression": true
+  }
+}
+```
+
+### Disk Optimizer
+
+```json
+{
+  "disk": {
+    "enabled": true,
+    "target_free_percent": 20,
+    "cleanup_old_files": true,
+    "cache_cleanup": true
+  }
+}
+```
+
+### Battery Optimizer
+
+```json
+{
+  "battery": {
+    "enabled": true,
+    "low_power_threshold": 20,
+    "optimization_on_low_power": true,
+    "screen_brightness_adaptive": true
+  }
+}
+```
+
+### Thermal Optimizer
+
+```json
+{
+  "thermal": {
+    "enabled": true,
+    "cooling_strategy": "balanced",
+    "fan_control": true,
+    "thermal_timeout_seconds": 300
+  }
+}
+```
+
+### Network Optimizer
+
+```json
+{
+  "network": {
+    "enabled": true,
+    "dns_optimization": true,
+    "connection_pooling": true,
+    "bandwidth_throttling": false
+  }
+}
+```
+
+## Monitoring Settings
+
+```json
+{
+  "monitoring": {
+    "metrics_interval": 5,
+    "log_level": "INFO",
+    "history_retention_days": 30,
+    "export_format": "json"
+  }
+}
+```
+
+## Advanced Configuration
+
+### Custom Profiles
+
+Create multiple configuration profiles for different scenarios:
+
+```bash
+# Gaming profile
+cp config.json config.gaming.json
+
+# Development profile
+cp config.json config.development.json
+
+# Production profile
+cp config.json config.production.json
+```
+
+### Per-Application Settings
+
+```json
+{
+  "app_overrides": {
+    "com.apple.Safari": {
+      "optimization_level": "conservative"
+    },
+    "com.google.Chrome": {
+      "memory_limit_mb": 2048
+    }
+  }
+}
+```
+
+## Environment Variables
+
+Set environment variables for runtime configuration:
+
+```bash
+# Set optimization level
+export OPTIMIZER_LEVEL=balanced
+
+# Enable debug logging
+export OPTIMIZER_DEBUG=true
+
+# Set custom config path
+export OPTIMIZER_CONFIG=/path/to/config.json
+```
+
+## Configuration Validation
+
+Validate your configuration:
+
+```bash
+# Validate config syntax
+/macos-resource-optimizer:0-init --validate-config
+
+# Test configuration
+/macos-resource-optimizer:1-analyze --dry-run
+```
+
+## Resetting Configuration
+
+Reset to default configuration:
+
+```bash
+# Backup current config
+cp config.json config.backup.json
+
+# Reset to defaults
+/macos-resource-optimizer:0-init --reset-config
+```
+
+## Next Steps
+
+- Review [First Run](/getting-started/first-run) guide
+- Explore [Optimization Strategies](/guides/performance-tuning)
+- Check [Architecture](/architecture/overview) for technical details
+
+## Troubleshooting Configuration
+
+- Invalid JSON: Use a JSON validator tool
+- Permission issues: Check file ownership
+- Settings not applied: Restart the optimizer
+
+See [Troubleshooting](/guides/troubleshooting) for more help.

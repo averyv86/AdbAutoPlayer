@@ -1,0 +1,166 @@
+name: Karrot Detection Avoidance Configuration
+version: 1.0.0
+description: Detection avoidance configuration workflow for human-like interaction patterns
+
+parameters:
+  enabled: true
+  profile: balanced
+
+phases:
+  - id: random_delay_config
+    name: Random Delay Settings
+    steps:
+      - action: set-config
+        key: random_delay.enabled
+        value: true
+      - action: set-config
+        key: random_delay.min_ms
+        value: 500
+      - action: set-config
+        key: random_delay.max_ms
+        value: 2000
+      - action: set-config
+        key: random_delay.distribution
+        value: gaussian
+        description: Gaussian distribution for more natural timing
+
+  - id: tap_variance_config
+    name: Human-like Tap Variance
+    steps:
+      - action: set-config
+        key: tap_variance.enabled
+        value: true
+      - action: set-config
+        key: tap_variance.offset_px
+        value: 10
+        description: Random offset of plus or minus 10 pixels
+      - action: set-config
+        key: tap_variance.pressure_variance
+        value: true
+      - action: set-config
+        key: tap_variance.duration_min_ms
+        value: 50
+      - action: set-config
+        key: tap_variance.duration_max_ms
+        value: 150
+
+  - id: scroll_behavior_config
+    name: Scroll Behavior Settings
+    steps:
+      - action: set-config
+        key: scroll.speed
+        value: slow
+        description: Slow scrolling mimics human behavior
+      - action: set-config
+        key: scroll.pause_between_ms
+        value: 1000
+      - action: set-config
+        key: scroll.variance_enabled
+        value: true
+      - action: set-config
+        key: scroll.distance_variance_percent
+        value: 15
+      - action: set-config
+        key: scroll.velocity_curve
+        value: ease_in_out
+
+  - id: input_behavior_config
+    name: Text Input Behavior
+    steps:
+      - action: set-config
+        key: input.char_delay_ms
+        value: 80
+      - action: set-config
+        key: input.char_variance_ms
+        value: 40
+      - action: set-config
+        key: input.typo_simulation
+        value: false
+        description: Disable typo simulation for reliability
+
+  - id: session_behavior_config
+    name: Session Behavior
+    steps:
+      - action: set-config
+        key: session.action_cooldown_ms
+        value: 200
+        description: Minimum delay between any actions
+      - action: set-config
+        key: session.idle_variance
+        value: true
+      - action: set-config
+        key: session.idle_min_ms
+        value: 1000
+      - action: set-config
+        key: session.idle_max_ms
+        value: 3000
+
+monitoring:
+  logcat:
+    enabled: true
+    keywords:
+      - LIAPP
+      - LIAPPClient
+      - security
+      - tamper
+      - detection
+      - integrity
+      - root
+      - su
+      - magisk
+      - hook
+      - frida
+      - xposed
+      - substrate
+    buffer: main,system
+    filter_level: verbose
+    on_detect: immediate_pause
+    cooldown_ms: 5000
+    alert_webhook: ""
+    log_to_file: true
+    log_path: ./logs/detection_events.log
+
+profiles:
+  aggressive:
+    description: Faster actions with less variance
+    random_delay:
+      min_ms: 200
+      max_ms: 800
+    tap_variance:
+      offset_px: 5
+    scroll:
+      speed: normal
+      pause_between_ms: 500
+
+  balanced:
+    description: Balanced speed and detection avoidance
+    random_delay:
+      min_ms: 500
+      max_ms: 2000
+    tap_variance:
+      offset_px: 10
+    scroll:
+      speed: slow
+      pause_between_ms: 1000
+
+  stealth:
+    description: Maximum detection avoidance with slower actions
+    random_delay:
+      min_ms: 1000
+      max_ms: 4000
+    tap_variance:
+      offset_px: 15
+    scroll:
+      speed: very_slow
+      pause_between_ms: 2000
+
+recovery:
+  on_detection:
+    action: immediate_pause
+    wait_ms: 30000
+    description: Pause for 30 seconds if detection keyword found
+  on_multiple_detections:
+    threshold: 3
+    window_ms: 60000
+    action: abort_session
+    description: Abort if 3 or more detections within 1 minute

@@ -1,0 +1,228 @@
+# Karrot Signup Flow - State Machine Definitions
+# Version: 1.0.0
+# Last Updated: 2025-12-03
+# Purpose: Define screen states with detection patterns for Karrot app signup automation
+
+states:
+  welcome:
+    description: "Initial welcome screen with language selection and login options"
+    activity_pattern: "GuideActivity"
+    ui_elements:
+      - "Get started"
+      - "Log in"
+      - "Korea"
+    ui_excludes: []
+    detection_priority: 1
+    screenshot_identifier: "welcome_screen"
+    stable_duration_ms: 2000
+    timeout_ms: 10000
+    metadata:
+      screen_type: "entry"
+      requires_interaction: true
+      can_skip: false
+
+  neighborhood:
+    description: "Neighborhood selection screen showing nearby areas"
+    activity_pattern: "KrSignUpOrInActivity"
+    ui_elements:
+      - "Find nearby neighborhoods"
+      - "서울"
+      - "동네"
+    ui_excludes:
+      - "Verify now"
+      - "verify your identity"
+    detection_priority: 2
+    screenshot_identifier: "neighborhood_screen"
+    stable_duration_ms: 3000
+    timeout_ms: 15000
+    metadata:
+      screen_type: "selection"
+      requires_interaction: true
+      can_skip: false
+      search_capable: true
+
+  verification:
+    description: "Identity verification prompt (higher priority than neighborhood)"
+    activity_pattern: "KrSignUpOrInActivity"
+    ui_elements:
+      - "Verify now"
+      - "verify your identity"
+      - "본인인증"
+    ui_excludes: []
+    detection_priority: 1
+    screenshot_identifier: "verification_prompt"
+    stable_duration_ms: 2000
+    timeout_ms: 10000
+    metadata:
+      screen_type: "verification"
+      requires_interaction: true
+      can_skip: false
+      critical: true
+
+  phone_entry:
+    description: "Phone number input screen"
+    activity_pattern: "Phone|Mobile|PhoneNumberActivity"
+    ui_elements:
+      - "phone number"
+      - "010"
+      - "휴대폰 번호"
+      - "입력"
+    ui_excludes:
+      - "verification code"
+      - "인증번호"
+    detection_priority: 2
+    screenshot_identifier: "phone_input_screen"
+    stable_duration_ms: 2000
+    timeout_ms: 15000
+    metadata:
+      screen_type: "input"
+      requires_interaction: true
+      can_skip: false
+      input_type: "phone"
+      validation_pattern: "^010[0-9]{8}$"
+
+  sms_code:
+    description: "SMS verification code input screen"
+    activity_pattern: "Verification|VerificationCodeActivity"
+    ui_elements:
+      - "verification code"
+      - "digit"
+      - "인증번호"
+      - "6자리"
+    ui_excludes:
+      - "phone number"
+    detection_priority: 1
+    screenshot_identifier: "sms_code_screen"
+    stable_duration_ms: 2000
+    timeout_ms: 60000
+    metadata:
+      screen_type: "input"
+      requires_interaction: true
+      can_skip: false
+      input_type: "numeric"
+      code_length: 6
+      auto_detect_sms: true
+      retry_limit: 3
+
+  home:
+    description: "Main home screen after successful signup"
+    activity_pattern: "MainActivity|HomeActivity"
+    ui_elements:
+      - "home"
+      - "채팅"
+      - "나의당근"
+      - "동네생활"
+    ui_excludes:
+      - "Get started"
+      - "Log in"
+      - "Verify now"
+    detection_priority: 1
+    screenshot_identifier: "home_screen"
+    stable_duration_ms: 3000
+    timeout_ms: 20000
+    metadata:
+      screen_type: "destination"
+      requires_interaction: false
+      can_skip: false
+      success_state: true
+
+  crashed:
+    description: "App crashed or unresponsive state"
+    activity_pattern: "FallbackHome|null|com.android.launcher"
+    ui_elements:
+      - "has stopped"
+      - "not responding"
+      - "crash"
+    ui_excludes: []
+    detection_priority: 10
+    screenshot_identifier: "crash_screen"
+    stable_duration_ms: 1000
+    timeout_ms: 5000
+    metadata:
+      screen_type: "error"
+      requires_interaction: true
+      can_skip: false
+      critical: true
+      recovery_required: true
+
+  error_generic:
+    description: "Generic error state with retry option"
+    activity_pattern: "ErrorActivity|DialogActivity"
+    ui_elements:
+      - "error"
+      - "retry"
+      - "오류"
+      - "다시 시도"
+    ui_excludes:
+      - "crashed"
+      - "has stopped"
+    detection_priority: 3
+    screenshot_identifier: "error_screen"
+    stable_duration_ms: 2000
+    timeout_ms: 10000
+    metadata:
+      screen_type: "error"
+      requires_interaction: true
+      can_skip: true
+      retry_capable: true
+
+  loading:
+    description: "Loading or transitional state"
+    activity_pattern: "SplashActivity|LoadingActivity"
+    ui_elements:
+      - "loading"
+      - "로딩"
+      - "잠시만"
+    ui_excludes: []
+    detection_priority: 5
+    screenshot_identifier: "loading_screen"
+    stable_duration_ms: 1000
+    timeout_ms: 30000
+    metadata:
+      screen_type: "transition"
+      requires_interaction: false
+      can_skip: false
+      wait_state: true
+
+detection_config:
+  method: "hybrid"
+  strategies:
+    - activity_name
+    - ui_text_matching
+    - ocr_fallback
+
+  ocr_config:
+    enabled: true
+    language: "kor+eng"
+    confidence_threshold: 0.7
+    preprocessing:
+      - grayscale
+      - contrast_enhancement
+      - noise_reduction
+
+  activity_config:
+    polling_interval_ms: 500
+    max_retries: 3
+    cache_duration_ms: 2000
+
+  ui_matching_config:
+    case_sensitive: false
+    partial_match: true
+    min_match_score: 0.8
+    fuzzy_matching: true
+
+validation:
+  state_detection_timeout_ms: 5000
+  stable_state_required: true
+  min_stable_duration_ms: 1000
+  screenshot_comparison_threshold: 0.95
+  retry_on_ambiguous: true
+  max_detection_retries: 3
+
+logging:
+  enabled: true
+  level: "INFO"
+  screenshot_on_state_change: true
+  activity_log: true
+  ui_dump_on_error: true
+  log_location: ".moai/logs/karrot/"

@@ -1,0 +1,379 @@
+name: Karrot Detection Avoidance Configuration
+description: "Advanced detection avoidance strategies for Karrot automation"
+version: 1.0.0
+
+metadata:
+  game: karrot
+  workflow_type: detection-avoidance
+  difficulty: advanced
+  tags: [anti-detection, stealth, human-simulation, behavior-randomization]
+  author: AdbAutoPlayer
+  created: 2025-12-03
+
+parameters:
+  device: "127.0.0.1:5555"
+  stealth_level: "high"  # low, medium, high, maximum
+  randomization_enabled: true
+  fingerprint_spoofing: true
+  behavior_profile: "casual_user"  # casual_user, power_user, new_user
+
+stealth_configuration:
+  enabled: true
+  level: "{{ stealth_level }}"
+
+  # Human-like timing patterns
+  timing:
+    tap_delay_min: 0.8
+    tap_delay_max: 3.2
+    swipe_duration_min: 250
+    swipe_duration_max: 900
+    page_view_min: 3.0
+    page_view_max: 12.0
+    typing_speed_min: 0.08
+    typing_speed_max: 0.35
+    error_rate: 0.02  # 2% typo rate
+    backspace_probability: 0.05
+
+  # Touch behavior randomization
+  touch:
+    coordinate_offset_max: 15  # pixels
+    pressure_variation: true
+    pressure_min: 0.6
+    pressure_max: 1.0
+    multi_touch_simulation: false
+    finger_size_variation: true
+
+  # Interaction patterns
+  interaction:
+    scroll_before_tap: true
+    scroll_probability: 0.3
+    random_scroll_amount: true
+    occasional_back_press: true
+    back_press_probability: 0.08
+    idle_periods: true
+    idle_min: 2.0
+    idle_max: 8.0
+    idle_probability: 0.15
+
+fingerprint_protection:
+  enabled: "{{ fingerprint_spoofing }}"
+
+  # Device fingerprint masking
+  device:
+    spoof_build_props: true
+    randomize_device_id: false  # Risky, may break login
+    spoof_imei: false  # Dangerous, not recommended
+    modify_android_id: false
+
+  # App-level fingerprint
+  app:
+    clear_app_cache_periodically: true
+    cache_clear_interval_hours: 24
+    modify_app_preferences: false
+    randomize_settings: true
+
+  # Network fingerprint
+  network:
+    use_vpn_check: true
+    rotate_user_agent: false
+    spoof_location: false  # Karrot is location-based, don't spoof
+    check_wifi_vs_mobile: true
+
+behavior_profiles:
+  casual_user:
+    daily_usage_hours: [8, 10, 12, 14, 18, 20, 22]
+    session_duration_min: 5
+    session_duration_max: 20
+    actions_per_session_min: 3
+    actions_per_session_max: 15
+    scroll_frequency: medium
+    search_frequency: low
+
+  power_user:
+    daily_usage_hours: [7, 9, 11, 13, 15, 17, 19, 21, 23]
+    session_duration_min: 10
+    session_duration_max: 45
+    actions_per_session_min: 10
+    actions_per_session_max: 50
+    scroll_frequency: high
+    search_frequency: high
+
+  new_user:
+    daily_usage_hours: [10, 14, 18, 21]
+    session_duration_min: 8
+    session_duration_max: 25
+    actions_per_session_min: 5
+    actions_per_session_max: 20
+    scroll_frequency: low
+    search_frequency: medium
+
+phases:
+  - id: pre_session_checks
+    name: Pre-Session Security Checks
+    description: Verify environment before starting automation
+    steps:
+      - id: check_vpn
+        name: Check VPN Status
+        action: check-vpn
+        params:
+          device: "{{ device }}"
+          required: false
+          warn_if_absent: true
+        on_success: continue
+        on_failure: warn
+
+      - id: check_root_detection
+        name: Check for Root Detection
+        action: check-root-visibility
+        params:
+          device: "{{ device }}"
+          hide_root: true
+        on_success: continue
+        on_failure: abort
+
+      - id: check_developer_options
+        name: Verify Developer Options Hidden
+        action: check-developer-settings
+        params:
+          device: "{{ device }}"
+          ensure_hidden: true
+        on_success: continue
+        on_failure: warn
+
+      - id: random_delay
+        name: Initial Random Delay
+        action: delay
+        params:
+          min: 2.0
+          max: 8.0
+        on_success: continue
+        on_failure: continue
+
+  - id: randomize_environment
+    name: Randomize Device Environment
+    description: Apply randomization to avoid detection patterns
+    steps:
+      - id: randomize_timezone
+        name: Random Timezone Check
+        action: check-timezone
+        params:
+          device: "{{ device }}"
+          expected: "Asia/Seoul"
+          warn_if_mismatch: true
+        on_success: continue
+        on_failure: continue
+
+      - id: randomize_language
+        name: Verify Language Settings
+        action: check-language
+        params:
+          device: "{{ device }}"
+          expected: "ko_KR"
+        on_success: continue
+        on_failure: continue
+
+      - id: clear_clipboard
+        name: Clear Clipboard
+        action: adb-command
+        params:
+          device: "{{ device }}"
+          command: "shell content query --uri content://clipboard"
+        on_success: continue
+        on_failure: continue
+
+  - id: human_behavior_simulation
+    name: Simulate Human Behavior
+    description: Execute actions with human-like patterns
+    steps:
+      - id: random_home_button
+        name: Random Home Button Press
+        action: conditional-action
+        params:
+          device: "{{ device }}"
+          condition: "random() < 0.1"
+          action: "press_home"
+        on_success: continue
+        on_failure: continue
+
+      - id: random_scroll
+        name: Random Scroll Action
+        action: conditional-action
+        params:
+          device: "{{ device }}"
+          condition: "random() < 0.3"
+          action: "scroll_random"
+        on_success: continue
+        on_failure: continue
+
+      - id: random_idle
+        name: Random Idle Period
+        action: conditional-delay
+        params:
+          condition: "random() < 0.15"
+          min: 2.0
+          max: 8.0
+        on_success: continue
+        on_failure: continue
+
+  - id: anti_detection_measures
+    name: Active Anti-Detection Measures
+    description: Apply real-time anti-detection techniques
+    steps:
+      - id: vary_coordinates
+        name: Enable Coordinate Variation
+        action: config-set
+        params:
+          device: "{{ device }}"
+          setting: "coordinate_offset_max"
+          value: 15
+        on_success: continue
+        on_failure: continue
+
+      - id: enable_pressure_variation
+        name: Enable Touch Pressure Variation
+        action: config-set
+        params:
+          device: "{{ device }}"
+          setting: "pressure_variation"
+          value: true
+        on_success: continue
+        on_failure: continue
+
+      - id: randomize_typing_speed
+        name: Randomize Typing Speed
+        action: config-set
+        params:
+          device: "{{ device }}"
+          setting: "typing_speed_variation"
+          value: true
+        on_success: continue
+        on_failure: continue
+
+  - id: session_maintenance
+    name: Session Maintenance
+    description: Maintain session health during automation
+    steps:
+      - id: periodic_cache_check
+        name: Check App Cache Size
+        action: check-cache
+        params:
+          device: "{{ device }}"
+          package: "com.towneers.www"
+          max_size_mb: 500
+          clear_if_exceeded: true
+        on_success: continue
+        on_failure: continue
+
+      - id: battery_check
+        name: Check Battery Level
+        action: check-battery
+        params:
+          device: "{{ device }}"
+          min_level: 20
+          warn_if_low: true
+        on_success: continue
+        on_failure: warn
+
+      - id: network_check
+        name: Verify Network Connection
+        action: check-network
+        params:
+          device: "{{ device }}"
+          required_type: "wifi"
+          fallback_mobile: true
+        on_success: continue
+        on_failure: retry
+
+detection_indicators:
+  # Indicators that suggest detection/blocking
+  indicators:
+    - type: captcha_appearance
+      severity: high
+      action: abort_and_wait
+      wait_duration: 3600  # 1 hour
+
+    - type: account_verification_request
+      severity: high
+      action: manual_intervention
+
+    - type: unusual_login_screen
+      severity: medium
+      action: retry_with_delay
+      delay: 600  # 10 minutes
+
+    - type: session_expired_quickly
+      severity: medium
+      action: increase_stealth_level
+
+    - type: repeated_play_store_redirect
+      severity: low
+      action: clear_app_data
+
+validation:
+  - phase: pre_session_checks
+    condition: "security_checks_passed == true"
+    on_failure: abort
+
+  - phase: randomize_environment
+    condition: "environment_ready == true"
+    on_failure: continue
+
+  - phase: human_behavior_simulation
+    condition: "behavior_enabled == true"
+    on_failure: continue
+
+  - phase: anti_detection_measures
+    condition: "measures_applied == true"
+    on_failure: warn
+
+recovery:
+  - on_error: detection_suspected
+    action: increase_delays
+    multiplier: 2.0
+    max_attempts: 3
+
+  - on_error: captcha_detected
+    action: abort_and_notify
+    wait_before_retry: 3600
+
+  - on_error: account_locked
+    action: abort
+    notify_admin: true
+
+  - on_error: environment_check_failed
+    action: fix_and_retry
+    max_attempts: 2
+
+best_practices:
+  - name: Avoid Peak Hours
+    description: "Don't run automation during high-traffic hours (12pm-2pm, 6pm-9pm)"
+    enforcement: warn
+
+  - name: Limit Daily Sessions
+    description: "Maximum 5-8 sessions per day for casual user profile"
+    enforcement: hard_limit
+
+  - name: Vary Session Times
+    description: "Don't run at exact same times every day"
+    enforcement: suggest
+
+  - name: Use WiFi
+    description: "Prefer WiFi over mobile data for consistency"
+    enforcement: warn
+
+  - name: Maintain Battery Above 20%
+    description: "Low battery may trigger power-saving restrictions"
+    enforcement: warn
+
+outputs:
+  - name: stealth_status
+    format: json
+    description: Current stealth configuration status
+
+  - name: detection_log
+    format: text
+    description: Log of detection events and responses
+
+  - name: behavior_metrics
+    format: table
+    description: Human behavior simulation metrics

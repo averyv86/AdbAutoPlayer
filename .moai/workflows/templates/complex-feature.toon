@@ -1,0 +1,77 @@
+# Complex Feature Workflow Template (8-15 files)
+# Full parallel execution (3-5 agents concurrently)
+# Use when: Large features spanning 3+ domains, high complexity
+
+@metadata[1]{template_id,name,complexity,file_count,agent_count}:
+COMPLEX-FEAT,Complex Feature,complex,8-15,3-5
+
+@phases[4]{id,agents,mode,deps,max_parallel,description}:
+1,manager-strategy,sequential,[],1,"Deep SPEC analysis and architecture planning"
+2,"expert-backend|expert-frontend|expert-database",parallel,[1],3,"Parallel multi-domain implementation"
+3,manager-tdd,sequential,[2],1,"Comprehensive test suite generation"
+4,manager-quality,sequential,[3],1,"Quality validation and integration testing"
+
+@agent_pool[6]{agent,domain,priority,parallel_group,capabilities}:
+manager-strategy,analysis,critical,0,"spec-analysis|architecture-planning"
+expert-backend,backend,high,1,"api-design|business-logic|integration"
+expert-frontend,frontend,high,1,"ui-components|state-management|routing"
+expert-database,database,high,1,"schema-design|migrations|queries"
+manager-tdd,testing,high,0,"test-generation|coverage-analysis"
+manager-quality,validation,critical,0,"trust-5-validation|integration-testing"
+
+@exec_strategy[1]{mode,parallel_default,dynamic_adjust,max_concurrent}:
+parallel,5,true,5
+
+@file_patterns[15]{pattern,agent,priority}:
+**/backend/**/*.py,expert-backend,critical
+**/api/**/*.py,expert-backend,critical
+**/models/**/*.py,expert-backend,high
+**/frontend/**/*.{ts,tsx},expert-frontend,critical
+**/components/**/*.tsx,expert-frontend,critical
+**/pages/**/*.tsx,expert-frontend,high
+**/hooks/**/*.ts,expert-frontend,medium
+**/migrations/**/*.sql,expert-database,critical
+**/schema/**/*.sql,expert-database,critical
+**/queries/**/*.py,expert-database,high
+**/test_*.py,manager-tdd,high
+**/tests/**/*.py,manager-tdd,high
+**/*.md,manager-docs,medium
+**/.github/**/*.yml,expert-devops,medium
+**/auth/**/*,expert-security,high
+
+@quality_gates[5]{gate_id,validator,threshold,required}:
+1,architecture-clarity,95,true
+2,agent-boundary-clarity,90,true
+3,test-coverage,90,true
+4,trust-5-compliance,100,true
+5,integration-validation,85,true
+
+@resource_limits[1]{cpu_threshold,memory_threshold,token_threshold}:
+80,75,150000
+
+@parallel_config[1]{min_agents,max_agents,default_agents,adjust_interval_sec}:
+1,5,3,300
+
+@example_files[12]{path,agent,operation}:
+src/backend/api/routes.py,expert-backend,create
+src/backend/api/handlers.py,expert-backend,create
+src/backend/models/user.py,expert-backend,create
+src/frontend/components/Dashboard.tsx,expert-frontend,create
+src/frontend/components/UserProfile.tsx,expert-frontend,create
+src/frontend/hooks/useAuth.ts,expert-frontend,create
+migrations/001_create_users.sql,expert-database,create
+migrations/002_add_permissions.sql,expert-database,create
+tests/test_api_routes.py,manager-tdd,create
+tests/test_models.py,manager-tdd,create
+tests/test_components.tsx,manager-tdd,create
+docs/ARCHITECTURE.md,manager-docs,create
+
+# Template Usage:
+# builder-workflow detects 8-15 files in SPEC
+# Analyzes patterns to identify backend, frontend, database domains
+# Phase 1: Strategy and architecture planning (sequential)
+# Phase 2: Backend, Frontend, Database parallel implementation (max 3 concurrent)
+# Phase 3: Comprehensive test generation (sequential)
+# Phase 4: Quality validation and integration testing (sequential)
+# High complexity, ~2-4 hour execution
+# Dynamic parallelism adjustment based on CPU/memory/token metrics

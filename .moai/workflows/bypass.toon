@@ -1,0 +1,173 @@
+# Karrot Play Integrity Bypass Workflow
+# Purpose: Bypass Karrot's Play Integrity API emulator detection
+# Duration: ~3-5 minutes
+# Requirements: Device with Magisk + Zygisk + PlayIntegrityFork installed
+
+name: karrot_bypass_workflow
+version: 1.0.0
+type: automation
+target_app: com.nexon.karrot
+target_api: Play Integrity API v1.4+
+created_at: 2025-12-02T02:00:00Z
+
+# Workflow stages
+stages:
+  pre_flight:
+    description: Verify device configuration and prerequisites
+    duration_seconds: 30
+    critical: true
+
+  magisk_verification:
+    description: Verify Magisk + Zygisk + PlayIntegrityFork modules are active
+    duration_seconds: 45
+    critical: true
+    retry_on_failure: true
+    max_retries: 3
+
+  app_launch:
+    description: Launch Karrot app with Play Integrity checks
+    duration_seconds: 30
+    critical: true
+
+  detection_monitor:
+    description: Monitor for Play Integrity errors (Error-18)
+    duration_seconds: 120
+    critical: false
+    alert_on_error: true
+
+  bypass_verification:
+    description: Verify app passes Play Integrity validation
+    duration_seconds: 60
+    critical: true
+
+# Detailed steps for each stage
+steps:
+  pre_flight:
+    - name: check_device_connection
+      type: adb_check
+      script: adb devices
+      expected_output: ".*offline|device"
+      timeout_seconds: 10
+
+    - name: verify_magisk_installed
+      type: shell_command
+      script: adb shell which magisk
+      expected_exit_code: 0
+      timeout_seconds: 5
+
+    - name: check_zygisk_enabled
+      type: shell_command
+      script: adb shell getprop ro.zygote zygote64_32
+      timeout_seconds: 5
+
+  magisk_verification:
+    - name: check_play_integrity_fork_module
+      type: shell_command
+      script: adb shell ls /data/adb/modules/ | grep -i playintegrity
+      expected_exit_code: 0
+      timeout_seconds: 5
+      recovery_on_failure: "install_play_integrity_fork"
+
+    - name: verify_module_active
+      type: shell_command
+      script: adb shell getprop ro.playintegrityfix.version
+      expected_pattern: "\\d+\\.\\d+\\.\\d+"
+      timeout_seconds: 5
+
+    - name: check_spoof_profile
+      type: shell_command
+      script: adb shell getprop ro.playintegrityfix.spoof_fingerprint
+      timeout_seconds: 5
+
+  app_launch:
+    - name: clear_app_cache
+      type: adb_command
+      script: "adb shell pm clear com.nexon.karrot"
+      timeout_seconds: 10
+      optional: true
+
+    - name: launch_karrot_app
+      type: ui_automation
+      action: launch_app
+      app_package: com.nexon.karrot
+      app_activity: ".MainActivity"
+      wait_for_launch: true
+      timeout_seconds: 30
+
+    - name: wait_app_ready
+      type: ui_wait
+      target_text: "로그인"
+      timeout_seconds: 30
+
+  detection_monitor:
+    - name: monitor_error_18
+      type: log_monitor
+      log_level: error
+      pattern: "Error-18|CLIENT_TRANSIENT_ERROR|emulator.*detected"
+      duration_seconds: 120
+      alert_threshold: 1
+
+    - name: verify_no_crash
+      type: app_monitor
+      monitor_crashes: true
+      timeout_seconds: 120
+
+  bypass_verification:
+    - name: attempt_play_service_call
+      type: app_probe
+      action: check_play_integrity
+      expected_result: "passed"
+      timeout_seconds: 30
+      retry_on_failure: true
+      max_retries: 2
+
+    - name: verify_app_stable
+      type: ui_check
+      expected_element: "홈"  # Home button
+      timeout_seconds: 30
+
+# Success criteria
+success_criteria:
+  - play_integrity_passes: true
+  - error_18_not_detected: true
+  - app_launched_successfully: true
+  - no_crashes: true
+  - home_screen_accessible: true
+
+# Failure handlers
+on_failure:
+  - action: collect_logs
+    target: /sdcard/karrot_bypass_debug.log
+
+  - action: take_screenshot
+    output: /sdcard/karrot_bypass_error.png
+
+  - action: alert
+    message: "Bypass verification failed. Check device logs."
+
+# Rollback steps (if needed)
+rollback:
+  - name: disable_play_integrity_fork
+    script: "adb shell magisk module disable PlayIntegrityFork"
+    optional: true
+
+  - name: clear_app_data
+    script: "adb shell pm clear com.nexon.karrot"
+    optional: true
+
+# Timing and retry configuration
+timing:
+  total_timeout_seconds: 300
+  inter_step_delay_seconds: 2
+
+retry_policy:
+  max_attempts: 3
+  exponential_backoff: true
+  backoff_multiplier: 1.5
+
+# Logging configuration
+logging:
+  level: info
+  output_file: karrot_bypass_workflow.log
+  include_timestamps: true
+  include_device_state: true

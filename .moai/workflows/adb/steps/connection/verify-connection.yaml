@@ -1,0 +1,79 @@
+id: adb-verify-connection
+name: Verify ADB Connection
+description: Check status and health of ADB connection to device
+category: connection
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = all devices)"
+    required: false
+  - name: detailed
+    type: boolean
+    default: true
+    description: "Include detailed device information in output"
+    required: false
+  - name: timeout
+    type: integer
+    default: 5
+    description: "Health check timeout in seconds"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/connection/verify_connection.py
+  args: ["--device", "{{ device }}", "--detailed", "{{ detailed }}", "--timeout", "{{ timeout }}"]
+  timeout_seconds: 20
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Connected"
+    - "device"
+  output_patterns:
+    - "^\d+\.\d+\.\d+\.\d+:\d+\s+device"
+    - "^[a-zA-Z0-9_]+\s+device"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 2
+  on_error:
+    - exit_code: 1
+      action: "No connected devices found"
+    - exit_code: 2
+      action: "Connection timeout, device may be offline"
+    - exit_code: 3
+      action: "ADB daemon not running"
+
+outputs:
+  - name: device_list
+    type: array
+    description: "List of connected devices with status"
+  - name: connection_status
+    type: string
+    description: "Overall connection status (connected/offline/unavailable)"
+  - name: device_count
+    type: integer
+    description: "Number of connected devices"
+  - name: device_details
+    type: object
+    description: "Detailed information about each device"
+    properties:
+      device_id:
+        type: string
+      model:
+        type: string
+      os_version:
+        type: string
+      battery_level:
+        type: integer
+      screen_state:
+        type: string
+
+validation:
+  - name: device_format
+    rule: "device must match IP:port, serial, or be empty"
+  - name: timeout_range
+    rule: "timeout must be between 1 and 30 seconds"

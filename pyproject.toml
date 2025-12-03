@@ -1,7 +1,8 @@
 [project]
-name = "workspace"
+name = "AdbAutoPlayer-MoAI-Workspace"
 version = "0.1.0"
-requires-python = ">=3.13.9"
+description = "Workspace containing AdbAutoPlayer project and moai-adk framework"
+requires-python = ">=3.11"
 dependencies = []
 
 [dependency-groups]
@@ -16,7 +17,7 @@ dev = [
 required-version = ">=0.9.11"
 
 [tool.uv.workspace]
-members = ["src-tauri"]
+members = ["moai-adk", "adbautoplayer"]
 
 [tool.uv.sources]
 adb-auto-player = { workspace = true }

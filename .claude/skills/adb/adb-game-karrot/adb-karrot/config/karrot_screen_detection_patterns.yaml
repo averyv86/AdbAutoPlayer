@@ -1,0 +1,756 @@
+# Karrot App Comprehensive Screen Detection Patterns
+# Version: 2.0.0
+# Package: com.towneers.www
+# Resolution: 1440x2560 (BlueStacks Air)
+# Last Updated: 2025-12-03
+
+# PROBLEM STATEMENT:
+# ================
+# 1. KrSignUpOrInActivity shows both neighborhood selection AND verification popup
+# 2. Screen detection returns "unknown" too often
+# 3. Need to differentiate screens that share the same activity
+#
+# SOLUTION:
+# Use BOTH activity name AND UI elements for accurate detection
+# Detection order: Activity -> UI Elements -> Fallback to Vision
+
+metadata:
+  version: 2.0.0
+  app_package: "com.towneers.www"
+  app_name: "Karrot"
+  author: "AdbAutoPlayer"
+  description: "Multi-layer screen detection with activity + UI element verification"
+  detection_method: "hybrid"
+  ui_element_source: "uiautomator"
+  fallback_method: "claude_vision"
+
+# ============================================================================
+# DETECTION LAYERS (from fastest to slowest)
+# ============================================================================
+detection_layers:
+  layer_1_activity:
+    name: "Activity Detection"
+    method: "dumpsys"
+    command: "dumpsys activity | grep 'mCurrentFocus'"
+    timeout_ms: 500
+    accuracy: 0.99
+    description: "Fast activity detection via dumpsys, differentiates between activities"
+    
+  layer_2_ui_elements:
+    name: "UI Element Detection"
+    method: "uiautomator"
+    command: "uiautomator dump /dev/stdout"
+    timeout_ms: 800
+    accuracy: 0.95
+    description: "Parse XML for specific UI elements (buttons, text fields, popups)"
+    
+  layer_3_text_ocr:
+    name: "Text/OCR Detection"
+    method: "tesseract_ocr"
+    timeout_ms: 1000
+    accuracy: 0.85
+    description: "Text detection from screenshot, slower but comprehensive"
+    
+  layer_4_vision_ai:
+    name: "Claude Vision AI"
+    method: "anthropic_vision"
+    timeout_ms: 2000
+    accuracy: 0.98
+    description: "Last resort: semantic understanding of screen content"
+
+# ============================================================================
+# SCREEN DETECTION PATTERNS
+# ============================================================================
+screens:
+  # =========================================================================
+  # WELCOME SCREEN - Initial onboarding
+  # =========================================================================
+  welcome:
+    id: "welcome"
+    description: "Initial welcome screen with Get Started button"
+    priority: 1
+    
+    # Layer 1: Activity Detection
+    activity:
+      pattern: "GuideActivity"
+      exact_match: true
+      
+    # Layer 2: UI Element Detection (Primary: check these first)
+    ui_elements:
+      # Button text: "Get started" or "시작하기"
+      get_started_button:
+        type: "button"
+        text_contains: ["Get started", "시작하기", "시작"]
+        xpath: "//android.widget.Button[contains(@text, 'started')]"
+        coordinates: {x: 720, y: 2350, variance: 10}
+        required: true
+        
+      # Title text area
+      title_text:
+        type: "text"
+        text_contains: ["Welcome", "Karrot", "환영", "당근"]
+        resource_id: "com.towneers.www:id/welcome_title"
+        coordinates: {x: 720, y: 800, width: 1040, height: 200}
+        required: true
+        
+      # Description text
+      description_text:
+        type: "text"
+        text_contains: ["neighborhood", "이웃", "동네"]
+        required: false
+        
+    # Layer 3: Text Detection (OCR regions)
+    ocr_regions:
+      - {name: "title_area", x: 200, y: 800, w: 1040, h: 200}
+      - {name: "button_area", x: 200, y: 2200, w: 1040, h: 200}
+      
+    # Layer 4: Vision AI Prompt
+    vision_prompt: |
+      Identify if this is the Karrot welcome screen.
+      Look for: 1) Orange "Get Started" button, 2) Welcome title, 3) Karrot branding
+      Return JSON: {"is_welcome": true/false, "elements": ["button", "title", ...]}
+      
+    # Expected next states
+    next_states:
+      - state: "neighborhood_search"
+        action: "tap_get_started_button"
+      - state: "login_phone"
+        action: "tap_login_link"
+        
+    timeout_sec: 30
+    recovery:
+      action: "none"
+
+  # =========================================================================
+  # NEIGHBORHOOD SEARCH SCREEN
+  # =========================================================================
+  neighborhood_search:
+    id: "neighborhood_search"
+    description: "Search for neighborhood location screen"
+    priority: 2
+    
+    # Layer 1: Activity Detection
+    activity:
+      pattern: "KrSignUpOrInActivity"
+      exact_match: true
+      
+    # Layer 2: UI Element Detection
+    ui_elements:
+      # Search input field (differentiator from verification)
+      search_input:
+        type: "text_input"
+        resource_id: "com.towneers.www:id/search_neighborhood"
+        hint: ["neighborhood", "동네"]
+        coordinates: {x: 720, y: 150, variance: 5}
+        required: true
+        
+      # Search/Find button
+      search_button:
+        type: "button"
+        text_contains: ["Search", "Find", "검색", "찾기"]
+        resource_id: "com.towneers.www:id/search_button"
+        coordinates: {x: 720, y: 200, variance: 5}
+        required: false
+        
+      # NO verification input (differentiator)
+      verification_code_absent:
+        type: "element_absent"
+        xpath: "//android.widget.EditText[contains(@hint, 'verification') or contains(@hint, '인증')]"
+        required: true
+        
+      # NO "Verify now" button visible (differentiator)
+      verify_button_absent:
+        type: "element_absent"
+        text_contains: ["Verify", "인증", "확인"]
+        xpath: "//android.widget.Button[contains(@text, 'Verify')]"
+        required: true
+        
+      # Back button (optional)
+      back_button:
+        type: "button"
+        resource_id: "com.towneers.www:id/back"
+        coordinates: {x: 64, y: 104, variance: 3}
+        required: false
+        
+    # Layer 3: Text Detection
+    ocr_regions:
+      - {name: "search_area", x: 100, y: 0, w: 1240, h: 300}
+      
+    # Layer 4: Vision AI Prompt
+    vision_prompt: |
+      Is this the neighborhood search screen in Karrot signup?
+      Look for: 1) Search input field, 2) NO verification code input, 3) Text like "Search neighborhood"
+      Return JSON: {"is_neighborhood_search": true/false, "has_search_field": bool, "has_verification": bool}
+      
+    next_states:
+      - state: "neighborhood_results"
+        action: "search_or_find_nearby"
+      - state: "welcome"
+        action: "tap_back"
+        
+    timeout_sec: 20
+    recovery:
+      action: "screenshot_and_analyze"
+
+  # =========================================================================
+  # VERIFICATION CODE SCREEN (CRITICAL DIFFERENTIATOR)
+  # =========================================================================
+  verification_code:
+    id: "verification_code"
+    description: "SMS verification code input screen (NOT neighborhood search)"
+    priority: 2
+    
+    # Layer 1: Activity Detection
+    activity:
+      pattern: "KrSignUpOrInActivity"
+      exact_match: true
+      note: "Same activity as neighborhood_search - MUST use Layer 2 UI elements to differentiate"
+      
+    # Layer 2: UI Element Detection (CRITICAL)
+    ui_elements:
+      # Verification code input field (differentiator #1)
+      verification_code_input:
+        type: "text_input"
+        hint: ["verification", "code", "인증", "코드", "번호"]
+        resource_id: "com.towneers.www:id/verification_code_input"
+        coordinates: {x: 720, y: 400, variance: 5}
+        required: true
+        
+      # "Verify now" or "Confirm" button (differentiator #2)
+      verify_button:
+        type: "button"
+        text_contains: ["Verify", "Confirm", "인증", "확인", "완료"]
+        resource_id: "com.towneers.www:id/verify_button"
+        coordinates: {x: 720, y: 2400, variance: 10}
+        required: true
+        
+      # Resend code link/button (differentiator #3)
+      resend_button:
+        type: "button"
+        text_contains: ["Resend", "Re-send", "다시"]
+        resource_id: "com.towneers.www:id/resend_button"
+        required: false
+        
+      # NO search input field (differentiator)
+      search_input_absent:
+        type: "element_absent"
+        xpath: "//android.widget.EditText[contains(@hint, 'search') or contains(@hint, '검색')]"
+        required: true
+        
+      # Timer text "Resend in XX seconds" (optional)
+      timer_text:
+        type: "text"
+        text_pattern: "Resend in [0-9]+ seconds"
+        required: false
+        
+    # Layer 3: Text Detection
+    ocr_regions:
+      - {name: "verification_label", x: 100, y: 150, w: 1240, h: 200}
+      - {name: "code_input_area", x: 200, y: 350, w: 1040, h: 150}
+      
+    # Layer 4: Vision AI Prompt
+    vision_prompt: |
+      Is this the SMS verification code input screen?
+      Look for: 1) Verification code input field, 2) "Verify now" button, 3) "Resend code" option
+      Exclude: Search input field (that's neighborhood search)
+      Return JSON: {"is_verification": true/false, "has_code_input": bool, "has_verify_button": bool, "has_search": bool}
+      
+    next_states:
+      - state: "home"
+        action: "enter_code_and_verify"
+      - state: "login_phone"
+        action: "tap_back_or_restart"
+        
+    timeout_sec: 120
+    recovery:
+      action: "resend_code_and_retry"
+
+  # =========================================================================
+  # PHONE NUMBER INPUT SCREEN
+  # =========================================================================
+  login_phone:
+    id: "login_phone"
+    description: "Phone number input for login/signup"
+    priority: 3
+    
+    # Layer 1: Activity Detection
+    activity:
+      pattern: "KrSignUpOrInActivity"
+      exact_match: true
+      
+    # Layer 2: UI Element Detection
+    ui_elements:
+      # Phone input field
+      phone_input:
+        type: "text_input"
+        hint: ["phone", "number", "전화", "번호"]
+        resource_id: "com.towneers.www:id/phone_input"
+        coordinates: {x: 410, y: 254, variance: 5}
+        required: true
+        
+      # Country code selector (e.g., "+82")
+      country_code:
+        type: "spinner"
+        text_contains: ["+82", "Korea", "+"]
+        resource_id: "com.towneers.www:id/country_code"
+        required: false
+        
+      # Confirm/Next button
+      confirm_button:
+        type: "button"
+        text_contains: ["Confirm", "Next", "Continue", "확인", "다음"]
+        resource_id: "com.towneers.www:id/confirm_button"
+        coordinates: {x: 720, y: 2520, variance: 10}
+        required: true
+        
+      # NO verification code input (differentiator from verification screen)
+      verification_absent:
+        type: "element_absent"
+        xpath: "//android.widget.EditText[contains(@hint, 'verification')]"
+        required: true
+        
+    # Layer 3: Text Detection
+    ocr_regions:
+      - {name: "form_area", x: 100, y: 150, w: 1240, h: 400}
+      
+    # Layer 4: Vision AI
+    vision_prompt: |
+      Is this the phone number login screen?
+      Look for: 1) Phone input field, 2) Country code selector, 3) Confirm button
+      Return JSON: {"is_phone_login": true/false, "has_phone_input": bool}
+      
+    next_states:
+      - state: "verification_code"
+        action: "enter_phone_and_confirm"
+      - state: "neighborhood_search"
+        action: "tap_back"
+        
+    timeout_sec: 30
+
+  # =========================================================================
+  # HOME SCREEN - Successfully logged in
+  # =========================================================================
+  home:
+    id: "home"
+    description: "Main home screen after successful login"
+    priority: 4
+    
+    # Layer 1: Activity Detection
+    activity:
+      pattern_any:
+        - "MainActivity"
+        - "HomeActivity"
+        - "LauncherActivity"  # Launcher activity when app is home
+      exact_match: false
+      
+    # Layer 2: UI Element Detection
+    ui_elements:
+      # Bottom navigation or tabs
+      bottom_nav:
+        type: "layout"
+        resource_id: "com.towneers.www:id/bottom_navigation"
+        required: false
+        
+      # Home/Feed section
+      feed_list:
+        type: "recycler_view"
+        resource_id: "com.towneers.www:id/feed_list"
+        required: false
+        
+      # Primary action buttons
+      sell_button:
+        type: "button"
+        text_contains: ["Sell", "판매"]
+        coordinates: {x: 720, y: 2400, variance: 20}
+        required: false
+        
+      # Tab buttons
+      home_tab:
+        type: "button"
+        text_contains: ["Home", "홈"]
+        required: false
+        
+      profile_tab:
+        type: "button"
+        text_contains: ["Profile", "프로필"]
+        coordinates: {x: 1350, y: 2480, variance: 20}
+        required: false
+        
+    # Layer 3: Text Detection
+    ocr_regions:
+      - {name: "feed_area", x: 100, y: 200, w: 1240, h: 2100}
+      
+    # Layer 4: Vision AI
+    vision_prompt: |
+      Is this the Karrot home/main screen (user is logged in)?
+      Look for: 1) Feed of listings, 2) Bottom navigation tabs, 3) Action buttons like "Sell"
+      Return JSON: {"is_home": true/false, "has_feed": bool, "is_logged_in": bool}
+      
+    is_goal: true
+    timeout_sec: 30
+
+  # =========================================================================
+  # PLAY STORE REDIRECT (Error state)
+  # =========================================================================
+  play_store:
+    id: "play_store"
+    description: "Accidentally launched Play Store"
+    priority: 100
+    
+    # Layer 1: Activity Detection
+    activity:
+      package: "com.android.vending"
+      exact_match: true
+      
+    # Layer 2: UI Element Detection
+    ui_elements:
+      google_play_header:
+        type: "text"
+        text_contains: ["Google Play"]
+        required: true
+        
+    recovery:
+      action: "press_back"
+      max_attempts: 1
+      
+    is_error: true
+    next_states:
+      - state: "welcome"
+      - state: "home"
+
+  # =========================================================================
+  # CRASHED/MISSING STATE
+  # =========================================================================
+  crashed:
+    id: "crashed"
+    description: "App crashed or closed unexpectedly"
+    priority: 101
+    
+    # Layer 1: Activity Detection (package not running)
+    activity:
+      package_absent: "com.towneers.www"
+      or_package_is_any:
+        - "com.android.systemui"
+        - "com.uncube.launcher"
+        
+    recovery:
+      action: "relaunch"
+      max_attempts: 3
+      backoff_sec: 2.0
+      
+    is_error: true
+    next_states:
+      - state: "welcome"
+
+  # =========================================================================
+  # UNKNOWN STATE (Fallback)
+  # =========================================================================
+  unknown:
+    id: "unknown"
+    description: "Unrecognized screen state"
+    priority: 999
+    
+    # No specific checks - this is the fallback
+    recovery:
+      action: "screenshot_and_ai_analyze"
+      
+    next_states:
+      - state: "welcome"
+
+# ============================================================================
+# DETECTION RULES (Logic for determining current screen)
+# ============================================================================
+detection_rules:
+  # Rule 1: KrSignUpOrInActivity could be multiple screens
+  krsignupoin_disambiguation:
+    activity: "KrSignUpOrInActivity"
+    rule_order:
+      - check: "element_present"
+        element: "verification_code_input"
+        confidence: 0.9
+        result: "verification_code"
+        
+      - check: "element_present"
+        element: "phone_input"
+        element_absent: "verification_code_input"
+        confidence: 0.85
+        result: "login_phone"
+        
+      - check: "element_present"
+        element: "search_input"
+        element_absent: "verification_code_input"
+        element_absent: "phone_input"
+        confidence: 0.8
+        result: "neighborhood_search"
+        
+      - check: "fallback"
+        method: "ai_vision"
+        confidence_threshold: 0.85
+        result: "determined_by_ai"
+        
+      - check: "final_fallback"
+        result: "unknown"
+
+  # Rule 2: MainActivity could be home or splash
+  mainactivity_disambiguation:
+    activity: "MainActivity"
+    rule_order:
+      - check: "element_present"
+        element: "feed_list"
+        confidence: 0.95
+        result: "home"
+        
+      - check: "element_absent"
+        elements: ["feed_list", "bottom_nav"]
+        timeout: 5
+        result: "loading"
+        
+      - check: "fallback"
+        method: "ai_vision"
+        result: "determined_by_ai"
+
+# ============================================================================
+# DETECTION ALGORITHM (Decision Tree)
+# ============================================================================
+algorithm:
+  name: "Multi-Layer Hybrid Detection"
+  description: "Progressive fallback through detection layers"
+  
+  steps:
+    1_get_activity:
+      command: "dumpsys activity | grep 'mCurrentFocus'"
+      timeout: 500
+      store_as: "current_activity"
+      on_timeout: "goto_step_2"
+      
+    2_capture_ui:
+      command: "uiautomator dump /dev/stdout"
+      timeout: 800
+      store_as: "ui_hierarchy"
+      on_timeout: "goto_step_3"
+      
+    3_match_activity_pattern:
+      input: "current_activity"
+      for_each_screen_config:
+        - check_activity_pattern
+        - if_match: "goto_step_4"
+        - if_no_match: "goto_step_5"
+        
+    4_verify_ui_elements:
+      input: "ui_hierarchy"
+      required_elements: "check_required_ui_elements"
+      optional_elements: "boost_confidence"
+      absent_elements: "eliminate_similar_screens"
+      result: "confidence_score"
+      
+      if_confidence >= 0.90:
+        action: "return_screen_with_confidence"
+      elif_confidence >= 0.70:
+        action: "goto_step_6_ocr"
+      else:
+        action: "goto_step_7_ai_vision"
+        
+    5_activity_not_found:
+      # Activity pattern didn't match any screen
+      action: "goto_step_7_ai_vision"
+      
+    6_ocr_fallback:
+      command: "screenshot + tesseract ocr"
+      regions: "ocr_regions_from_matched_screen"
+      timeout: 1000
+      on_success: "return_screen"
+      on_timeout: "goto_step_7_ai_vision"
+      
+    7_ai_vision_fallback:
+      method: "claude_vision_api"
+      screenshot: "current_screenshot"
+      prompt: "vision_prompt_from_screen_config"
+      timeout: 2000
+      on_success: "return_ai_detected_screen"
+      on_failure: "return_unknown"
+
+# ============================================================================
+# DETECTION MATRIX (Reference for coverage)
+# ============================================================================
+detection_matrix:
+  headers:
+    - activity
+    - screen
+    - layer1_accuracy
+    - layer2_accuracy
+    - layer2_differentiator
+    
+  rows:
+    - ["GuideActivity", "welcome", 0.99, 0.95, "Get Started button"]
+    - ["KrSignUpOrInActivity", "neighborhood_search", 0.99, 0.95, "Search input (absent verification)"]
+    - ["KrSignUpOrInActivity", "login_phone", 0.99, 0.95, "Phone input (absent verification)"]
+    - ["KrSignUpOrInActivity", "verification_code", 0.99, 0.95, "Verification code input + Verify button"]
+    - ["MainActivity", "home", 0.99, 0.95, "Feed list + Bottom nav"]
+    - ["com.android.vending", "play_store", 0.99, 0.99, "Google Play header"]
+
+# ============================================================================
+# IMPLEMENTATION GUIDE
+# ============================================================================
+implementation_guide:
+  step_1_extract_activity:
+    command: "adb shell dumpsys activity | grep 'mCurrentFocus'"
+    parse_pattern: ".*{([a-zA-Z0-9._]+)/([a-zA-Z0-9._]+).*"
+    extract:
+      package: "group_1"
+      activity: "group_2"
+    python_example: |
+      import subprocess
+      import re
+      result = subprocess.run(
+          "adb shell dumpsys activity | grep mCurrentFocus",
+          shell=True, capture_output=True, text=True
+      )
+      match = re.search(r'{([^/]+)/([^ }]+)', result.stdout)
+      if match:
+          package, activity = match.groups()
+      
+  step_2_dump_ui:
+    command: "adb shell uiautomator dump /dev/stdout"
+    parse_method: "xml.etree.ElementTree"
+    extract:
+      text_elements: "find all android.widget.TextView"
+      buttons: "find all android.widget.Button"
+      inputs: "find all android.widget.EditText"
+      popups: "find all android.app.Dialog"
+    python_example: |
+      import xml.etree.ElementTree as ET
+      result = subprocess.run(
+          "adb shell uiautomator dump /dev/stdout",
+          shell=True, capture_output=True, text=True
+      )
+      root = ET.fromstring(result.stdout)
+      buttons = root.findall('.//android.widget.Button')
+      for btn in buttons:
+          text = btn.get('text', '')
+          if 'Verify' in text or 'verification' in text:
+              return 'verification_screen'
+      
+  step_3_check_ui_elements:
+    description: "For each matched screen, verify required UI elements"
+    pseudo_code: |
+      function detect_screen(activity, ui_hierarchy):
+          if activity == "KrSignUpOrInActivity":
+              if has_element(ui_hierarchy, "verification_code_input"):
+                  return "verification_code"
+              elif has_element(ui_hierarchy, "phone_input"):
+                  return "login_phone"
+              elif has_element(ui_hierarchy, "search_input"):
+                  return "neighborhood_search"
+              else:
+                  # Fallback to AI vision
+                  return ai_vision_detect(screenshot)
+          
+          elif activity in ["MainActivity", "HomeActivity"]:
+              if has_element(ui_hierarchy, "feed_list"):
+                  return "home"
+              else:
+                  # Could be loading, wait 5 sec and recheck
+                  return "loading"
+                  
+          else:
+              # Fallback to AI vision
+              return ai_vision_detect(screenshot)
+      
+  step_4_ai_vision_fallback:
+    description: "When uncertain, use Claude Vision API"
+    python_library: "anthropic>=0.39.0"
+    example: |
+      from anthropic import Anthropic
+      
+      client = Anthropic()
+      with open("screenshot.png", "rb") as f:
+          image_data = base64.standard_b64encode(f.read()).decode("utf-8")
+      
+      message = client.messages.create(
+          model="claude-3-5-sonnet-20241022",
+          max_tokens=1024,
+          messages=[
+              {
+                  "role": "user",
+                  "content": [
+                      {
+                          "type": "image",
+                          "source": {
+                              "type": "base64",
+                              "media_type": "image/png",
+                              "data": image_data,
+                          },
+                      },
+                      {
+                          "type": "text",
+                          "text": vision_prompt
+                      }
+                  ],
+              }
+          ],
+      )
+
+# ============================================================================
+# CONFIGURATION FOR UIAUTOMATOR ELEMENT MATCHING
+# ============================================================================
+ui_matching_config:
+  strategies:
+    # Strategy 1: By text content
+    text_contains:
+      xpath_format: "//*[contains(@text, '{text}')]"
+      case_sensitive: false
+      partial_match: true
+      
+    # Strategy 2: By resource ID
+    resource_id:
+      xpath_format: "//*[@resource-id='{resource_id}']"
+      case_sensitive: true
+      
+    # Strategy 3: By hint (for EditText)
+    hint_contains:
+      xpath_format: "//android.widget.EditText[contains(@hint, '{hint}')]"
+      case_sensitive: false
+      
+    # Strategy 4: By class type
+    by_class:
+      xpath_format: "//android.widget.{class}"
+      supported_classes: ["Button", "EditText", "TextView", "ImageView"]
+      
+    # Strategy 5: By content description
+    content_description:
+      xpath_format: "//*[contains(@content-desc, '{description}')]"
+      
+  confidence_boost_factors:
+    required_element_found: 0.3
+    optional_element_found: 0.1
+    element_absent: 0.2
+    text_exact_match: 0.15
+    element_position_correct: 0.1
+
+# ============================================================================
+# TIMEOUT AND RETRY STRATEGY
+# ============================================================================
+timeout_strategy:
+  layer1_timeout: 500  # Activity detection must be fast
+  layer2_timeout: 800  # UI dump can take longer
+  layer3_timeout: 1000  # OCR is slower
+  layer4_timeout: 2000  # AI vision is slowest
+  
+  total_timeout: 30000  # 30 second global timeout
+  
+  retry_backoff:
+    initial_delay_ms: 500
+    factor: 1.5
+    max_delay_ms: 5000
+    max_attempts: 10
+    
+  exponential_backoff_example:
+    attempt_1: 500
+    attempt_2: 750
+    attempt_3: 1125
+    attempt_4: 1687
+    attempt_5: 2531
+    attempt_6: 3796
+    attempt_7: 5000
+    attempt_8: 5000
+

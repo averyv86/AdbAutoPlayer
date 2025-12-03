@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-11-30T21:23:16.370466",
+  "windowserver_info": {
+    "pid": 404,
+    "memory_gb": 0.16,
+    "memory_percent": 0.3,
+    "cpu_percent": 41.3,
+    "process_name": "WindowServer"
+  },
+  "severity": "normal",
+  "display_configuration": {
+    "display_count": 3,
+    "displays": [
+      {
+        "display_number": 1,
+        "resolution": "3840 x 2160 @ 60.00Hz",
+        "pixel_depth": "Unknown",
+        "is_main": false
+      },
+      {
+        "display_number": 2,
+        "resolution": "2048 x 1330 @ 120.00Hz",
+        "pixel_depth": "Unknown",
+        "is_main": false
+      },
+      {
+        "display_number": 3,
+        "resolution": "3840 x 2160 @ 60.00Hz",
+        "pixel_depth": "Unknown",
+        "is_main": false
+      }
+    ],
+    "configuration": "multiple",
+    "high_resolution": false
+  },
+  "thresholds": {
+    "normal_gb": 1.5,
+    "warning_gb": 2.5,
+    "critical_gb": 4.0
+  },
+  "optimization_analysis": {
+    "current_memory_gb": 0.16,
+    "target_memory_gb": 1.5,
+    "potential_savings_gb": 0,
+    "reduction_percent": 0.0
+  },
+  "recommendations": [
+    {
+      "priority": "low",
+      "action": "no_action_needed",
+      "description": "WindowServer memory usage is normal",
+      "current_memory_gb": 0.16,
+      "target_memory_gb": 1.5
+    }
+  ]
+}

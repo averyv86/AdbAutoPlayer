@@ -1,0 +1,254 @@
+name: Karrot Error Recovery Workflow
+version: 1.0.0
+description: Error recovery workflow with detection patterns, recovery actions, and retry logic
+
+parameters:
+  max_global_retries: 5
+  exponential_backoff:
+    enabled: true
+    base_ms: 1000
+    max_ms: 30000
+    multiplier: 2
+  state_verification:
+    enabled: true
+    timeout_ms: 10000
+
+phases:
+  - id: error_detection
+    name: Error Detection Setup
+    steps:
+      - action: set-monitor
+        type: screen_freeze
+        threshold_ms: 15000
+        description: Detect frozen screen after 15 seconds of no change
+      - action: set-monitor
+        type: app_crash
+        package: com.karrot.alpha
+        description: Monitor for app crashes via activity manager
+      - action: set-monitor
+        type: anr
+        package: com.karrot.alpha
+        description: Monitor for Application Not Responding
+
+  - id: pattern_detection
+    name: Error Pattern Detection
+    steps:
+      - action: register-pattern
+        id: dialog_popup
+        type: template_match
+        templates:
+          - error_dialog
+          - confirmation_dialog
+          - alert_dialog
+          - permission_dialog
+        priority: high
+      - action: register-pattern
+        id: network_error
+        type: template_match
+        templates:
+          - network_error_screen
+          - connection_failed
+          - retry_button
+        priority: medium
+      - action: register-pattern
+        id: session_expired
+        type: template_match
+        templates:
+          - login_required
+          - session_timeout
+        priority: critical
+
+recovery:
+  on_error: structured_recovery
+  max_attempts: 3
+
+  error_handlers:
+    - id: app_crash_handler
+      condition: app_crashed
+      priority: 1
+      actions:
+        - action: log-event
+          level: error
+          message: "App crash detected"
+        - action: delay
+          fixed_ms: 2000
+        - action: adb-force-stop
+          package: com.karrot.alpha
+        - action: delay
+          fixed_ms: 1000
+        - action: adb-start-app
+          package: com.karrot.alpha
+        - action: delay
+          fixed_ms: 5000
+        - action: verify-state
+          expected: app_running
+          timeout_ms: 10000
+      retry:
+        max_attempts: 3
+        backoff:
+          type: exponential
+          base_ms: 2000
+          multiplier: 2
+          max_ms: 16000
+
+    - id: dialog_popup_handler
+      condition: dialog_popup
+      priority: 2
+      actions:
+        - action: log-event
+          level: warning
+          message: "Dialog popup detected"
+        - action: find-and-tap
+          templates:
+            - dialog_dismiss
+            - dialog_ok
+            - dialog_cancel
+            - dialog_close
+          fallback: tap_outside
+        - action: delay
+          min_ms: 500
+          max_ms: 1000
+        - action: verify-state
+          expected: dialog_dismissed
+          timeout_ms: 3000
+      retry:
+        max_attempts: 3
+        backoff:
+          type: linear
+          delay_ms: 1000
+
+    - id: network_error_handler
+      condition: network_error
+      priority: 3
+      actions:
+        - action: log-event
+          level: warning
+          message: "Network error detected"
+        - action: check-connectivity
+          type: wifi
+        - action: delay
+          fixed_ms: 5000
+        - action: find-and-tap
+          templates:
+            - retry_button
+            - refresh_button
+          optional: true
+        - action: delay
+          min_ms: 2000
+          max_ms: 4000
+        - action: verify-state
+          expected: network_restored
+          timeout_ms: 15000
+      retry:
+        max_attempts: 5
+        backoff:
+          type: exponential
+          base_ms: 3000
+          multiplier: 2
+          max_ms: 30000
+
+    - id: freeze_handler
+      condition: screen_freeze
+      priority: 4
+      actions:
+        - action: log-event
+          level: warning
+          message: "Screen freeze detected"
+        - action: tap
+          x: 720
+          y: 1280
+          description: Tap center of screen to wake
+        - action: delay
+          fixed_ms: 2000
+        - action: swipe
+          start_x: 720
+          start_y: 2000
+          end_x: 720
+          end_y: 500
+          duration_ms: 500
+          description: Swipe up to trigger refresh
+        - action: delay
+          fixed_ms: 3000
+        - action: verify-state
+          expected: screen_responsive
+          timeout_ms: 5000
+      retry:
+        max_attempts: 2
+        on_max_attempts:
+          action: force_restart_app
+
+    - id: session_expired_handler
+      condition: session_expired
+      priority: 0
+      actions:
+        - action: log-event
+          level: error
+          message: "Session expired - re-authentication required"
+        - action: trigger-workflow
+          workflow: karrot-login.toon
+          pass_params: true
+      retry:
+        max_attempts: 1
+        on_failure: abort_with_notification
+
+  state_verification:
+    enabled: true
+    after_recovery: true
+    checks:
+      - type: app_running
+        package: com.karrot.alpha
+        method: activity_manager
+      - type: screen_responsive
+        method: screenshot_diff
+        threshold: 0.95
+      - type: expected_screen
+        method: template_match
+        timeout_ms: 5000
+
+  fallback:
+    on_all_handlers_failed:
+      action: abort_session
+      log_level: critical
+      notification: true
+      save_state: true
+      screenshot: true
+
+monitoring:
+  logcat:
+    keywords:
+      - Exception
+      - Error
+      - FATAL
+      - ANR
+      - crash
+      - OutOfMemory
+      - SecurityException
+    on_detect: log_and_continue
+
+  metrics:
+    enabled: true
+    track:
+      - error_count
+      - recovery_success_rate
+      - average_recovery_time_ms
+      - handler_invocations
+    export_path: ./logs/recovery_metrics.json
+
+ui_coordinates:
+  resolution: 1440x2560
+  elements:
+    dialog_ok:
+      x: 720
+      y: 1400
+    dialog_cancel:
+      x: 400
+      y: 1400
+    dialog_close:
+      x: 1100
+      y: 800
+    retry_button:
+      x: 720
+      y: 1600
+    login_back:
+      x: 40
+      y: 56

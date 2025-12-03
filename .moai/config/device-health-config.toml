@@ -1,0 +1,477 @@
+# Phase 9b Workstream B: Device Health Monitoring Configuration
+# Location: .moai/config/device-health-config.toml
+# Purpose: Centralized configuration for device health checks and recovery strategies
+# Last Updated: 2025-12-02
+# Format: TOML (Token-Optimized Object Notation)
+
+[metadata]
+name = "Device Health Monitoring Configuration"
+version = "1.0.0"
+phase = "9b"
+workstream = "B"
+created_date = "2025-12-02"
+description = "Configuration for health checks, connection management, recovery strategies, and multi-device orchestration"
+
+# =============================================================================
+# SECTION 1: Health Check Intervals
+# =============================================================================
+
+[health_check]
+# Health check monitoring intervals for device connectivity and performance
+enabled = true
+description = "Periodic health checks to monitor device status"
+
+# Minimum check interval (seconds)
+# Controls how frequently health checks run
+# Lower values (5-10): More responsive to failures, higher CPU usage
+# Higher values (30-60): Less frequent checks, lower CPU overhead
+min_interval_seconds = 5
+
+# Default check interval (seconds)
+# Used when device is operating normally
+default_interval_seconds = 15
+
+# Maximum check interval (seconds)
+# When device is in stable state, checks can be less frequent
+max_interval_seconds = 60
+
+# Health check timeout (seconds)
+# Maximum time to wait for a health check result
+check_timeout_seconds = 10
+
+# Number of consecutive successful checks before increasing interval
+consecutive_success_threshold = 3
+
+# Number of consecutive failures before increasing check frequency
+consecutive_failure_threshold = 2
+
+# =============================================================================
+# SECTION 2: Connection Thresholds
+# =============================================================================
+
+[connection]
+# Connection reliability thresholds
+description = "Connection management and timeout settings"
+
+# Connection timeout in seconds
+# Time to wait for ADB connection establishment
+timeout_seconds = 15
+
+# Reconnection timeout in seconds
+# Time to wait when attempting to reconnect
+reconnect_timeout_seconds = 20
+
+# Maximum number of connection retries
+# After this many retries, escalate to recovery strategies
+max_connection_retries = 5
+
+# Backoff multiplier for connection retries
+# Delay = base_delay * (backoff_multiplier ^ retry_count)
+connection_backoff_multiplier = 1.5
+
+# Initial backoff delay (seconds)
+connection_backoff_base_seconds = 1.0
+
+# Port validity check (validate ADB port is accessible)
+port_validity_check = true
+
+# ADB daemon responsiveness threshold
+# Time limit for shell commands to respond
+adb_shell_timeout_seconds = 8
+
+# =============================================================================
+# SECTION 3: Recovery Settings - Retry and Fallback Strategies
+# =============================================================================
+
+[recovery]
+# Recovery strategy configuration for device failures
+description = "Multi-tier recovery strategies with exponential backoff"
+
+# Maximum recovery attempts per strategy
+# If max_attempts reached, move to next strategy
+max_recovery_attempts = 5
+
+# Recovery timeout per strategy (seconds)
+# Time allocated for each recovery strategy to succeed
+strategy_timeout_seconds = 30
+
+# Overall recovery timeout (seconds)
+# Total time allowed for entire recovery process
+overall_timeout_seconds = 120
+
+# =============================================================================
+# SECTION 3.1: Recovery Strategy 1 - Reconnect
+# =============================================================================
+
+[recovery.reconnect]
+# Attempt to reconnect to the device
+enabled = true
+order = 1
+priority = "high"
+description = "Simple reconnection without device restart"
+
+# Timeout for reconnection attempt
+timeout_seconds = 20
+
+# Exponential backoff configuration
+backoff_base_seconds = 2.0
+backoff_multiplier = 1.5
+max_backoff_seconds = 30.0
+
+# Enable jitter to avoid thundering herd
+jitter_enabled = true
+jitter_factor = 0.1
+
+# Success criteria: Device responds to shell command
+success_criteria = "shell_responsive"
+
+# =============================================================================
+# SECTION 3.2: Recovery Strategy 2 - Restart ADB
+# =============================================================================
+
+[recovery.restart_adb]
+# Restart the ADB daemon on the device
+enabled = true
+order = 2
+priority = "high"
+description = "Restart ADB daemon without full device restart"
+
+# Timeout for ADB restart
+timeout_seconds = 25
+
+# Commands to execute for ADB restart
+# Platform-specific restart sequences
+restart_commands = [
+    "adb kill-server",
+    "adb start-server",
+    "adb devices"
+]
+
+# Wait time after killing ADB daemon
+wait_after_kill_seconds = 2
+
+# Wait time after starting ADB daemon
+wait_after_start_seconds = 3
+
+# Success criteria
+success_criteria = "device_listed"
+
+# =============================================================================
+# SECTION 3.3: Recovery Strategy 3 - Device Restart
+# =============================================================================
+
+[recovery.device_restart]
+# Full device restart (reboot)
+enabled = true
+order = 3
+priority = "medium"
+description = "Full device reboot recovery"
+
+# Timeout for device restart
+timeout_seconds = 60
+
+# Reboot command
+reboot_command = "adb reboot"
+
+# Wait time for device to go offline
+wait_offline_seconds = 5
+
+# Wait time for device to come back online
+wait_online_seconds = 30
+
+# Maximum total reboot time
+max_reboot_time_seconds = 120
+
+# Success criteria
+success_criteria = "device_online"
+
+# =============================================================================
+# SECTION 3.4: Recovery Strategy 4 - Force Stop Game
+# =============================================================================
+
+[recovery.force_stop_game]
+# Force stop the game application
+enabled = true
+order = 4
+priority = "medium"
+description = "Force stop game app to clear stuck state"
+
+# Timeout for force stop
+timeout_seconds = 15
+
+# Game package names to force stop
+game_packages = [
+    "com.lilith.emulator",
+    "com.lilith.emulator.ak",
+    "com.afk.journey"
+]
+
+# Wait time after force stop
+wait_after_stop_seconds = 3
+
+# Restart game after stop
+restart_game = true
+wait_before_restart_seconds = 2
+
+# Success criteria
+success_criteria = "app_stopped"
+
+# =============================================================================
+# SECTION 3.5: Recovery Strategy 5 - Fallback to Backup Device
+# =============================================================================
+
+[recovery.fallback_device]
+# Switch to backup/fallback device
+enabled = true
+order = 5
+priority = "low"
+description = "Switch to backup device if primary fails"
+
+# Timeout for fallback setup
+timeout_seconds = 15
+
+# Whether to maintain session state during fallback
+preserve_session_state = true
+
+# Success criteria
+success_criteria = "backup_device_ready"
+
+# =============================================================================
+# SECTION 4: Performance Metric Thresholds
+# =============================================================================
+
+[performance_metrics]
+# Performance thresholds that trigger alerts/recovery
+description = "Device performance monitoring thresholds"
+
+# CPU usage threshold (percentage)
+# Alert when CPU > this value
+cpu_threshold_percent = 90.0
+
+# Memory usage threshold (percentage)
+# Alert when memory > this value
+memory_threshold_percent = 85.0
+
+# Temperature threshold (Celsius)
+# Alert when device temperature > this value
+temperature_threshold_celsius = 50.0
+
+# Thermal throttling detection
+# If device reports thermal throttling, reduce processing load
+thermal_throttling_check = true
+
+# Battery level threshold (percentage)
+# Alert when battery < this value
+battery_threshold_percent = 10.0
+
+# Battery drain rate threshold (percent per hour)
+# Alert if draining faster than expected
+battery_drain_rate_percent_per_hour = 15.0
+
+# Screen on/off detection
+# Monitor whether screen is on (affects power usage)
+screen_state_detection = true
+
+# Storage threshold (percentage)
+# Alert when storage usage > this value
+storage_threshold_percent = 90.0
+
+# =============================================================================
+# SECTION 5: Multi-Device Orchestration
+# =============================================================================
+
+[multi_device]
+# Multi-device management settings
+description = "Orchestration of multiple connected devices"
+
+# Maximum number of devices to manage simultaneously
+max_devices = 4
+
+# Load balancing strategy: "round_robin", "least_busy", "performance_aware"
+load_balancing_strategy = "least_busy"
+
+# Priority queue: Prioritize certain devices
+device_priority_enabled = false
+
+# Device priority list (device_id -> priority level 1-10)
+[multi_device.priority_map]
+# Example:
+# "emulator-5554" = 10
+# "device-192-168-1-10" = 5
+
+# Synchronization mode for multi-device operations
+# "independent": Each device operates independently
+# "synchronized": Devices wait for each other
+# "staged": Devices process in stages
+sync_mode = "independent"
+
+# Whether to share preprocessing cache across devices
+share_cache = true
+
+# Whether to share health check results across devices
+share_health_status = false
+
+# =============================================================================
+# SECTION 6: Adaptive Monitoring
+# =============================================================================
+
+[adaptive_monitoring]
+# Adaptive health check configuration based on device state
+description = "Dynamic adjustment of health check frequency"
+
+# Enable adaptive monitoring
+enabled = true
+
+# Increase check frequency when errors detected
+increase_on_error = true
+error_detection_window_seconds = 30
+
+# Decrease check frequency during idle periods
+decrease_on_idle = true
+idle_detection_window_seconds = 300
+
+# Idle threshold: No activity for this duration
+idle_threshold_seconds = 120
+
+# Busy threshold: High activity level
+busy_threshold_seconds = 5
+
+# Check interval during idle state (seconds)
+idle_check_interval_seconds = 60
+
+# Check interval during busy state (seconds)
+busy_check_interval_seconds = 5
+
+# =============================================================================
+# SECTION 7: Alert Configuration
+# =============================================================================
+
+[alerts]
+# Alert configuration for health check failures
+description = "Alert thresholds and notification settings"
+
+# Enable alerting
+enabled = true
+
+# Alert level: "info", "warning", "error", "critical"
+alert_level = "warning"
+
+# Log alerts to file
+log_alerts = true
+alert_log_path = ".moai/logs/device_health_alerts.log"
+
+# Send alerts to console
+console_alerts = true
+
+# Email alerts (if configured)
+email_alerts = false
+email_recipients = []
+
+# Slack alerts (if configured)
+slack_alerts = false
+slack_webhook_url = ""
+
+# =============================================================================
+# SECTION 8: State Persistence
+# =============================================================================
+
+[state_persistence]
+# Checkpoint and recovery of device state
+description = "Persistent state for recovery across restarts"
+
+# Enable state persistence
+enabled = true
+
+# Save state checkpoint every N seconds
+checkpoint_interval_seconds = 30
+
+# State storage location
+state_file_path = ".moai/cache/device_health_state.json"
+
+# Maximum state history to keep
+max_state_history = 100
+
+# Auto-restore state on startup
+auto_restore_state = true
+
+# =============================================================================
+# SECTION 9: Logging and Diagnostics
+# =============================================================================
+
+[logging]
+# Logging configuration for device health monitoring
+description = "Diagnostic logging for health checks"
+
+# Enable detailed logging
+enabled = false
+
+# Log level: "debug", "info", "warning", "error"
+level = "info"
+
+# Log file location
+file_path = ".moai/logs/device_health.log"
+
+# Log health check metrics
+log_metrics = false
+metrics_path = ".moai/cache/health_metrics.json"
+
+# Log recovery attempts and results
+log_recovery = false
+recovery_log_path = ".moai/logs/recovery_attempts.log"
+
+# =============================================================================
+# SECTION 10: Quality Assurance
+# =============================================================================
+
+[quality_assurance]
+# Health monitoring quality metrics
+description = "Quality validation for health monitoring"
+
+# Track health check accuracy
+track_accuracy = true
+
+# Accuracy storage path
+accuracy_path = ".moai/cache/health_accuracy.json"
+
+# Performance benchmark tracking
+track_performance = false
+benchmark_path = ".moai/cache/health_benchmarks.json"
+
+# =============================================================================
+# SECTION 11: Advanced Options
+# =============================================================================
+
+[advanced]
+# Advanced configuration options
+description = "Expert-level configuration options"
+
+# Circuit breaker pattern: Stop checking after N consecutive failures
+circuit_breaker_threshold = 10
+circuit_breaker_recovery_time_seconds = 60
+
+# Bulkhead pattern: Isolate device monitoring by type
+bulkhead_enabled = false
+
+# Rate limiting: Maximum checks per second
+rate_limit_checks_per_second = 10
+
+# Graceful degradation: Continue operation with reduced functionality if checks fail
+graceful_degradation = true
+
+# Observability: Expose metrics for monitoring
+expose_metrics = false
+metrics_port = 9090
+
+# =============================================================================
+# Configuration Notes:
+# =============================================================================
+# 1. Recovery strategies execute in order until one succeeds
+# 2. All timeouts are in seconds with subsecond precision
+# 3. Exponential backoff formula: delay = base * (multiplier ^ attempt)
+# 4. Multi-device load balancing is automatic; no manual configuration needed
+# 5. Thresholds are platform-specific; adjust for your device model
+# 6. State persistence requires writable .moai/cache/ directory
+# 7. For emulators: Use shorter timeouts (10-20 seconds)
+# 8. For physical devices: Use longer timeouts (20-30 seconds)
+# 9. CPU/memory thresholds depend on game requirements
+# 10. Temperature thresholds vary by device manufacturer

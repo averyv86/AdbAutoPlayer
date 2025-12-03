@@ -1,0 +1,439 @@
+# Magisk Full Installation with Zygisk - TOON Workflow Definition
+# YAML-based workflow for comprehensive Magisk + Zygisk installation
+# Version: 1.0.0
+# Last Updated: 2025-12-02
+
+name: magisk-full-installation
+title: "Magisk Full Installation with Zygisk"
+description: "Complete Magisk installation workflow including boot.img flashing and Zygisk setup with checkpoint recovery"
+author: "MoAI-ADK"
+category: "magisk-installation"
+version: "1.0.0"
+
+# Configuration references (runtime variable resolution)
+config_source: "{project-root}/.moai/config/config.json"
+output_folder: "{config_source}:settings.output_folder"
+user_name: "{config_source}:user.name"
+communication_language: "{config_source}:language.conversation_language"
+
+# Project context
+project_context: "**/CLAUDE.md"
+
+# Workflow installation path
+installed_path: "{project-root}/.claude/skills/adb/adb-game-magisk-installer/adb-magisk-installer/workflows/magisk-installation"
+instructions: "{installed_path}/instructions.md"
+checklist: "{installed_path}/checklist.md"
+
+# Execution settings
+standalone: true
+web_bundle: false
+estimated_duration_minutes: "15-30"
+complexity_level: "high"
+requires_device_connection: true
+risk_level: "medium"
+
+# Metadata
+tags:
+  - magisk
+  - installation
+  - zygisk
+  - boot-flashing
+  - device-modification
+  - recovery
+
+# Prerequisites
+prerequisites:
+  - device_connected: "USB-connected Android device"
+  - adb_enabled: "ADB debugging enabled on device"
+  - bootloader_unlocked: "Bootloader unlocked (CRITICAL)"
+  - backup_available: "Original boot.img backup available"
+  - storage_space: "1+ GB available storage"
+
+# Success criteria
+success_criteria:
+  - magisk_installed: "Magisk app running on device"
+  - magisk_rooted: "Device shows as rooted in Magisk app"
+  - zygisk_enabled: "Zygisk module is active"
+  - zygisk_working: "Zygisk hooks verified via zygisk-status"
+  - no_bootloops: "Device boots without loops"
+
+# Failure recovery
+failure_recovery:
+  - boot_loop_recovery: "Restore original boot.img from backup"
+  - flash_failure: "Re-download Magisk APK and retry"
+  - connection_loss: "Reconnect device and resume from last checkpoint"
+  - partial_installation: "Run Phase 2 cleanup and restart"
+
+# Rollback strategy
+rollback:
+  enabled: true
+  trigger: "Flash failed or device enters bootloop"
+  action: "Restore original boot.img from checkpoint backup"
+  checkpoint_file: "{output_folder}/magisk-installation/boot-img-backup.img"
+  restore_command: "adb shell 'su -c \"dd if=/sdcard/boot-backup.img of=/dev/block/bootdevice/by-name/boot\"'"
+
+# Decision tree for conditional logic
+decision_tree:
+  phase_1_device_check:
+    check: "Device connectivity"
+    options:
+      device_found:
+        description: "Device detected via ADB"
+        next_phase: "phase-2"
+      device_not_found:
+        description: "Device not found"
+        action: "Troubleshoot USB connection"
+        user_intervention: true
+
+  phase_2_backup_check:
+    check: "Boot.img backup availability"
+    options:
+      backup_exists:
+        description: "Backup already present"
+        action: "Verify backup integrity and proceed"
+        next_phase: "phase-3"
+      backup_missing:
+        description: "No backup available"
+        action: "Create new backup from device"
+        estimated_time: "2-3 minutes"
+        next_phase: "phase-3"
+
+  phase_3_flash_preparation:
+    check: "Flash environment readiness"
+    options:
+      ready:
+        description: "All checks pass"
+        action: "Proceed to flashing"
+        next_phase: "phase-4"
+      not_ready:
+        description: "One or more checks failed"
+        action: "Review and fix issues"
+        user_intervention: true
+
+  phase_4_flash_status:
+    check: "Boot image flashing result"
+    options:
+      flash_success:
+        description: "Boot.img flashed successfully"
+        next_phase: "phase-5"
+      flash_failed:
+        description: "Flash operation failed"
+        action: "Execute rollback to restore original boot.img"
+        recovery: true
+        next_phase: "phase-8"
+
+  phase_5_boot_result:
+    check: "Device boot status"
+    options:
+      boot_success:
+        description: "Device boots normally"
+        next_phase: "phase-6"
+      boot_failure:
+        description: "Device in bootloop"
+        action: "Execute rollback to restore original boot.img"
+        recovery: true
+        next_phase: "phase-8"
+
+  phase_6_magisk_verification:
+    check: "Magisk installation verification"
+    options:
+      magisk_running:
+        description: "Magisk app active and responding"
+        next_phase: "phase-7"
+      magisk_not_found:
+        description: "Magisk app missing"
+        action: "Reinstall Magisk APK"
+        retry: true
+        next_phase: "phase-6"
+
+  phase_7_zygisk_status:
+    check: "Zygisk configuration status"
+    options:
+      zygisk_enabled:
+        description: "Zygisk already enabled"
+        action: "Verify Zygisk hooks are working"
+        next_phase: "phase-8"
+      zygisk_disabled:
+        description: "Zygisk is disabled"
+        action: "Enable Zygisk and verify"
+        next_phase: "phase-8"
+
+# Micro-file steps (7 phases)
+steps:
+  - name: "Phase 1 - Device Verification"
+    file: "{installed_path}/phase-01-device-verification.md"
+    checkpoint: true
+    estimated_time: "1-2 minutes"
+    description: "Verify device connectivity, ADB debugging, and bootloader unlock status"
+    checks:
+      - device_detected: "Device visible via ADB"
+      - adb_shell_works: "ADB shell commands execute"
+      - bootloader_unlocked: "Bootloader status confirmed"
+    failure_action: "Troubleshoot USB connection and ADB setup"
+
+  - name: "Phase 2 - Boot Image Backup"
+    file: "{installed_path}/phase-02-boot-image-backup.md"
+    checkpoint: true
+    estimated_time: "2-3 minutes"
+    description: "Create backup of current boot.img for safe rollback"
+    checks:
+      - backup_created: "boot.img extracted from device"
+      - backup_verified: "Backup file integrity checked"
+      - backup_stored: "Backup saved in checkpoint location"
+    failure_action: "Verify storage space and retry backup"
+    rollback_on_failure: true
+
+  - name: "Phase 3 - Flash Environment Preparation"
+    file: "{installed_path}/phase-03-flash-preparation.md"
+    checkpoint: true
+    estimated_time: "2-3 minutes"
+    description: "Prepare device for boot image flashing (enter fastboot, disable verification)"
+    checks:
+      - device_in_fastboot: "Device accessible in fastboot mode"
+      - verification_disabled: "Boot verification disabled"
+      - kernel_patching_ready: "Kernel patching system ready"
+    failure_action: "Reboot device and retry fastboot setup"
+
+  - name: "Phase 4 - Boot Image Flashing"
+    file: "{installed_path}/phase-04-boot-image-flash.md"
+    checkpoint: true
+    estimated_time: "2-3 minutes"
+    description: "Flash patched boot.img to device (critical step)"
+    checks:
+      - flash_initiated: "Flash command sent to device"
+      - flash_completed: "Flash operation reports success"
+      - device_responses: "Device responds to commands"
+    failure_action: "Execute rollback to restore original boot.img"
+    rollback_on_failure: true
+    user_warning: "CRITICAL: Do not disconnect device during flash"
+
+  - name: "Phase 5 - Boot Verification"
+    file: "{installed_path}/phase-05-boot-verification.md"
+    checkpoint: true
+    estimated_time: "3-5 minutes"
+    description: "Verify device boots successfully after flash"
+    checks:
+      - device_boots: "Device completes boot sequence"
+      - no_bootloop: "No reboot loops detected"
+      - adb_responsive: "Device responds to ADB commands"
+    failure_action: "Execute rollback to restore original boot.img"
+    rollback_on_failure: true
+    timeout_seconds: 300
+
+  - name: "Phase 6 - Magisk Installation"
+    file: "{installed_path}/phase-06-magisk-installation.md"
+    checkpoint: true
+    estimated_time: "3-5 minutes"
+    description: "Install and verify Magisk application"
+    checks:
+      - magisk_app_installed: "Magisk APK installed on device"
+      - magisk_running: "Magisk app launches without errors"
+      - root_available: "Magisk reports device as rooted"
+      - magisk_version: "Magisk version 26.0+ verified"
+    failure_action: "Reinstall Magisk APK or contact developer"
+
+  - name: "Phase 7 - Zygisk Setup and Verification"
+    file: "{installed_path}/phase-07-zygisk-setup.md"
+    checkpoint: false
+    estimated_time: "2-3 minutes"
+    description: "Enable Zygisk and verify hooks are working"
+    checks:
+      - zygisk_module_enabled: "Zygisk module active in Magisk"
+      - zygisk_hooks_loaded: "Zygisk hooks verified as loaded"
+      - zygisk_status_ok: "zygisk-status command reports success"
+      - no_reboots_needed: "Device functions without reboot loop"
+    failure_action: "Run zygisk-status to diagnose issues"
+    post_completion: "Run Phase 8 verification workflow"
+
+# Checkpoints for recovery
+checkpoints:
+  checkpoint_1:
+    phase: 1
+    name: "Device Connected"
+    description: "Device successfully detected and ADB debugging confirmed"
+    resume_from: "Phase 2 - Boot Image Backup"
+    state_file: "{output_folder}/magisk-installation/checkpoint-phase-1.json"
+
+  checkpoint_2:
+    phase: 2
+    name: "Boot Image Backed Up"
+    description: "Original boot.img successfully backed up and verified"
+    resume_from: "Phase 3 - Flash Environment Preparation"
+    state_file: "{output_folder}/magisk-installation/checkpoint-phase-2.json"
+    rollback_enabled: true
+    rollback_file: "{output_folder}/magisk-installation/boot-img-backup.img"
+
+  checkpoint_3:
+    phase: 3
+    name: "Environment Ready"
+    description: "Device in fastboot mode with verification disabled"
+    resume_from: "Phase 4 - Boot Image Flashing"
+    state_file: "{output_folder}/magisk-installation/checkpoint-phase-3.json"
+
+  checkpoint_4:
+    phase: 4
+    name: "Boot Image Flashed"
+    description: "Patched boot.img successfully flashed to device"
+    resume_from: "Phase 5 - Boot Verification"
+    state_file: "{output_folder}/magisk-installation/checkpoint-phase-4.json"
+    critical: true
+
+  checkpoint_5:
+    phase: 5
+    name: "Device Booted"
+    description: "Device successfully booted after flash with no loops"
+    resume_from: "Phase 6 - Magisk Installation"
+    state_file: "{output_folder}/magisk-installation/checkpoint-phase-5.json"
+
+  checkpoint_6:
+    phase: 6
+    name: "Magisk Installed"
+    description: "Magisk app installed and verified as rooted"
+    resume_from: "Phase 7 - Zygisk Setup and Verification"
+    state_file: "{output_folder}/magisk-installation/checkpoint-phase-6.json"
+
+# Error handling branches
+error_handling:
+  usb_connection_lost:
+    condition: "Device disconnects during execution"
+    action: "Pause workflow and wait for reconnection"
+    recovery: "Reconnect device and resume from last checkpoint"
+    user_intervention: true
+
+  flash_timeout:
+    condition: "Flash operation exceeds 5 minutes"
+    action: "Timeout triggered, check device status"
+    recovery: "Manually verify device status, resume or rollback"
+    user_intervention: true
+
+  bootloop_detected:
+    condition: "Device reboots continuously"
+    action: "Automatic rollback to restore original boot.img"
+    recovery: "Restore from checkpoint backup"
+    automatic_recovery: true
+
+  magisk_crash:
+    condition: "Magisk app crashes on launch"
+    action: "Uninstall and reinstall Magisk APK"
+    recovery: "Retry Magisk installation (Phase 6)"
+    retry_count: 3
+
+  zygisk_hook_failure:
+    condition: "zygisk-status reports hook loading failure"
+    action: "Run diagnostic and attempt recovery"
+    recovery: "Disable/re-enable Zygisk module or reinstall"
+    diagnostic_command: "zygisk-status"
+
+# Output structure
+outputs:
+  installation_log:
+    file: "{output_folder}/magisk-installation/installation-log.md"
+    description: "Complete installation log with timestamps"
+    format: "Markdown"
+
+  checkpoint_states:
+    directory: "{output_folder}/magisk-installation/checkpoints/"
+    description: "JSON state files for each checkpoint"
+    format: "JSON"
+
+  boot_image_backup:
+    file: "{output_folder}/magisk-installation/boot-img-backup.img"
+    description: "Original boot.img backup for rollback"
+    format: "Binary image file"
+
+  installation_report:
+    file: "{output_folder}/magisk-installation/final-report.md"
+    description: "Final installation report with verification results"
+    format: "Markdown"
+
+# Dependencies
+dependencies:
+  - skill: "adb-foundation"
+    required_for: "ADB device communication"
+
+  - skill: "adb-magisk"
+    required_for: "Magisk-specific operations"
+
+  - external_tool: "adb"
+    version: "35.0.0+"
+    description: "Android Debug Bridge for device control"
+
+  - external_tool: "fastboot"
+    version: "35.0.0+"
+    description: "Fastboot for bootloader operations"
+
+# Integration points
+integrations:
+  next_workflow: "zygisk-verification.toon"
+  next_workflow_description: "Run after installation to verify Zygisk functionality"
+
+  recovery_workflow: "magisk-uninstall.toon"
+  recovery_workflow_description: "Use this to safely remove Magisk if needed"
+
+# Estimated timeline
+timeline:
+  phase_1: "1-2 min"
+  phase_2: "2-3 min"
+  phase_3: "2-3 min"
+  phase_4: "2-3 min"
+  phase_5: "3-5 min"
+  phase_6: "3-5 min"
+  phase_7: "2-3 min"
+  total_minimum: "15 minutes"
+  total_maximum: "30 minutes"
+  buffer_recommended: "10 minutes"
+
+# Risk assessment
+risk_assessment:
+  overall_risk: "medium"
+  critical_operations:
+    - name: "Boot Image Flashing"
+      phase: 4
+      risk: "bootloop or device brick if fails"
+      mitigation: "Backup before flash, rollback enabled"
+
+    - name: "Device Boot Verification"
+      phase: 5
+      risk: "Bootloop if flash corrupted"
+      mitigation: "Timeout detection, auto-rollback"
+
+  recovery_available:
+    - "Checkpoint-based resume capability"
+    - "Automatic rollback to original boot.img"
+    - "Manual restoration via fastboot"
+
+# Notifications
+notifications:
+  on_phase_complete:
+    enabled: true
+    format: "Progress update to user"
+
+  on_checkpoint_created:
+    enabled: true
+    format: "Checkpoint saved notification"
+
+  on_error_detected:
+    enabled: true
+    format: "Error alert with recovery options"
+
+  on_rollback_executed:
+    enabled: true
+    format: "Rollback notification with status"
+
+# Validation rules
+validation:
+  on_checkpoint:
+    - verify_device_connectivity
+    - verify_file_integrity
+    - verify_state_consistency
+
+  on_phase_completion:
+    - log_phase_completion
+    - update_checkpoint_state
+    - trigger_next_phase_notification
+
+---
+
+# End of TOON Workflow Definition
+# Status: Ready for execution
+# Last validated: 2025-12-02

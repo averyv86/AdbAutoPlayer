@@ -1,0 +1,87 @@
+id: adb-get-display-info
+name: Get Display Information
+description: Retrieve current display information including resolution, density, orientation
+category: capture
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = default device)"
+    required: false
+  - name: timeout
+    type: integer
+    default: 5
+    description: "Command timeout in seconds"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/capture/get_display_info.py
+  args: ["--device", "{{ device }}", "--timeout", "{{ timeout }}"]
+  timeout_seconds: 15
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Display information"
+    - "resolution"
+    - "density"
+  output_patterns:
+    - "Resolution: \d+x\d+"
+    - "Density: \d+"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 1
+  on_error:
+    - exit_code: 1
+      action: "Device not found or offline"
+    - exit_code: 2
+      action: "Failed to retrieve display properties"
+
+outputs:
+  - name: display_status
+    type: string
+    description: "Status of display information retrieval"
+  - name: resolution
+    type: object
+    description: "Display resolution"
+    properties:
+      width:
+        type: integer
+      height:
+        type: integer
+  - name: density_dpi
+    type: integer
+    description: "Display density in DPI"
+  - name: density_category
+    type: string
+    description: "Density category (ldpi, mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi)"
+  - name: orientation
+    type: string
+    description: "Current screen orientation (portrait, landscape)"
+  - name: refresh_rate
+    type: number
+    description: "Screen refresh rate in Hz"
+  - name: physical_size
+    type: object
+    description: "Physical screen size"
+    properties:
+      width_inches:
+        type: number
+      height_inches:
+        type: number
+      diagonal_inches:
+        type: number
+  - name: screen_state
+    type: string
+    description: "Screen state (on, off)"
+  - name: brightness_level
+    type: integer
+    description: "Current screen brightness (0-255)"
+
+validation:
+  - name: timeout_range
+    rule: "timeout must be between 2 and 30 seconds"

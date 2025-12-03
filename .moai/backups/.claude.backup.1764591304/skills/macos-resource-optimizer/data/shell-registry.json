@@ -1,0 +1,917 @@
+{
+  "shells": {
+    "agent_python_zombies_1764505149054": {
+      "shell_id": "agent_python_zombies_1764505149054",
+      "agent_name": "python_zombies",
+      "command": "uv run agent_python_zombies.py",
+      "timestamp": 1764505149.0552168,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505150.727891
+    },
+    "agent_node_process_scanner_1764505149057": {
+      "shell_id": "agent_node_process_scanner_1764505149057",
+      "agent_name": "node_process_scanner",
+      "command": "uv run agent_node_process_scanner.py",
+      "timestamp": 1764505149.057625,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505151.185826
+    },
+    "agent_test_zombies_1764505149059": {
+      "shell_id": "agent_test_zombies_1764505149059",
+      "agent_name": "test_zombies",
+      "command": "uv run agent_test_zombies.py",
+      "timestamp": 1764505149.059673,
+      "status": "failed",
+      "status_code": 2,
+      "completed_at": 1764505149.090632
+    },
+    "agent_workerd_zombies_1764505149061": {
+      "shell_id": "agent_workerd_zombies_1764505149061",
+      "agent_name": "workerd_zombies",
+      "command": "uv run agent_workerd_zombies.py",
+      "timestamp": 1764505149.061706,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505151.5236359
+    },
+    "agent_browser_helpers_1764505149063": {
+      "shell_id": "agent_browser_helpers_1764505149063",
+      "agent_name": "browser_helpers",
+      "command": "uv run agent_browser_helpers.py",
+      "timestamp": 1764505149.063941,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505151.659415
+    },
+    "agent_language_servers_1764505149065": {
+      "shell_id": "agent_language_servers_1764505149065",
+      "agent_name": "language_servers",
+      "command": "uv run agent_language_servers.py",
+      "timestamp": 1764505149.066026,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505150.685038
+    },
+    "agent_electron_helpers_1764505149068": {
+      "shell_id": "agent_electron_helpers_1764505149068",
+      "agent_name": "electron_helpers",
+      "command": "uv run agent_electron_helpers.py",
+      "timestamp": 1764505149.068393,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505150.890968
+    },
+    "agent_generic_idle_1764505149070": {
+      "shell_id": "agent_generic_idle_1764505149070",
+      "agent_name": "generic_idle",
+      "command": "uv run agent_generic_idle.py",
+      "timestamp": 1764505149.0706701,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505151.219669
+    },
+    "agent_network_connection_leaks_1764505149073": {
+      "shell_id": "agent_network_connection_leaks_1764505149073",
+      "agent_name": "network_connection_leaks",
+      "command": "uv run agent_network_connection_leaks.py",
+      "timestamp": 1764505149.073285,
+      "status": "failed",
+      "status_code": -1,
+      "completed_at": 1764505164.0933938
+    },
+    "agent_orphaned_process_groups_1764505149076": {
+      "shell_id": "agent_orphaned_process_groups_1764505149076",
+      "agent_name": "orphaned_process_groups",
+      "command": "uv run agent_orphaned_process_groups.py",
+      "timestamp": 1764505149.076738,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505152.837565
+    },
+    "agent_docker_container_scanner_1764505149079": {
+      "shell_id": "agent_docker_container_scanner_1764505149079",
+      "agent_name": "docker_container_scanner",
+      "command": "uv run agent_docker_container_scanner.py",
+      "timestamp": 1764505149.079485,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505151.183378
+    },
+    "agent_database_connection_pooler_1764505149081": {
+      "shell_id": "agent_database_connection_pooler_1764505149081",
+      "agent_name": "database_connection_pooler",
+      "command": "uv run agent_database_connection_pooler.py",
+      "timestamp": 1764505149.081698,
+      "status": "failed",
+      "status_code": -1,
+      "completed_at": 1764505164.09435
+    },
+    "agent_jvm_memory_hog_detector_1764505149083": {
+      "shell_id": "agent_jvm_memory_hog_detector_1764505149083",
+      "agent_name": "jvm_memory_hog_detector",
+      "command": "uv run agent_jvm_memory_hog_detector.py",
+      "timestamp": 1764505149.0840619,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505150.230168
+    },
+    "agent_ssh_git_process_zombies_1764505149086": {
+      "shell_id": "agent_ssh_git_process_zombies_1764505149086",
+      "agent_name": "ssh_git_process_zombies",
+      "command": "uv run agent_ssh_git_process_zombies.py",
+      "timestamp": 1764505149.086596,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505151.875254
+    },
+    "agent_memory_pressure_detector_1764505164097": {
+      "shell_id": "agent_memory_pressure_detector_1764505164097",
+      "agent_name": "memory_pressure_detector",
+      "command": "uv run agent_memory_pressure_detector.py",
+      "timestamp": 1764505164.097177,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505164.732831
+    },
+    "agent_browser_tab_manager_1764505164100": {
+      "shell_id": "agent_browser_tab_manager_1764505164100",
+      "agent_name": "browser_tab_manager",
+      "command": "uv run agent_browser_tab_manager.py",
+      "timestamp": 1764505164.10063,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505167.378646
+    },
+    "agent_browser_helper_consolidator_1764505164103": {
+      "shell_id": "agent_browser_helper_consolidator_1764505164103",
+      "agent_name": "browser_helper_consolidator",
+      "command": "uv run agent_browser_helper_consolidator.py",
+      "timestamp": 1764505164.10373,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505166.1742148
+    },
+    "agent_browser_cache_optimizer_1764505164106": {
+      "shell_id": "agent_browser_cache_optimizer_1764505164106",
+      "agent_name": "browser_cache_optimizer",
+      "command": "uv run agent_browser_cache_optimizer.py",
+      "timestamp": 1764505164.10656,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505165.062151
+    },
+    "agent_inactive_app_detector_1764505164109": {
+      "shell_id": "agent_inactive_app_detector_1764505164109",
+      "agent_name": "inactive_app_detector",
+      "command": "uv run agent_inactive_app_detector.py",
+      "timestamp": 1764505164.109556,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505165.0422919
+    },
+    "agent_electron_app_optimizer_1764505164112": {
+      "shell_id": "agent_electron_app_optimizer_1764505164112",
+      "agent_name": "electron_app_optimizer",
+      "command": "uv run agent_electron_app_optimizer.py",
+      "timestamp": 1764505164.112704,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505166.167459
+    },
+    "agent_background_app_suspender_1764505164115": {
+      "shell_id": "agent_background_app_suspender_1764505164115",
+      "agent_name": "background_app_suspender",
+      "command": "uv run agent_background_app_suspender.py",
+      "timestamp": 1764505164.115753,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505166.016153
+    },
+    "agent_swap_optimizer_1764505164118": {
+      "shell_id": "agent_swap_optimizer_1764505164118",
+      "agent_name": "swap_optimizer",
+      "command": "uv run agent_swap_optimizer.py",
+      "timestamp": 1764505164.118675,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505165.047345
+    },
+    "agent_memory_leak_hunter_1764505164121": {
+      "shell_id": "agent_memory_leak_hunter_1764505164121",
+      "agent_name": "memory_leak_hunter",
+      "command": "uv run agent_memory_leak_hunter.py",
+      "timestamp": 1764505164.121778,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505164.7240121
+    },
+    "agent_python_zombies_1764505228912": {
+      "shell_id": "agent_python_zombies_1764505228912",
+      "agent_name": "python_zombies",
+      "command": "uv run agent_python_zombies.py",
+      "timestamp": 1764505228.912354,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505229.439275
+    },
+    "agent_node_process_scanner_1764505228915": {
+      "shell_id": "agent_node_process_scanner_1764505228915",
+      "agent_name": "node_process_scanner",
+      "command": "uv run agent_node_process_scanner.py",
+      "timestamp": 1764505228.915116,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505229.42283
+    },
+    "agent_test_zombies_1764505228917": {
+      "shell_id": "agent_test_zombies_1764505228917",
+      "agent_name": "test_zombies",
+      "command": "uv run agent_test_zombies.py",
+      "timestamp": 1764505228.917134,
+      "status": "failed",
+      "status_code": 2,
+      "completed_at": 1764505228.949162
+    },
+    "agent_workerd_zombies_1764505228919": {
+      "shell_id": "agent_workerd_zombies_1764505228919",
+      "agent_name": "workerd_zombies",
+      "command": "uv run agent_workerd_zombies.py",
+      "timestamp": 1764505228.919193,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505229.507954
+    },
+    "agent_browser_helpers_1764505228921": {
+      "shell_id": "agent_browser_helpers_1764505228921",
+      "agent_name": "browser_helpers",
+      "command": "uv run agent_browser_helpers.py",
+      "timestamp": 1764505228.921393,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505229.4330938
+    },
+    "agent_language_servers_1764505228923": {
+      "shell_id": "agent_language_servers_1764505228923",
+      "agent_name": "language_servers",
+      "command": "uv run agent_language_servers.py",
+      "timestamp": 1764505228.923839,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505230.09647
+    },
+    "agent_electron_helpers_1764505228926": {
+      "shell_id": "agent_electron_helpers_1764505228926",
+      "agent_name": "electron_helpers",
+      "command": "uv run agent_electron_helpers.py",
+      "timestamp": 1764505228.926719,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505229.5027819
+    },
+    "agent_generic_idle_1764505228929": {
+      "shell_id": "agent_generic_idle_1764505228929",
+      "agent_name": "generic_idle",
+      "command": "uv run agent_generic_idle.py",
+      "timestamp": 1764505228.929445,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505230.5188658
+    },
+    "agent_network_connection_leaks_1764505228932": {
+      "shell_id": "agent_network_connection_leaks_1764505228932",
+      "agent_name": "network_connection_leaks",
+      "command": "uv run agent_network_connection_leaks.py",
+      "timestamp": 1764505228.9321349,
+      "status": "failed",
+      "status_code": -1,
+      "completed_at": 1764505243.9513721
+    },
+    "agent_orphaned_process_groups_1764505228934": {
+      "shell_id": "agent_orphaned_process_groups_1764505228934",
+      "agent_name": "orphaned_process_groups",
+      "command": "uv run agent_orphaned_process_groups.py",
+      "timestamp": 1764505228.934607,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505231.591916
+    },
+    "agent_docker_container_scanner_1764505228936": {
+      "shell_id": "agent_docker_container_scanner_1764505228936",
+      "agent_name": "docker_container_scanner",
+      "command": "uv run agent_docker_container_scanner.py",
+      "timestamp": 1764505228.936985,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505229.6209931
+    },
+    "agent_database_connection_pooler_1764505228939": {
+      "shell_id": "agent_database_connection_pooler_1764505228939",
+      "agent_name": "database_connection_pooler",
+      "command": "uv run agent_database_connection_pooler.py",
+      "timestamp": 1764505228.939761,
+      "status": "failed",
+      "status_code": 1,
+      "completed_at": 1764505229.5174348
+    },
+    "agent_jvm_memory_hog_detector_1764505228942": {
+      "shell_id": "agent_jvm_memory_hog_detector_1764505228942",
+      "agent_name": "jvm_memory_hog_detector",
+      "command": "uv run agent_jvm_memory_hog_detector.py",
+      "timestamp": 1764505228.942385,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505229.461662
+    },
+    "agent_ssh_git_process_zombies_1764505228944": {
+      "shell_id": "agent_ssh_git_process_zombies_1764505228944",
+      "agent_name": "ssh_git_process_zombies",
+      "command": "uv run agent_ssh_git_process_zombies.py",
+      "timestamp": 1764505228.944931,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505229.612868
+    },
+    "agent_memory_pressure_detector_1764505243955": {
+      "shell_id": "agent_memory_pressure_detector_1764505243955",
+      "agent_name": "memory_pressure_detector",
+      "command": "uv run agent_memory_pressure_detector.py",
+      "timestamp": 1764505243.955293,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505244.573298
+    },
+    "agent_browser_tab_manager_1764505243960": {
+      "shell_id": "agent_browser_tab_manager_1764505243960",
+      "agent_name": "browser_tab_manager",
+      "command": "uv run agent_browser_tab_manager.py",
+      "timestamp": 1764505243.9608,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505247.327491
+    },
+    "agent_browser_helper_consolidator_1764505243964": {
+      "shell_id": "agent_browser_helper_consolidator_1764505243964",
+      "agent_name": "browser_helper_consolidator",
+      "command": "uv run agent_browser_helper_consolidator.py",
+      "timestamp": 1764505243.9649699,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505246.1612842
+    },
+    "agent_browser_cache_optimizer_1764505243968": {
+      "shell_id": "agent_browser_cache_optimizer_1764505243968",
+      "agent_name": "browser_cache_optimizer",
+      "command": "uv run agent_browser_cache_optimizer.py",
+      "timestamp": 1764505243.9692109,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505244.616517
+    },
+    "agent_inactive_app_detector_1764505243973": {
+      "shell_id": "agent_inactive_app_detector_1764505243973",
+      "agent_name": "inactive_app_detector",
+      "command": "uv run agent_inactive_app_detector.py",
+      "timestamp": 1764505243.973942,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505244.566705
+    },
+    "agent_electron_app_optimizer_1764505243978": {
+      "shell_id": "agent_electron_app_optimizer_1764505243978",
+      "agent_name": "electron_app_optimizer",
+      "command": "uv run agent_electron_app_optimizer.py",
+      "timestamp": 1764505243.9785259,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505246.160091
+    },
+    "agent_background_app_suspender_1764505243982": {
+      "shell_id": "agent_background_app_suspender_1764505243982",
+      "agent_name": "background_app_suspender",
+      "command": "uv run agent_background_app_suspender.py",
+      "timestamp": 1764505243.983078,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505245.976799
+    },
+    "agent_swap_optimizer_1764505243987": {
+      "shell_id": "agent_swap_optimizer_1764505243987",
+      "agent_name": "swap_optimizer",
+      "command": "uv run agent_swap_optimizer.py",
+      "timestamp": 1764505243.9877849,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505244.839543
+    },
+    "agent_memory_leak_hunter_1764505243992": {
+      "shell_id": "agent_memory_leak_hunter_1764505243992",
+      "agent_name": "memory_leak_hunter",
+      "command": "uv run agent_memory_leak_hunter.py",
+      "timestamp": 1764505243.992275,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505244.564925
+    },
+    "agent_timemachine_snapshot_cleaner_1764505247328": {
+      "shell_id": "agent_timemachine_snapshot_cleaner_1764505247328",
+      "agent_name": "timemachine_snapshot_cleaner",
+      "command": "uv run agent_timemachine_snapshot_cleaner.py",
+      "timestamp": 1764505247.3288908,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505247.9714072
+    },
+    "agent_developer_cache_cleaner_1764505247330": {
+      "shell_id": "agent_developer_cache_cleaner_1764505247330",
+      "agent_name": "developer_cache_cleaner",
+      "command": "uv run agent_developer_cache_cleaner.py",
+      "timestamp": 1764505247.3310301,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505277.273304
+    },
+    "agent_xcode_cache_cleaner_1764505247332": {
+      "shell_id": "agent_xcode_cache_cleaner_1764505247332",
+      "agent_name": "xcode_cache_cleaner",
+      "command": "uv run agent_xcode_cache_cleaner.py",
+      "timestamp": 1764505247.3330638,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505248.5234098
+    },
+    "agent_build_cache_cleaner_1764505247335": {
+      "shell_id": "agent_build_cache_cleaner_1764505247335",
+      "agent_name": "build_cache_cleaner",
+      "command": "uv run agent_build_cache_cleaner.py",
+      "timestamp": 1764505247.335148,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505247.427161
+    },
+    "agent_system_log_cleaner_1764505247337": {
+      "shell_id": "agent_system_log_cleaner_1764505247337",
+      "agent_name": "system_log_cleaner",
+      "command": "uv run agent_system_log_cleaner.py",
+      "timestamp": 1764505247.337392,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505247.72494
+    },
+    "agent_docker_deep_cleanup_1764505247339": {
+      "shell_id": "agent_docker_deep_cleanup_1764505247339",
+      "agent_name": "docker_deep_cleanup",
+      "command": "uv run agent_docker_deep_cleanup.py",
+      "timestamp": 1764505247.339926,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505247.561381
+    },
+    "agent_swap_purgeable_hunter_1764505277276": {
+      "shell_id": "agent_swap_purgeable_hunter_1764505277276",
+      "agent_name": "swap_purgeable_hunter",
+      "command": "uv run agent_swap_purgeable_hunter.py",
+      "timestamp": 1764505277.276097,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505277.338393
+    },
+    "agent_window_server_optimizer_1764505277279": {
+      "shell_id": "agent_window_server_optimizer_1764505277279",
+      "agent_name": "window_server_optimizer",
+      "command": "uv run agent_window_server_optimizer.py",
+      "timestamp": 1764505277.279289,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505278.676193
+    },
+    "agent_spotlight_mds_hunter_1764505277281": {
+      "shell_id": "agent_spotlight_mds_hunter_1764505277281",
+      "agent_name": "spotlight_mds_hunter",
+      "command": "uv run agent_spotlight_mds_hunter.py",
+      "timestamp": 1764505277.281882,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505277.691189
+    },
+    "agent_memory_leak_hunter_1764505277284": {
+      "shell_id": "agent_memory_leak_hunter_1764505277284",
+      "agent_name": "memory_leak_hunter",
+      "command": "uv run agent_memory_leak_hunter.py",
+      "timestamp": 1764505277.284628,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505277.478273
+    },
+    "agent_chrome_deep_cleanup_1764505278677": {
+      "shell_id": "agent_chrome_deep_cleanup_1764505278677",
+      "agent_name": "chrome_deep_cleanup",
+      "command": "uv run agent_chrome_deep_cleanup.py",
+      "timestamp": 1764505278.677702,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505279.8528252
+    },
+    "agent_safari_optimizer_1764505278679": {
+      "shell_id": "agent_safari_optimizer_1764505278679",
+      "agent_name": "safari_optimizer",
+      "command": "uv run agent_safari_optimizer.py",
+      "timestamp": 1764505278.6801128,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505278.856162
+    },
+    "agent_firefox_deep_cleanup_1764505278682": {
+      "shell_id": "agent_firefox_deep_cleanup_1764505278682",
+      "agent_name": "firefox_deep_cleanup",
+      "command": "uv run agent_firefox_deep_cleanup.py",
+      "timestamp": 1764505278.6825228,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505279.110144
+    },
+    "agent_messaging_app_hunter_1764505279854": {
+      "shell_id": "agent_messaging_app_hunter_1764505279854",
+      "agent_name": "messaging_app_hunter",
+      "command": "uv run agent_messaging_app_hunter.py",
+      "timestamp": 1764505279.854225,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505281.0870788
+    },
+    "agent_vscode_deep_cleanup_1764505279856": {
+      "shell_id": "agent_vscode_deep_cleanup_1764505279856",
+      "agent_name": "vscode_deep_cleanup",
+      "command": "uv run agent_vscode_deep_cleanup.py",
+      "timestamp": 1764505279.8564858,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505280.445311
+    },
+    "agent_dns_connection_scanner_1764505279858": {
+      "shell_id": "agent_dns_connection_scanner_1764505279858",
+      "agent_name": "dns_connection_scanner",
+      "command": "uv run agent_dns_connection_scanner.py",
+      "timestamp": 1764505279.858502,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505280.601321
+    },
+    "agent_python_zombies_1764505346947": {
+      "shell_id": "agent_python_zombies_1764505346947",
+      "agent_name": "python_zombies",
+      "command": "uv run agent_python_zombies.py",
+      "timestamp": 1764505346.947587,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505347.4143941
+    },
+    "agent_node_process_scanner_1764505346950": {
+      "shell_id": "agent_node_process_scanner_1764505346950",
+      "agent_name": "node_process_scanner",
+      "command": "uv run agent_node_process_scanner.py",
+      "timestamp": 1764505346.950443,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505347.389355
+    },
+    "agent_test_zombies_1764505346952": {
+      "shell_id": "agent_test_zombies_1764505346952",
+      "agent_name": "test_zombies",
+      "command": "uv run agent_test_zombies.py",
+      "timestamp": 1764505346.9526908,
+      "status": "failed",
+      "status_code": 2,
+      "completed_at": 1764505346.986528
+    },
+    "agent_workerd_zombies_1764505346954": {
+      "shell_id": "agent_workerd_zombies_1764505346954",
+      "agent_name": "workerd_zombies",
+      "command": "uv run agent_workerd_zombies.py",
+      "timestamp": 1764505346.954964,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505347.5181398
+    },
+    "agent_browser_helpers_1764505346957": {
+      "shell_id": "agent_browser_helpers_1764505346957",
+      "agent_name": "browser_helpers",
+      "command": "uv run agent_browser_helpers.py",
+      "timestamp": 1764505346.957406,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505347.453099
+    },
+    "agent_language_servers_1764505346959": {
+      "shell_id": "agent_language_servers_1764505346959",
+      "agent_name": "language_servers",
+      "command": "uv run agent_language_servers.py",
+      "timestamp": 1764505346.9598022,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505348.111236
+    },
+    "agent_electron_helpers_1764505346962": {
+      "shell_id": "agent_electron_helpers_1764505346962",
+      "agent_name": "electron_helpers",
+      "command": "uv run agent_electron_helpers.py",
+      "timestamp": 1764505346.962328,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505347.515119
+    },
+    "agent_generic_idle_1764505346964": {
+      "shell_id": "agent_generic_idle_1764505346964",
+      "agent_name": "generic_idle",
+      "command": "uv run agent_generic_idle.py",
+      "timestamp": 1764505346.965024,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505348.515061
+    },
+    "agent_network_connection_leaks_1764505346967": {
+      "shell_id": "agent_network_connection_leaks_1764505346967",
+      "agent_name": "network_connection_leaks",
+      "command": "uv run agent_network_connection_leaks.py",
+      "timestamp": 1764505346.96771,
+      "status": "failed",
+      "status_code": -1,
+      "completed_at": 1764505361.989983
+    },
+    "agent_orphaned_process_groups_1764505346970": {
+      "shell_id": "agent_orphaned_process_groups_1764505346970",
+      "agent_name": "orphaned_process_groups",
+      "command": "uv run agent_orphaned_process_groups.py",
+      "timestamp": 1764505346.970752,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505349.668166
+    },
+    "agent_docker_container_scanner_1764505346973": {
+      "shell_id": "agent_docker_container_scanner_1764505346973",
+      "agent_name": "docker_container_scanner",
+      "command": "uv run agent_docker_container_scanner.py",
+      "timestamp": 1764505346.9734788,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505347.619884
+    },
+    "agent_database_connection_pooler_1764505346976": {
+      "shell_id": "agent_database_connection_pooler_1764505346976",
+      "agent_name": "database_connection_pooler",
+      "command": "uv run agent_database_connection_pooler.py",
+      "timestamp": 1764505346.976369,
+      "status": "failed",
+      "status_code": -1,
+      "completed_at": 1764505361.993132
+    },
+    "agent_jvm_memory_hog_detector_1764505346979": {
+      "shell_id": "agent_jvm_memory_hog_detector_1764505346979",
+      "agent_name": "jvm_memory_hog_detector",
+      "command": "uv run agent_jvm_memory_hog_detector.py",
+      "timestamp": 1764505346.979203,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505347.460947
+    },
+    "agent_ssh_git_process_zombies_1764505346981": {
+      "shell_id": "agent_ssh_git_process_zombies_1764505346981",
+      "agent_name": "ssh_git_process_zombies",
+      "command": "uv run agent_ssh_git_process_zombies.py",
+      "timestamp": 1764505346.981955,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505347.624982
+    },
+    "agent_memory_pressure_detector_1764505362001": {
+      "shell_id": "agent_memory_pressure_detector_1764505362001",
+      "agent_name": "memory_pressure_detector",
+      "command": "uv run agent_memory_pressure_detector.py",
+      "timestamp": 1764505362.001407,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505362.5822852
+    },
+    "agent_browser_tab_manager_1764505362016": {
+      "shell_id": "agent_browser_tab_manager_1764505362016",
+      "agent_name": "browser_tab_manager",
+      "command": "uv run agent_browser_tab_manager.py",
+      "timestamp": 1764505362.0170581,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505365.382571
+    },
+    "agent_browser_helper_consolidator_1764505362020": {
+      "shell_id": "agent_browser_helper_consolidator_1764505362020",
+      "agent_name": "browser_helper_consolidator",
+      "command": "uv run agent_browser_helper_consolidator.py",
+      "timestamp": 1764505362.020641,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505364.063164
+    },
+    "agent_browser_cache_optimizer_1764505362024": {
+      "shell_id": "agent_browser_cache_optimizer_1764505362024",
+      "agent_name": "browser_cache_optimizer",
+      "command": "uv run agent_browser_cache_optimizer.py",
+      "timestamp": 1764505362.024367,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505362.9186041
+    },
+    "agent_inactive_app_detector_1764505362027": {
+      "shell_id": "agent_inactive_app_detector_1764505362027",
+      "agent_name": "inactive_app_detector",
+      "command": "uv run agent_inactive_app_detector.py",
+      "timestamp": 1764505362.027769,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505363.15172
+    },
+    "agent_electron_app_optimizer_1764505362031": {
+      "shell_id": "agent_electron_app_optimizer_1764505362031",
+      "agent_name": "electron_app_optimizer",
+      "command": "uv run agent_electron_app_optimizer.py",
+      "timestamp": 1764505362.031327,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505364.210248
+    },
+    "agent_background_app_suspender_1764505362034": {
+      "shell_id": "agent_background_app_suspender_1764505362034",
+      "agent_name": "background_app_suspender",
+      "command": "uv run agent_background_app_suspender.py",
+      "timestamp": 1764505362.034922,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505364.061244
+    },
+    "agent_swap_optimizer_1764505362038": {
+      "shell_id": "agent_swap_optimizer_1764505362038",
+      "agent_name": "swap_optimizer",
+      "command": "uv run agent_swap_optimizer.py",
+      "timestamp": 1764505362.038829,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505362.893249
+    },
+    "agent_memory_leak_hunter_1764505362041": {
+      "shell_id": "agent_memory_leak_hunter_1764505362041",
+      "agent_name": "memory_leak_hunter",
+      "command": "uv run agent_memory_leak_hunter.py",
+      "timestamp": 1764505362.042059,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505362.576923
+    },
+    "agent_timemachine_snapshot_cleaner_1764505365384": {
+      "shell_id": "agent_timemachine_snapshot_cleaner_1764505365384",
+      "agent_name": "timemachine_snapshot_cleaner",
+      "command": "uv run agent_timemachine_snapshot_cleaner.py",
+      "timestamp": 1764505365.384074,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505365.881286
+    },
+    "agent_developer_cache_cleaner_1764505365386": {
+      "shell_id": "agent_developer_cache_cleaner_1764505365386",
+      "agent_name": "developer_cache_cleaner",
+      "command": "uv run agent_developer_cache_cleaner.py",
+      "timestamp": 1764505365.386474,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505394.997738
+    },
+    "agent_xcode_cache_cleaner_1764505365388": {
+      "shell_id": "agent_xcode_cache_cleaner_1764505365388",
+      "agent_name": "xcode_cache_cleaner",
+      "command": "uv run agent_xcode_cache_cleaner.py",
+      "timestamp": 1764505365.3886201,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505366.503844
+    },
+    "agent_build_cache_cleaner_1764505365390": {
+      "shell_id": "agent_build_cache_cleaner_1764505365390",
+      "agent_name": "build_cache_cleaner",
+      "command": "uv run agent_build_cache_cleaner.py",
+      "timestamp": 1764505365.390795,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505365.482962
+    },
+    "agent_system_log_cleaner_1764505365393": {
+      "shell_id": "agent_system_log_cleaner_1764505365393",
+      "agent_name": "system_log_cleaner",
+      "command": "uv run agent_system_log_cleaner.py",
+      "timestamp": 1764505365.39327,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505365.724556
+    },
+    "agent_docker_deep_cleanup_1764505365395": {
+      "shell_id": "agent_docker_deep_cleanup_1764505365395",
+      "agent_name": "docker_deep_cleanup",
+      "command": "uv run agent_docker_deep_cleanup.py",
+      "timestamp": 1764505365.3960152,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505365.51366
+    },
+    "agent_swap_purgeable_hunter_1764505394999": {
+      "shell_id": "agent_swap_purgeable_hunter_1764505394999",
+      "agent_name": "swap_purgeable_hunter",
+      "command": "uv run agent_swap_purgeable_hunter.py",
+      "timestamp": 1764505395.0,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505395.056596
+    },
+    "agent_window_server_optimizer_1764505395002": {
+      "shell_id": "agent_window_server_optimizer_1764505395002",
+      "agent_name": "window_server_optimizer",
+      "command": "uv run agent_window_server_optimizer.py",
+      "timestamp": 1764505395.00277,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505396.377955
+    },
+    "agent_spotlight_mds_hunter_1764505395004": {
+      "shell_id": "agent_spotlight_mds_hunter_1764505395004",
+      "agent_name": "spotlight_mds_hunter",
+      "command": "uv run agent_spotlight_mds_hunter.py",
+      "timestamp": 1764505395.0051131,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505395.371789
+    },
+    "agent_memory_leak_hunter_1764505395007": {
+      "shell_id": "agent_memory_leak_hunter_1764505395007",
+      "agent_name": "memory_leak_hunter",
+      "command": "uv run agent_memory_leak_hunter.py",
+      "timestamp": 1764505395.008064,
+      "status": "failed",
+      "status_code": -2,
+      "completed_at": 1764505395.210737
+    },
+    "agent_chrome_deep_cleanup_1764505396379": {
+      "shell_id": "agent_chrome_deep_cleanup_1764505396379",
+      "agent_name": "chrome_deep_cleanup",
+      "command": "uv run agent_chrome_deep_cleanup.py",
+      "timestamp": 1764505396.3794172,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505397.525406
+    },
+    "agent_safari_optimizer_1764505396381": {
+      "shell_id": "agent_safari_optimizer_1764505396381",
+      "agent_name": "safari_optimizer",
+      "command": "uv run agent_safari_optimizer.py",
+      "timestamp": 1764505396.381869,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505396.55228
+    },
+    "agent_firefox_deep_cleanup_1764505396383": {
+      "shell_id": "agent_firefox_deep_cleanup_1764505396383",
+      "agent_name": "firefox_deep_cleanup",
+      "command": "uv run agent_firefox_deep_cleanup.py",
+      "timestamp": 1764505396.3841002,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505396.797054
+    },
+    "agent_messaging_app_hunter_1764505397526": {
+      "shell_id": "agent_messaging_app_hunter_1764505397526",
+      "agent_name": "messaging_app_hunter",
+      "command": "uv run agent_messaging_app_hunter.py",
+      "timestamp": 1764505397.5268888,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505397.850167
+    },
+    "agent_vscode_deep_cleanup_1764505397529": {
+      "shell_id": "agent_vscode_deep_cleanup_1764505397529",
+      "agent_name": "vscode_deep_cleanup",
+      "command": "uv run agent_vscode_deep_cleanup.py",
+      "timestamp": 1764505397.5293078,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505397.9881148
+    },
+    "agent_dns_connection_scanner_1764505397531": {
+      "shell_id": "agent_dns_connection_scanner_1764505397531",
+      "agent_name": "dns_connection_scanner",
+      "command": "uv run agent_dns_connection_scanner.py",
+      "timestamp": 1764505397.531789,
+      "status": "completed",
+      "status_code": 0,
+      "completed_at": 1764505397.6855419
+    }
+  },
+  "metadata": {
+    "created_at": 1764505149.054993,
+    "updated_at": 1764505397.9881148
+  }
+}
