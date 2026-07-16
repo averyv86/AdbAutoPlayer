@@ -677,9 +677,10 @@ class TestEdgeCases:
         with pytest.raises(RuntimeError):
             fsm.update()
 
-    def test_device_exception_handling(self, fsm, mock_device):
+    def test_device_exception_handling(self, fsm, mock_device, mock_detector):
         """FSM handles device exceptions gracefully"""
         mock_device.tap.side_effect = RuntimeError("Device error")
+        mock_detector.get_element_region.return_value = (10, 20, 100, 80)
         fsm.current_state = BotState.IDLE
         with pytest.raises(RuntimeError):
             fsm._click_quest_button()
