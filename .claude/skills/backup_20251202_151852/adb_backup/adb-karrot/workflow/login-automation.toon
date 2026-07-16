@@ -1,0 +1,268 @@
+name: Karrot App Login Automation
+description: Automate login flow to Karrot (당근마켓) app with 2FA support
+version: 1.0.0
+
+metadata:
+  category: app-automation
+  skill: adb-karrot
+  difficulty: intermediate
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  phone_number:
+    type: string
+    default: ""
+    description: Karrot account phone number
+  timeout:
+    type: integer
+    default: 60
+    description: Action timeout in seconds
+  wait_for_sms:
+    type: boolean
+    default: false
+    description: Wait for SMS verification code
+  verification_code:
+    type: string
+    default: ""
+    description: Manual 2FA verification code (if not waiting for SMS)
+
+phases:
+  - id: launch_app
+    name: Launch Karrot App
+    description: Start the Karrot application
+    steps:
+      - id: clear_app_data
+        name: Clear Previous Session Data
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "pm clear com.daangn.android.app 2>/dev/null || true"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: launch_karrot
+        name: Launch Karrot Application
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "am start -n com.daangn.android.app/.MainActivity"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: abort
+
+      - id: wait_app_load
+        name: Wait for App to Load
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: text
+          target: "당근마켓|Karrot|Login|로그인"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: abort
+
+  - id: enter_credentials
+    name: Enter Login Credentials
+    description: Input phone number and initiate login
+    steps:
+      - id: find_phone_field
+        name: Find Phone Number Input Field
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "휴대폰|Phone|번호|number"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: enter_phone
+        name: Enter Phone Number
+        action: adb-text-input
+        params:
+          device: "{{ device }}"
+          text: "{{ phone_number }}"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: find_login_button
+        name: Locate Login Button
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "로그인|Login|시작|Start"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: tap_login
+        name: Tap Login Button
+        action: adb-tap
+        params:
+          device: "{{ device }}"
+          x: 540
+          y: 600
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: wait_verification
+    name: Wait for Verification Code
+    description: Handle 2FA verification process
+    steps:
+      - id: detect_verification_screen
+        name: Detect Verification Screen
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: text
+          target: "인증|verification|코드|code|번호"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: abort
+
+      - id: check_sms_option
+        name: Check for SMS Reception Option
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "문자|SMS|수신"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: wait_for_sms
+        name: Wait for SMS Code Reception
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: text
+          target: "{{ verification_code }}"
+          timeout: 180
+        on_success: continue
+        on_failure: skip
+
+  - id: enter_verification
+    name: Enter Verification Code
+    description: Input 2FA verification code
+    steps:
+      - id: find_code_field
+        name: Find Code Input Field
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "코드|Code|입력|Enter"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: enter_code
+        name: Enter Verification Code
+        action: adb-text-input
+        params:
+          device: "{{ device }}"
+          text: "{{ verification_code }}"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: confirm_code
+        name: Confirm Code Entry
+        action: adb-tap
+        params:
+          device: "{{ device }}"
+          x: 540
+          y: 600
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: complete_login
+    name: Complete Login Process
+    description: Verify successful login
+    steps:
+      - id: wait_home_screen
+        name: Wait for Home Screen
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: text
+          target: "홈|Home|피드|Feed|마켓|Market"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: abort
+
+      - id: verify_profile
+        name: Verify User Profile Loaded
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "프로필|Profile|내정보|My Info"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: capture_home
+        name: Capture Home Screen
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/karrot_login_success.png"
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: launch_app
+    condition: "app_launched == true"
+    on_failure: continue
+
+  - phase: enter_credentials
+    condition: "phone_entered == true"
+    on_failure: continue
+
+  - phase: wait_verification
+    condition: "verification_screen_found == true"
+    on_failure: continue
+
+  - phase: complete_login
+    condition: "home_screen_visible == true"
+    on_failure: abort
+
+recovery:
+  - on_error: launch_karrot
+    action: retry
+    max_attempts: 3
+
+  - on_error: enter_phone
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: tap_login
+    action: retry
+    max_attempts: 2
+
+  - on_error: wait_home_screen
+    action: abort
+    max_attempts: 1
+
+outputs:
+  - name: login_status
+    format: json
+    description: Login success/failure status with timestamp
+
+  - name: session_info
+    format: table
+    description: User session information and state
+
+  - name: login_log
+    format: text
+    description: Detailed login process log

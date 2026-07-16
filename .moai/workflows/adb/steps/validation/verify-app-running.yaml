@@ -1,0 +1,98 @@
+id: adb-verify-app-running
+name: Verify Application Running
+description: Check if specified application is running on device
+category: validation
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = default device)"
+    required: false
+  - name: package_name
+    type: string
+    default: ""
+    description: "Application package name (e.g., com.example.app)"
+    required: true
+  - name: activity
+    type: string
+    default: ""
+    description: "Specific activity name (optional, checks main activity if empty)"
+    required: false
+  - name: timeout
+    type: integer
+    default: 10
+    description: "Check timeout in seconds"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/validation/verify_app_running.py
+  args: ["--device", "{{ device }}", "--package-name", "{{ package_name }}", "--activity", "{{ activity }}", "--timeout", "{{ timeout }}"]
+  timeout_seconds: 20
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "running"
+    - "app is active"
+  output_patterns:
+    - "Status: (running|not_running)"
+    - "Package .+ is active"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 1
+  on_error:
+    - exit_code: 1
+      action: "Device not found or offline"
+    - exit_code: 2
+      action: "Application not installed on device"
+    - exit_code: 3
+      action: "Application is not running"
+
+outputs:
+  - name: app_status
+    type: string
+    description: "Application status (running/not_running/not_installed)"
+  - name: package_name
+    type: string
+    description: "Application package name"
+  - name: is_running
+    type: boolean
+    description: "True if application is currently running"
+  - name: current_activity
+    type: string
+    description: "Currently displayed activity name"
+  - name: process_id
+    type: integer
+    description: "Process ID if running, null otherwise"
+  - name: memory_usage_mb
+    type: number
+    description: "Memory usage in MB if running"
+  - name: foreground
+    type: boolean
+    description: "True if application is in foreground"
+  - name: installed
+    type: boolean
+    description: "True if application is installed"
+  - name: version_info
+    type: object
+    description: "Application version information"
+    properties:
+      version_name:
+        type: string
+      version_code:
+        type: integer
+  - name: check_timestamp
+    type: string
+    description: "Timestamp of the check"
+
+validation:
+  - name: package_name_format
+    rule: "package_name must follow format com.example.app"
+  - name: timeout_range
+    rule: "timeout must be between 5 and 60 seconds"
+  - name: package_name_not_empty
+    rule: "package_name parameter must not be empty"

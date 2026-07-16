@@ -1,0 +1,182 @@
+name: AFK Journey Quest Automation
+description: Automated quest completion with state tracking
+version: 1.0.0
+metadata:
+  game: afk-journey
+  workflow_type: quest-automation
+  difficulty: intermediate
+parameters:
+  device: 127.0.0.1:5555
+  quest_type: main
+  auto_equip: true
+  claim_rewards: true
+phases:
+- id: select_quest
+  name: Select Quest
+  description: Choose quest objective
+  steps:
+  - id: select_quest_step1
+    name: Select Quest - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: select_quest_step2
+    name: Select Quest - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: select_quest_step3
+    name: Select Quest - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: travel_map
+  name: Travel Map
+  description: Navigate to quest location
+  steps:
+  - id: travel_map_step1
+    name: Travel Map - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: travel_map_step2
+    name: Travel Map - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: travel_map_step3
+    name: Travel Map - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: travel_map_step4
+    name: Travel Map - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: complete_objective
+  name: Complete Objective
+  description: Execute quest tasks
+  steps:
+  - id: complete_objective_step1
+    name: Complete Objective - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: complete_objective_step2
+    name: Complete Objective - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: complete_objective_step3
+    name: Complete Objective - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: complete_objective_step4
+    name: Complete Objective - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: complete_objective_step5
+    name: Complete Objective - Step 5
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: return_base
+  name: Return to Base
+  description: Return and claim rewards
+  steps:
+  - id: return_base_step1
+    name: Return to Base - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: return_base_step2
+    name: Return to Base - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: return_base_step3
+    name: Return to Base - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+validation:
+- phase: phase_1
+  condition: phase_1_complete == true
+  on_failure: continue
+- phase: phase_2
+  condition: phase_2_complete == true
+  on_failure: continue
+- phase: phase_3
+  condition: phase_3_complete == true
+  on_failure: continue
+- phase: phase_4
+  condition: phase_4_complete == true
+  on_failure: abort
+recovery:
+- on_error: any
+  action: retry
+  max_attempts: 3
+- on_error: timeout
+  action: reset_and_retry
+  max_attempts: 2
+- on_error: device_disconnected
+  action: abort
+  max_attempts: 1
+outputs:
+- name: quest-automation_status
+  format: json
+  description: Workflow execution status
+- name: quest-automation_log
+  format: text
+  description: Detailed execution log
+- name: quest-automation_metrics
+  format: table
+  description: Performance metrics

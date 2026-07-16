@@ -1,0 +1,275 @@
+name: Complete Magisk Installation
+description: Full system installation from "Installed: N/A" to "Installed: Yes" with boot patching and flashing
+version: 1.0.0
+
+metadata:
+  category: system-installation
+  skill: adb-magisk-installer
+  difficulty: advanced
+  estimated_duration: 15
+  device_status_before: "Installed: N/A"
+  device_status_after: "Installed: Yes"
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: "Target device ID or ADB connection string"
+
+  version:
+    type: string
+    default: "latest"
+    description: "Magisk version to install (latest or specific like 30.6)"
+
+  output_dir:
+    type: string
+    default: "/tmp/magisk"
+    description: "Directory to store downloaded files and boot images"
+
+  timeout_download:
+    type: integer
+    default: 60
+    description: "Timeout for download phase (seconds)"
+
+  timeout_install:
+    type: integer
+    default: 60
+    description: "Timeout for app installation (seconds)"
+
+  timeout_extract:
+    type: integer
+    default: 30
+    description: "Timeout for boot extraction (seconds)"
+
+  timeout_patch:
+    type: integer
+    default: 120
+    description: "Timeout for boot patching (seconds)"
+
+  timeout_flash:
+    type: integer
+    default: 120
+    description: "Timeout for boot flashing (seconds)"
+
+phases:
+  - id: phase1_download
+    name: "Download Magisk Files"
+    description: "Download Magisk APK and boot image from GitHub releases"
+    steps:
+      - id: download_files
+        action: adb-magisk-download
+        params:
+          version: "{{ version }}"
+          include_boot: true
+          output_dir: "{{ output_dir }}"
+          timeout: "{{ timeout_download }}"
+
+  - id: phase2_install_app
+    name: "Install Magisk Manager App"
+    description: "Push APK to device and install via adb install"
+    steps:
+      - id: install_apk
+        action: adb-magisk-install-app
+        params:
+          device: "{{ device }}"
+          apk_path: "{{ output_dir }}/Magisk-v{{ version }}.apk"
+          force: true
+          verify: true
+          timeout: "{{ timeout_install }}"
+
+      - id: verify_launch
+        action: adb-magisk-launch
+        params:
+          device: "{{ device }}"
+          wait_text: "Modules"
+          timeout: 15
+
+  - id: phase3_extract_boot
+    name: "Extract Boot Image from Device"
+    description: "Pull boot partition for patching"
+    steps:
+      - id: extract_boot
+        action: adb-magisk-extract-boot
+        params:
+          device: "{{ device }}"
+          output_path: "{{ output_dir }}/boot.img"
+          verify: true
+          timeout: "{{ timeout_extract }}"
+
+  - id: phase4_push_boot
+    name: "Push Boot Image to Device Storage"
+    description: "Copy boot.img to /sdcard for Magisk app patching"
+    steps:
+      - id: push_boot
+        action: adb-push
+        params:
+          device: "{{ device }}"
+          local_path: "{{ output_dir }}/boot.img"
+          remote_path: "/sdcard/boot.img"
+          timeout: 60
+
+  - id: phase5_patch_boot
+    name: "Patch Boot Image via Magisk"
+    description: "Launch Magisk app and patch boot image"
+    steps:
+      - id: launch_magisk
+        action: adb-magisk-launch
+        params:
+          device: "{{ device }}"
+          wait_text: "Modules"
+          timeout: 15
+
+      - id: navigate_to_install
+        action: adb-tap
+        params:
+          device: "{{ device }}"
+          x: 100
+          y: 400
+          description: "Tap on Install/Update button"
+
+      - id: wait_for_file_selector
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: text
+          target: "Select"
+          timeout: 10
+
+      - id: select_boot_file
+        action: adb-file-select
+        params:
+          device: "{{ device }}"
+          path: "/sdcard/boot.img"
+          timeout: 10
+
+      - id: wait_patching_complete
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: text
+          target: "Patching"
+          timeout: "{{ timeout_patch }}"
+
+  - id: phase6_pull_patched
+    name: "Download Patched Boot Image"
+    description: "Pull patched_boot.img from device /sdcard/Download/"
+    steps:
+      - id: pull_patched
+        action: adb-pull
+        params:
+          device: "{{ device }}"
+          remote_path: "/sdcard/Download/magisk_patched*.img"
+          local_path: "{{ output_dir }}/patched_boot.img"
+          timeout: 60
+
+  - id: phase7_reboot_fastboot
+    name: "Reboot to Fastboot Mode"
+    description: "Reboot device into fastboot for boot flashing"
+    steps:
+      - id: reboot_cmd
+        action: adb-reboot
+        params:
+          device: "{{ device }}"
+          mode: fastboot
+          timeout: 10
+
+      - id: wait_fastboot_connection
+        action: adb-wait-fastboot
+        params:
+          device: "{{ device }}"
+          timeout: 30
+
+  - id: phase8_flash_boot
+    name: "Flash Patched Boot Image"
+    description: "Flash patched_boot.img to device boot partition"
+    steps:
+      - id: flash_boot
+        action: adb-magisk-flash-boot
+        params:
+          device: "{{ device }}"
+          boot_path: "{{ output_dir }}/patched_boot.img"
+          partition: "boot"
+          verify: true
+          reboot: true
+          timeout: "{{ timeout_flash }}"
+
+      - id: wait_device_boot
+        action: adb-wait-device
+        params:
+          device: "{{ device }}"
+          timeout: 120
+          description: "Wait for device to fully boot after flash"
+
+  - id: phase9_verify_installation
+    name: "Verify Magisk Installation"
+    description: "Confirm Magisk shows 'Installed: Yes'"
+    steps:
+      - id: launch_magisk_verify
+        action: adb-magisk-launch
+        params:
+          device: "{{ device }}"
+          wait_text: "Installed"
+          timeout: 30
+
+      - id: verify_zygisk_available
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: text
+          target: "Zygisk"
+          timeout: 10
+
+validation:
+  - phase: phase1_download
+    condition: "file_exists('{{ output_dir }}/Magisk-v{{ version }}.apk')"
+    on_failure: abort
+
+  - phase: phase2_install_app
+    condition: "app_installed('{{ device }}', 'com.topjohnwu.magisk')"
+    on_failure: abort
+
+  - phase: phase3_extract_boot
+    condition: "file_exists('{{ output_dir }}/boot.img')"
+    on_failure: continue
+
+  - phase: phase6_pull_patched
+    condition: "file_exists('{{ output_dir }}/patched_boot.img')"
+    on_failure: continue
+
+  - phase: phase9_verify_installation
+    condition: "text_visible('{{ device }}', 'Installed')"
+    on_failure: warn
+
+recovery:
+  - on_error: phase1_download
+    action: retry
+    max_attempts: 2
+    delay: 5
+
+  - on_error: phase2_install_app
+    action: retry
+    max_attempts: 2
+    delay: 5
+
+  - on_error: phase5_patch_boot
+    action: adb-screenshot-capture
+    then: pause
+    description: "Manual intervention may be needed - review Magisk app state"
+
+  - on_error: phase8_flash_boot
+    action: adb-screenshot-capture
+    then: pause
+    description: "Boot flashing failed - device may need recovery"
+
+outputs:
+  - name: installation_status
+    format: json
+    description: "Final installation status and results"
+
+  - name: files_created
+    format: table
+    description: "List of files downloaded and created"
+
+  - name: device_state
+    format: text
+    description: "Device Magisk installation state after workflow"

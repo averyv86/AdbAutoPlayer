@@ -1,0 +1,215 @@
+name: Karrot App Login Automation
+description: "Automate login flow to Karrot (\uB2F9\uADFC\uB9C8\uCF13) app with 2FA\
+  \ support"
+version: 1.0.0
+metadata:
+  game: karrot
+  workflow_type: login-automation
+  difficulty: intermediate
+parameters:
+  device: 127.0.0.1:5555
+  phone_number: ''
+  timeout: 60
+  wait_for_sms: false
+  verification_code: ''
+phases:
+- id: launch_app
+  name: Launch Karrot App
+  description: Start the Karrot application
+  steps:
+  - id: launch_app_step1
+    name: Launch Karrot App - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: launch_app_step2
+    name: Launch Karrot App - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: launch_app_step3
+    name: Launch Karrot App - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: launch_app_step4
+    name: Launch Karrot App - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: enter_credentials
+  name: Enter Credentials
+  description: Input phone number
+  steps:
+  - id: enter_credentials_step1
+    name: Enter Credentials - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: enter_credentials_step2
+    name: Enter Credentials - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: enter_credentials_step3
+    name: Enter Credentials - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: enter_credentials_step4
+    name: Enter Credentials - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: wait_verification
+  name: Wait Verification
+  description: Handle 2FA verification
+  steps:
+  - id: wait_verification_step1
+    name: Wait Verification - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: wait_verification_step2
+    name: Wait Verification - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: wait_verification_step3
+    name: Wait Verification - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: wait_verification_step4
+    name: Wait Verification - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: enter_verification
+  name: Enter Verification Code
+  description: Input 2FA code
+  steps:
+  - id: enter_verification_step1
+    name: Enter Verification Code - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: enter_verification_step2
+    name: Enter Verification Code - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: enter_verification_step3
+    name: Enter Verification Code - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: complete_login
+  name: Complete Login
+  description: Verify successful login
+  steps:
+  - id: complete_login_step1
+    name: Complete Login - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: complete_login_step2
+    name: Complete Login - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: complete_login_step3
+    name: Complete Login - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+validation:
+- phase: phase_1
+  condition: phase_1_complete == true
+  on_failure: continue
+- phase: phase_2
+  condition: phase_2_complete == true
+  on_failure: continue
+- phase: phase_3
+  condition: phase_3_complete == true
+  on_failure: continue
+- phase: phase_4
+  condition: phase_4_complete == true
+  on_failure: continue
+- phase: phase_5
+  condition: phase_5_complete == true
+  on_failure: abort
+recovery:
+- on_error: any
+  action: retry
+  max_attempts: 3
+- on_error: timeout
+  action: reset_and_retry
+  max_attempts: 2
+- on_error: device_disconnected
+  action: abort
+  max_attempts: 1
+outputs:
+- name: login-automation_status
+  format: json
+  description: Workflow execution status
+- name: login-automation_log
+  format: text
+  description: Detailed execution log
+- name: login-automation_metrics
+  format: table
+  description: Performance metrics

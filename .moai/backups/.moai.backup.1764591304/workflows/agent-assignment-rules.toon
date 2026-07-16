@@ -1,0 +1,93 @@
+# Agent Assignment Rules for Workflow Orchestration
+# Pattern matching (80%) + Content analysis (20%)
+# Automatic agent selection with fallback support
+
+@metadata[1]{version,last_updated,rule_count}:
+1.0.0,2025-11-30,12
+
+# File Pattern Matching Rules (Priority-based)
+@file_patterns[12]{pattern,agent,priority,fallback,confidence}:
+**/*.py,expert-backend,high,general-purpose,0.85
+**/*.{ts,tsx,jsx},expert-frontend,high,general-purpose,0.90
+**/*.sql,expert-database,high,expert-backend,0.95
+**/test_*.py,manager-tdd,critical,general-purpose,0.95
+**/migrations/**,expert-database,high,expert-backend,0.90
+**/api/**/*.py,expert-backend,critical,general-purpose,0.95
+**/components/**/*.tsx,expert-frontend,critical,general-purpose,0.95
+**/auth/**/*,expert-security,high,expert-backend,0.85
+**/deploy/**/*,expert-devops,medium,expert-backend,0.80
+**/*.css,expert-uiux,medium,expert-frontend,0.75
+**/docs/**/*.md,manager-docs,low,general-purpose,0.70
+**/.github/**,expert-devops,medium,general-purpose,0.85
+
+# Content Analysis Triggers (Keyword-based)
+@content_triggers[8]{keyword_pattern,agent,confidence}:
+"class Test|def test_",manager-tdd,0.95
+"SELECT|INSERT|CREATE TABLE",expert-database,0.90
+"React.Component|useState|useEffect",expert-frontend,0.95
+"FastAPI|Flask|Django",expert-backend,0.90
+"JWT|bcrypt|password_hash",expert-security,0.85
+"Docker|Kubernetes|CI/CD",expert-devops,0.85
+"accessibility|aria-|role=",expert-uiux,0.80
+"migration|schema|database",expert-database,0.90
+
+# Agent Capabilities Matrix
+@agent_capabilities[10]{agent,primary_domain,secondary_domains,file_types}:
+expert-backend,backend,"api|services|models","py|pyc"
+expert-frontend,frontend,"ui|components|pages","ts|tsx|jsx|js"
+expert-database,database,"schema|migrations|queries","sql|psql"
+expert-devops,devops,"deployment|ci-cd|infrastructure","yml|yaml|sh|dockerfile"
+expert-security,security,"auth|encryption|access-control","py|ts|config"
+expert-uiux,uiux,"design|accessibility|styling","css|scss|tsx"
+manager-tdd,testing,"unit|integration|e2e","py|ts|spec"
+manager-docs,documentation,"readme|guides|api-docs","md|rst|txt"
+manager-quality,validation,"trust-5|compliance|review","all"
+manager-git,version-control,"commits|branches|prs","all"
+
+# Assignment Algorithm Configuration
+@algorithm_config[1]{pattern_weight,content_weight,min_confidence,default_fallback}:
+0.80,0.20,0.70,general-purpose
+
+# Domain Detection Rules
+@domain_detection[7]{domain,indicators,agent_preferences}:
+backend,"api|service|model|controller|handler","expert-backend|expert-database"
+frontend,"component|page|ui|view|router","expert-frontend|expert-uiux"
+database,"migration|schema|query|model","expert-database|expert-backend"
+testing,"test|spec|assert|mock","manager-tdd"
+security,"auth|permission|encrypt|jwt","expert-security|expert-backend"
+devops,"deploy|ci|cd|docker|k8s","expert-devops"
+documentation,"readme|doc|guide|api","manager-docs"
+
+# Priority Levels (Confidence Thresholds)
+@priority_thresholds[4]{priority,min_confidence,override_allowed,fallback_required}:
+critical,0.90,false,true
+high,0.80,true,true
+medium,0.70,true,true
+low,0.60,true,false
+
+# Special Cases (Override Rules)
+@special_cases[5]{condition,agent,reason}:
+"multiple_domains=3+",manager-strategy,"Complex coordination required"
+"file_count>15",manager-strategy,"Architectural planning needed"
+"security_keywords_present",expert-security,"Security review mandatory"
+"test_coverage<85%",manager-tdd,"Test generation required"
+"migration_files_present",expert-database,"Database expert required"
+
+# Fallback Chain
+@fallback_chain[3]{level,agents,description}:
+1,specific-expert,"Domain-specific expert agent (e.g., expert-backend)"
+2,general-purpose,"Claude Code built-in general-purpose agent"
+3,manager-strategy,"Strategy manager for complex/ambiguous cases"
+
+# Usage Examples
+@usage_examples[4]{scenario,files,detected_agents}:
+"Simple bug fix","src/api.py",manager-tdd
+"Frontend feature","src/components/Login.tsx|src/pages/auth.tsx","expert-frontend|manager-tdd"
+"Database migration","migrations/001_users.sql|migrations/002_permissions.sql",expert-database
+"Full-stack feature","api/routes.py|components/Dashboard.tsx|migrations/schema.sql","expert-backend|expert-frontend|expert-database"
+
+# Quality Assurance
+@qa_rules[3]{rule_id,check,action_if_failed}:
+1,"confidence>=min_confidence","Use fallback agent"
+2,"agent_exists_in_system","Use default fallback (general-purpose)"
+3,"circular_dependency_detected","Escalate to manager-strategy"

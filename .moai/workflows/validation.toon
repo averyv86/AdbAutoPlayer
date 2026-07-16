@@ -1,0 +1,223 @@
+# Karrot App Functionality Validation Workflow
+# Purpose: Verify Karrot app is fully functional after bypass and login
+# Duration: ~2-3 minutes
+# Requirements: Login workflow completed, user authenticated
+
+name: karrot_validation_workflow
+version: 1.0.0
+type: automation
+target_app: com.nexon.karrot
+created_at: 2025-12-02T02:00:00Z
+
+# Workflow configuration
+config:
+  detection_method: hybrid  # semantic → template → ocr fallback
+  screenshot_on_error: true
+  performance_baseline: true
+
+# Workflow stages
+stages:
+  verify_home_screen:
+    description: Verify home screen is fully accessible and loaded
+    duration_seconds: 30
+    critical: true
+
+  check_navigation_elements:
+    description: Verify all navigation UI elements are present
+    duration_seconds: 20
+    critical: true
+
+  verify_core_features:
+    description: Verify core game features are accessible
+    duration_seconds: 60
+    critical: true
+
+  capture_performance_baseline:
+    description: Capture performance metrics and baseline
+    duration_seconds: 30
+    critical: false
+    optional: true
+
+  final_validation:
+    description: Final validation and status report
+    duration_seconds: 10
+    critical: true
+
+# Detailed steps for each stage
+steps:
+  verify_home_screen:
+    - name: wait_home_screen
+      type: ui_wait
+      target_text: "홈"  # Home
+      timeout_seconds: 30
+      on_failure: "screenshot_and_alert"
+
+    - name: check_home_button
+      type: ui_find
+      method: semantic
+      target_text: "홈"  # Home
+      timeout_seconds: 10
+
+    - name: verify_screen_stability
+      type: ui_wait
+      duration_seconds: 2
+      description: "Wait for screen animations to complete"
+
+  check_navigation_elements:
+    - name: verify_quest_button
+      type: ui_find
+      method: semantic
+      target_text: "퀘스트"  # Quests
+      timeout_seconds: 10
+      required: false
+
+    - name: verify_battle_button
+      type: ui_find
+      method: semantic
+      target_text: "전투"  # Battle
+      timeout_seconds: 10
+      required: false
+
+    - name: verify_profile_button
+      type: ui_find
+      method: semantic
+      target_class: "android.widget.ImageButton"
+      timeout_seconds: 10
+      description: "Profile/user icon button"
+
+    - name: verify_menu_button
+      type: ui_find
+      method: semantic
+      target_text: "메뉴"  # Menu
+      timeout_seconds: 10
+      required: false
+
+  verify_core_features:
+    - name: check_battle_feature
+      type: app_probe
+      action: verify_feature_accessible
+      feature: "battle"
+      timeout_seconds: 30
+      retry_on_failure: true
+      max_retries: 2
+
+    - name: check_matching_feature
+      type: app_probe
+      action: verify_feature_accessible
+      feature: "matching"
+      timeout_seconds: 30
+      optional: true
+
+    - name: check_inventory
+      type: ui_find
+      method: semantic
+      target_text: "인벤토리"  # Inventory
+      timeout_seconds: 10
+      required: false
+
+    - name: verify_resource_display
+      type: ui_find
+      method: semantic
+      target_class: "android.widget.TextView"
+      timeout_seconds: 10
+      description: "Check resource counters are visible"
+
+    - name: verify_no_error_dialogs
+      type: ui_check
+      check_for_absence: true
+      target_text: "오류"  # Error
+      timeout_seconds: 5
+
+  capture_performance_baseline:
+    - name: get_device_memory_usage
+      type: device_probe
+      action: memory_info
+      timeout_seconds: 5
+
+    - name: get_app_fps
+      type: app_monitor
+      metric: "fps"
+      duration_seconds: 10
+      timeout_seconds: 15
+
+    - name: capture_performance_screenshot
+      type: screenshot
+      output: /sdcard/karrot_validation_performance.png
+      optional: true
+
+  final_validation:
+    - name: verify_all_checks_passed
+      type: validation_check
+      check_criteria: "all_stages_passed"
+      timeout_seconds: 5
+
+    - name: capture_final_screenshot
+      type: screenshot
+      output: /sdcard/karrot_validation_success.png
+      optional: true
+
+    - name: generate_validation_report
+      type: report_generation
+      include_metrics: true
+      include_screenshots: true
+      output: /sdcard/karrot_validation_report.json
+
+# Output parameters
+outputs:
+  validation_successful: boolean
+  home_screen_accessible: boolean
+  navigation_elements_count: number
+  features_accessible: array
+  performance_metrics:
+    memory_usage_mb: number
+    fps_average: number
+  validation_duration_seconds: number
+  error_messages: array
+  final_screenshot_path: string
+  validation_report_path: string
+
+# Success criteria
+success_criteria:
+  - home_screen_reachable: true
+  - home_button_visible: true
+  - navigation_menu_accessible: true
+  - no_error_dialogs: true
+  - core_features_functional: true
+  - app_stability_maintained: true
+  - no_crashes: true
+
+# Error handling
+on_failure:
+  - action: take_screenshot
+    output: /sdcard/karrot_validation_error.png
+
+  - action: check_error_message
+    patterns:
+      - "오류"  # Error
+      - "충돌"  # Crash
+      - "응답 없음"  # Not responding
+      - "초기화 실패"  # Failed to initialize
+
+  - action: collect_logs
+    target: /sdcard/karrot_validation_debug.log
+
+  - action: alert
+    message: "Validation failed. Check device logs and screenshots."
+
+# Timing and retry configuration
+timing:
+  total_timeout_seconds: 180
+  inter_step_delay_seconds: 1
+
+retry_policy:
+  max_attempts: 2
+  exponential_backoff: true
+  backoff_multiplier: 1.5
+
+# Logging configuration
+logging:
+  level: info
+  output_file: karrot_validation_workflow.log
+  include_timestamps: true
+  include_device_state: true
+  include_performance_metrics: true

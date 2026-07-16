@@ -1,0 +1,84 @@
+name: BlueStacks Interactive Demonstration
+description: Interactive demonstration of ADB automation on BlueStacks emulator
+version: 1.0.0
+
+metadata:
+  category: demonstration
+  skill: adb-workflow-orchestrator
+  difficulty: beginner
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: BlueStacks device address
+  demo_type:
+    type: string
+    default: "quick"
+    description: "Demo type: quick, full, custom"
+
+phases:
+  - id: setup_demo
+    name: Setup Demo Environment
+    description: Initialize demo on BlueStacks
+    steps:
+      - id: connect_device
+        name: Connect to BlueStacks
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "getprop ro.product.manufacturer"
+          timeout: 10
+        on_success: continue
+        on_failure: abort
+
+  - id: demonstrate_basics
+    name: Demonstrate Basic Operations
+    description: Show fundamental ADB operations
+    steps:
+      - id: demo_screen_capture
+        name: Demonstrate Screen Capture
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/demo_screen.png"
+        on_success: continue
+        on_failure: continue
+
+      - id: demo_shell_command
+        name: Demonstrate Shell Commands
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'ADB Demo: Shell commands working' && date"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+  - id: demonstrate_automation
+    name: Demonstrate Automation
+    description: Show workflow automation capabilities
+    steps:
+      - id: demo_app_launch
+        name: Demonstrate App Launch
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "am start -n com.android.settings/.Settings 2>/dev/null || echo 'App launch demo'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+validation:
+  - phase: setup_demo
+    condition: "device_connected == true"
+    on_failure: abort
+
+outputs:
+  - name: demo_status
+    format: json
+    description: Demo execution status
+
+  - name: demo_log
+    format: text
+    description: Interactive demo log

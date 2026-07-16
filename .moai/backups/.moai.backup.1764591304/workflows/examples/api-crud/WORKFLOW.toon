@@ -1,0 +1,51 @@
+# API CRUD Workflow Example (Medium Complexity)
+# REST API with CRUD operations (backend + tests)
+# Execution: Mixed (sequential analysis + parallel impl)
+
+@metadata[1]{id,name,complexity,file_count,agent_count}:
+API-CRUD,REST API CRUD Operations,medium,6,2-3
+
+@phases[4]{id,agents,mode,deps,max_parallel,description}:
+1,manager-strategy,sequential,[],1,"Analyze CRUD API requirements and design endpoints"
+2,"expert-backend",parallel,[1],2,"Implement API routes, handlers, and models in parallel"
+3,manager-tdd,sequential,[2],1,"Generate comprehensive test suite with ≥90% coverage"
+4,manager-quality,sequential,[3],1,"Validate TRUST 5 principles and API security"
+
+@agent_pool[4]{agent,domain,priority,capabilities}:
+manager-strategy,analysis,critical,"api-design|endpoint-planning|data-modeling"
+expert-backend,backend,high,"fastapi|sqlalchemy|pydantic|rest-api"
+manager-tdd,testing,critical,"pytest|api-testing|coverage-analysis"
+manager-quality,validation,critical,"trust-5|security-audit|api-validation"
+
+@exec_strategy[1]{mode,parallel_default,dynamic_adjust,max_concurrent}:
+mixed,2,true,3
+
+@files[6]{path,agent,operation}:
+src/api/routes/users.py,expert-backend,create
+src/api/handlers/users.py,expert-backend,create
+src/models/user.py,expert-backend,create
+tests/test_api_users.py,manager-tdd,create
+tests/test_handlers_users.py,manager-tdd,create
+docs/API_SPEC.md,manager-docs,create
+
+@quality_gates[4]{gate_id,validator,threshold,required}:
+1,test-coverage,90,true
+2,api-security,95,true
+3,rest-compliance,90,true
+4,trust-5-compliance,100,true
+
+@file_patterns[6]{pattern,agent,priority}:
+src/api/**/*.py,expert-backend,critical
+src/models/**/*.py,expert-backend,high
+tests/test_api*.py,manager-tdd,critical
+tests/test_handlers*.py,manager-tdd,high
+docs/**/*.md,manager-docs,medium
+**/*.py,expert-backend,medium
+
+# Usage Example:
+# /moai:2-run SPEC-001
+#   → Detects this workflow
+#   → builder-workflow executes phases 1-4
+#   → Phase 2 runs backend impl in parallel
+#   → ~1-2 hour execution
+#   → Produces: API endpoints + tests + docs

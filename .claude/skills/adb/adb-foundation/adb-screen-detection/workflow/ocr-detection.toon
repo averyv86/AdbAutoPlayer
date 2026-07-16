@@ -1,0 +1,171 @@
+name: OCR-Based Screen Text Detection
+description: Detect text on screen using OCR (Optical Character Recognition)
+version: 1.0.0
+
+metadata:
+  category: screen-detection
+  skill: adb-screen-detection
+  difficulty: beginner
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  search_text:
+    type: string
+    default: ""
+    description: Text to search for on screen
+  language:
+    type: string
+    default: "kor+eng"
+    description: OCR language (kor, eng, kor+eng, etc.)
+  timeout:
+    type: integer
+    default: 20
+    description: OCR processing timeout in seconds
+
+phases:
+  - id: prepare_ocr
+    name: Prepare for OCR Processing
+    description: Capture and prepare screen for OCR
+    steps:
+      - id: take_screenshot
+        name: Take Screenshot
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/ocr_screen.png"
+        on_success: continue
+        on_failure: abort
+
+      - id: verify_tesseract
+        name: Verify Tesseract OCR Available
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "which tesseract > /dev/null && echo 'available' || echo 'missing'"
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+  - id: perform_ocr
+    name: Perform OCR Text Recognition
+    description: Extract text from screenshot
+    steps:
+      - id: run_ocr
+        name: Run OCR on Screenshot
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "tesseract /tmp/ocr_screen.png stdout -l {{ language }} 2>/dev/null"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: save_ocr_output
+        name: Save OCR Output
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "tesseract /tmp/ocr_screen.png /tmp/ocr_result -l {{ language }} 2>/dev/null && echo 'saved'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: search_text
+    name: Search for Text
+    description: Find search text in OCR results
+    steps:
+      - id: search_in_results
+        name: Search OCR Results
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -i '{{ search_text }}' /tmp/ocr_result.txt 2>/dev/null | wc -l"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: get_context_lines
+        name: Get Context Lines
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -i -B1 -A1 '{{ search_text }}' /tmp/ocr_result.txt 2>/dev/null | head -10"
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+  - id: analyze_results
+    name: Analyze OCR Results
+    description: Process and analyze OCR output
+    steps:
+      - id: get_confidence
+        name: Get OCR Confidence
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "if [ -f /tmp/ocr_result.tsv ]; then cat /tmp/ocr_result.tsv | grep -v '^$' | tail -10; else echo 'no_confidence_data'; fi"
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+      - id: count_words
+        name: Count Words Found
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "wc -w < /tmp/ocr_result.txt 2>/dev/null || echo '0'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: generate_report
+    name: Generate OCR Report
+    description: Create OCR analysis report
+    steps:
+      - id: create_report
+        name: Create OCR Report
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'OCR Detection Report:' && echo 'Language: {{ language }}' && echo 'Search Term: {{ search_text }}' && echo 'Status: Complete' && echo 'Result: ' && (grep -i '{{ search_text }}' /tmp/ocr_result.txt 2>/dev/null && echo 'FOUND' || echo 'NOT FOUND')"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: prepare_ocr
+    condition: "screenshot_ready == true"
+    on_failure: abort
+
+  - phase: perform_ocr
+    condition: "ocr_executed == true"
+    on_failure: continue
+
+  - phase: search_text
+    condition: "search_text_provided == true OR search_text_provided == false"
+    on_failure: skip
+
+recovery:
+  - on_error: run_ocr
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: search_in_results
+    action: log_and_continue
+    max_attempts: 1
+
+outputs:
+  - name: ocr_result
+    format: text
+    description: Raw OCR extracted text
+
+  - name: search_result
+    format: json
+    description: Search term found status with context
+
+  - name: ocr_report
+    format: text
+    description: OCR analysis and confidence report

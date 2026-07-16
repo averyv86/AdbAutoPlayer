@@ -1,0 +1,318 @@
+# Karrot States Registry - TOON Format
+# Screen states, coordinates, and detection rules for Karrot automation
+# Resolution: BlueStacks Air 1440x2560
+# Last Updated: 2025-12-03
+
+---
+meta:
+  version: "1.0.0"
+  app_package: "com.towneers.www"
+  app_activity: ".launcher.LauncherActivity"
+  resolution:
+    width: 1440
+    height: 2560
+  user_settings:
+    phone: "01039705176"
+    neighborhood: "서초동"
+    country: "Korea"
+
+# Screen States Definition
+states:
+  # Welcome/Onboarding Screen
+  welcome:
+    id: "welcome"
+    description: "Initial welcome screen with Get Started button"
+    indicators:
+      text:
+        - "Welcome to Karrot"
+        - "Your friendly neighborhood"
+        - "Get started"
+      ocr_regions:
+        - {x: 200, y: 800, w: 1040, h: 200}  # Title area
+    elements:
+      get_started_btn:
+        x: 720
+        y: 2350
+        description: "Orange Get Started button"
+        tap_variance: 10
+      login_link:
+        x: 490
+        y: 2493
+        description: "Have an account? Log in link"
+        tap_variance: 5
+      country_selector:
+        x: 720
+        y: 900
+        description: "Country dropdown selector"
+    next_states:
+      - "neighborhood_search"
+      - "login_phone"
+    timeout_sec: 30
+
+  # Neighborhood Search Screen
+  neighborhood_search:
+    id: "neighborhood_search"
+    description: "Search for neighborhood location"
+    indicators:
+      text:
+        - "Search by neighborhood"
+        - "Find nearby"
+        - "neighborhood"
+      ocr_regions:
+        - {x: 100, y: 0, w: 1240, h: 300}  # Top header area
+    elements:
+      search_box:
+        x: 420
+        y: 60
+        description: "Search input field"
+        tap_variance: 5
+      find_nearby_btn:
+        x: 420
+        y: 122
+        description: "Find nearby neighborhoods button"
+        tap_variance: 5
+      back_btn:
+        x: 64
+        y: 104
+        description: "Back arrow button"
+        tap_variance: 3
+    next_states:
+      - "neighborhood_results"
+      - "welcome"
+    timeout_sec: 20
+
+  # Neighborhood Results Screen
+  neighborhood_results:
+    id: "neighborhood_results"
+    description: "List of neighborhood search results"
+    indicators:
+      text:
+        - "서초동"
+        - "neighborhoods"
+        - "Select"
+    elements:
+      first_result:
+        x: 720
+        y: 400
+        description: "First search result item"
+        tap_variance: 10
+      search_input:
+        x: 720
+        y: 150
+        description: "Search input with text"
+    next_states:
+      - "login_phone"
+      - "neighborhood_search"
+    timeout_sec: 15
+
+  # Phone Login Screen
+  login_phone:
+    id: "login_phone"
+    description: "Phone number input for login"
+    indicators:
+      text:
+        - "phone number"
+        - "Enter your"
+        - "Verify"
+        - "010"
+      ocr_regions:
+        - {x: 100, y: 150, w: 1240, h: 400}  # Form area
+    elements:
+      phone_input:
+        x: 410
+        y: 254
+        description: "Phone number input field"
+        tap_variance: 5
+      country_code:
+        x: 200
+        y: 254
+        description: "Country code selector (+82)"
+      confirm_btn:
+        x: 720
+        y: 2520
+        description: "Confirm/Next button"
+        tap_variance: 10
+      back_btn:
+        x: 64
+        y: 104
+        description: "Back arrow"
+    next_states:
+      - "verification_code"
+      - "neighborhood_search"
+    timeout_sec: 30
+
+  # Verification Code Screen
+  verification_code:
+    id: "verification_code"
+    description: "SMS verification code input"
+    indicators:
+      text:
+        - "verification"
+        - "code"
+        - "SMS"
+        - "Resend"
+    elements:
+      code_input:
+        x: 720
+        y: 400
+        description: "6-digit code input"
+      resend_btn:
+        x: 720
+        y: 600
+        description: "Resend code button"
+      confirm_btn:
+        x: 720
+        y: 2400
+        description: "Verify button"
+    next_states:
+      - "home"
+      - "login_phone"
+    timeout_sec: 120
+
+  # Home Screen (Logged In)
+  home:
+    id: "home"
+    description: "Main home screen after login"
+    indicators:
+      text:
+        - "Karrot"
+        - "Sell"
+        - "Buy"
+        - "Chat"
+      package: "com.towneers.www"
+    elements:
+      sell_btn:
+        x: 720
+        y: 2400
+        description: "Sell button"
+      search_btn:
+        x: 1300
+        y: 150
+        description: "Search icon"
+      profile_btn:
+        x: 1350
+        y: 2480
+        description: "Profile tab"
+    next_states: []
+    is_goal: true
+
+  # Crashed/Error State
+  crashed:
+    id: "crashed"
+    description: "App crashed or closed unexpectedly"
+    indicators:
+      package_not:
+        - "com.towneers.www"
+      package_any:
+        - "com.android.settings"
+        - "com.uncube.launcher3"
+        - "com.android.vending"
+    recovery:
+      action: "relaunch"
+      max_attempts: 3
+      backoff_sec: 2.0
+    next_states:
+      - "welcome"
+      - "home"
+
+  # Loading/Splash Screen
+  loading:
+    id: "loading"
+    description: "Karrot loading/splash screen with gradient wave"
+    indicators:
+      package: "com.towneers.www"
+      visual:
+        - "gradient wave pattern"
+        - "minimal UI"
+    elements: {}
+    recovery:
+      action: "wait"
+      wait_sec: 5
+      next_check: "detect_again"
+    next_states:
+      - "welcome"
+      - "neighborhood_search"
+      - "home"
+    timeout_sec: 30
+
+  # Location Permission Dialog
+  location_permission:
+    id: "location_permission"
+    description: "Location permission dialog from Settings"
+    indicators:
+      package_any:
+        - "com.android.settings"
+        - "com.google.android.gms"
+      text:
+        - "location"
+        - "permission"
+        - "Allow"
+    elements:
+      allow_btn:
+        x: 720
+        y: 1400
+        description: "Allow permission button"
+      deny_btn:
+        x: 720
+        y: 1200
+        description: "Deny permission button"
+    recovery:
+      action: "tap_allow_or_back"
+    next_states:
+      - "welcome"
+      - "neighborhood_search"
+
+  # Unknown State
+  unknown:
+    id: "unknown"
+    description: "Unrecognized screen state"
+    recovery:
+      action: "screenshot_and_analyze"
+      fallback: "relaunch"
+    next_states:
+      - "welcome"
+
+# Banned Zones (BlueStacks overlay areas)
+banned_zones:
+  bluestacks_game_banner:
+    description: "BlueStacks POPULAR GAMES - triggers Play Store"
+    x_min: 0
+    x_max: 1440
+    y_min: 2440
+    y_max: 2560
+  bluestacks_ad_container:
+    description: "BlueStacks side ad container"
+    x_min: 840
+    x_max: 1440
+    y_min: 162
+    y_max: 2200
+  bluestacks_search:
+    description: "BlueStacks Search bar"
+    x_min: 240
+    x_max: 1200
+    y_min: 178
+    y_max: 258
+
+# Timing Configuration
+timing:
+  tap_delay_min_ms: 500
+  tap_delay_max_ms: 2000
+  post_tap_wait_sec: 1.0
+  state_check_interval_sec: 0.5
+  crash_detection_interval_sec: 1.0
+  recovery_wait_sec: 2.0
+  exponential_backoff:
+    initial_sec: 0.5
+    factor: 1.5
+    max_sec: 5.0
+    max_attempts: 10
+    total_timeout_sec: 30
+
+# Logging Configuration
+logging:
+  state_log: "/tmp/karrot-state-log.json"
+  tap_log: "/tmp/karrot-tap-log.json"
+  crash_log: "/tmp/karrot-crash-log.json"
+  screenshot_dir: "/tmp/karrot-screenshots"
+  max_log_entries: 1000
+  max_screenshots: 50

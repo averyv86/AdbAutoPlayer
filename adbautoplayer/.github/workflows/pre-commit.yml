@@ -1,0 +1,28 @@
+name: pre-commit
+permissions:
+  contents: read
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  pre-commit:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest] # ubuntu-latest ignored for now ceebs
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node, uv, Python
+        uses: ./.github/actions/setup-tools
+
+      - run: pnpm install
+
+      - run: uvx pre-commit run --all-files

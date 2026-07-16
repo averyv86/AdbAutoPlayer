@@ -1,0 +1,92 @@
+id: adb-get-device-info
+name: Get Device Information
+description: Retrieve detailed device information including model, OS, hardware specs
+category: capture
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = default device)"
+    required: false
+  - name: detailed
+    type: boolean
+    default: true
+    description: "Include detailed hardware and build information"
+    required: false
+  - name: timeout
+    type: integer
+    default: 10
+    description: "Command timeout in seconds"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/capture/get_device_info.py
+  args: ["--device", "{{ device }}", "--detailed", "{{ detailed }}", "--timeout", "{{ timeout }}"]
+  timeout_seconds: 20
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Device information"
+    - "model"
+    - "version"
+  output_patterns:
+    - "Model: .+"
+    - "Android Version: .+"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 1
+  on_error:
+    - exit_code: 1
+      action: "Device not found or offline"
+    - exit_code: 2
+      action: "Failed to retrieve device properties"
+
+outputs:
+  - name: info_status
+    type: string
+    description: "Status of information retrieval"
+  - name: device_id
+    type: string
+    description: "Device unique identifier"
+  - name: model
+    type: string
+    description: "Device model name"
+  - name: manufacturer
+    type: string
+    description: "Device manufacturer"
+  - name: android_version
+    type: string
+    description: "Android OS version"
+  - name: api_level
+    type: integer
+    description: "Android API level"
+  - name: build_number
+    type: string
+    description: "Build number/version"
+  - name: hardware_specs
+    type: object
+    description: "Hardware specifications"
+    properties:
+      cpu:
+        type: string
+      ram_mb:
+        type: integer
+      storage_gb:
+        type: number
+      battery_capacity_mah:
+        type: integer
+  - name: device_features
+    type: array
+    description: "List of device features (wifi, bluetooth, nfc, etc.)"
+  - name: build_date
+    type: string
+    description: "Build date/time"
+
+validation:
+  - name: timeout_range
+    rule: "timeout must be between 5 and 60 seconds"

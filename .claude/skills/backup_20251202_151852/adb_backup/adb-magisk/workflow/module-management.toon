@@ -1,0 +1,264 @@
+name: Magisk Module Installation and Management
+description: Install, enable, disable, and remove Magisk modules
+version: 1.0.0
+
+metadata:
+  category: system-management
+  skill: adb-magisk
+  difficulty: advanced
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  action:
+    type: string
+    default: "list"
+    description: "Action: list, install, enable, disable, remove"
+  module_name:
+    type: string
+    default: ""
+    description: Module name to install/manage
+  module_path:
+    type: string
+    default: ""
+    description: Path to module zip file for installation
+  timeout:
+    type: integer
+    default: 60
+    description: Action timeout in seconds
+
+phases:
+  - id: prepare_operation
+    name: Prepare Module Operation
+    description: Initialize and validate operation parameters
+    steps:
+      - id: verify_device_access
+        name: Verify Device Access
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "test -d /data/adb/modules && echo 'ok' || echo 'denied'"
+          timeout: 10
+        on_success: continue
+        on_failure: abort
+
+      - id: validate_module_directory
+        name: Validate Module Directory
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls -la /data/adb/modules/ | head -5"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: check_free_space
+        name: Check Free Space
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "df /data | tail -1 | awk '{print $4}'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: list_modules
+    name: List Installed Modules
+    description: List all currently installed modules
+    steps:
+      - id: get_module_list
+        name: Get Module List
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls /data/adb/modules/ | grep -v '^\\.' | sort"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: get_module_details
+        name: Get Module Details
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "for dir in /data/adb/modules/*/; do echo \"Module: $(basename $dir)\"; test -f \"$dir/module.prop\" && grep '^name=' \"$dir/module.prop\" | cut -d= -f2-; test -f \"$dir/disable\" && echo 'Status: DISABLED' || echo 'Status: ENABLED'; echo; done"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: check_module_conflicts
+        name: Check for Module Conflicts
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -r 'com.daangn\\|playintegrity\\|bypass' /data/adb/modules/*/module.prop 2>/dev/null | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: install_module
+    name: Install Module
+    description: Install a new Magisk module from zip
+    steps:
+      - id: prepare_zip
+        name: Prepare Module ZIP
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "test -f {{ module_path }} && echo 'found' || echo 'not_found'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: push_module
+        name: Push Module to Device
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "cp {{ module_path }} /data/adb/modules/install.zip 2>/dev/null && echo 'pushed' || echo 'failed'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: extract_module
+        name: Extract Module
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "cd /data/adb/modules && unzip -q install.zip && rm install.zip && echo 'extracted' || echo 'extract_failed'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: enable_disable_module
+    name: Enable or Disable Module
+    description: Toggle module active/inactive status
+    steps:
+      - id: check_module_exists
+        name: Check Module Exists
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "test -d /data/adb/modules/{{ module_name }} && echo 'exists' || echo 'not_found'"
+          timeout: 10
+        on_success: continue
+        on_failure: abort
+
+      - id: disable_module
+        name: Disable Module
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "touch /data/adb/modules/{{ module_name }}/disable && echo 'disabled' || echo 'failed'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: enable_module
+        name: Enable Module
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "rm /data/adb/modules/{{ module_name }}/disable 2>/dev/null && echo 'enabled' || echo 'failed'"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: remove_module
+    name: Remove Module
+    description: Remove a module completely
+    steps:
+      - id: backup_module
+        name: Backup Module (Optional)
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "cp -r /data/adb/modules/{{ module_name }} /data/adb/modules/{{ module_name }}.bak 2>/dev/null || true"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: remove_module_dir
+        name: Remove Module Directory
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "rm -rf /data/adb/modules/{{ module_name }} && echo 'removed' || echo 'failed'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_removal
+        name: Verify Module Removed
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "test ! -d /data/adb/modules/{{ module_name }} && echo 'verified' || echo 'still_exists'"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+  - id: finalize_operation
+    name: Finalize Operation
+    description: Complete operation and prepare for reboot if needed
+    steps:
+      - id: get_module_list_final
+        name: Get Final Module List
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls /data/adb/modules/ | grep -v '^\\.' | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: note_reboot_needed
+        name: Note Reboot Requirement
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Note: Reboot device for changes to take full effect' && date"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: prepare_operation
+    condition: "device_access == 'ok'"
+    on_failure: abort
+
+  - phase: install_module
+    condition: "install_action == true AND extracted == true"
+    on_failure: continue
+
+  - phase: remove_module
+    condition: "removal_verified == true"
+    on_failure: continue
+
+recovery:
+  - on_error: push_module
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: extract_module
+    action: skip
+    max_attempts: 1
+
+  - on_error: remove_module_dir
+    action: log_and_continue
+    max_attempts: 1
+
+outputs:
+  - name: operation_result
+    format: json
+    description: Module operation success/failure status
+
+  - name: module_list
+    format: table
+    description: Current installed modules and their status
+
+  - name: operation_log
+    format: text
+    description: Detailed operation log with timestamps

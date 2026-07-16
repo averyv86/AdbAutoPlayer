@@ -1,0 +1,395 @@
+# Command 2: optimize
+
+Apply targeted optimizations to improve system performance.
+
+## Syntax
+
+```bash
+/macos-resource-optimizer:2-optimize [options]
+```
+
+## Description
+
+The optimize command:
+- Plans optimization based on system analysis
+- Applies targeted improvements
+- Monitors impact in real-time
+- Generates detailed change log
+- Safe, reversible modifications
+
+## Basic Usage
+
+```bash
+# Run optimization
+/macos-resource-optimizer:2-optimize
+```
+
+Expected output:
+```json
+{
+  "status": "success",
+  "optimizations_applied": 12,
+  "estimated_improvement_percent": 18,
+  "execution_time_seconds": 2.0,
+  "summary": {
+    "cpu_optimizations": 3,
+    "memory_optimizations": 4,
+    "disk_optimizations": 2,
+    "battery_optimizations": 2,
+    "thermal_optimizations": 1
+  }
+}
+```
+
+## Optimization Categories
+
+### CPU Optimizations
+
+- Frequency scaling adjustment
+- Process priority rebalancing
+- Thread pool optimization
+- Load balancing
+
+### Memory Optimizations
+
+- Cache clearing
+- Memory compression
+- Swap optimization
+- Garbage collection tuning
+
+### Disk Optimizations
+
+- Temporary file cleanup
+- Cache cleanup
+- Fragmentation reduction
+- Free space optimization
+
+### Battery Optimizations
+
+- Power profile adjustment
+- Screen brightness optimization
+- Background task throttling
+- CPU frequency limiting
+
+### Thermal Optimizations
+
+- Fan speed optimization
+- Thermal throttling management
+- Temperature-based adjustments
+
+### Network Optimizations
+
+- DNS optimization
+- Connection pooling
+- Bandwidth management
+- Latency reduction
+
+## Options
+
+### Optimization Strategy
+
+```bash
+# Conservative strategy (minimal changes)
+/macos-resource-optimizer:2-optimize --strategy conservative
+
+# Balanced strategy (recommended)
+/macos-resource-optimizer:2-optimize --strategy balanced
+
+# Aggressive strategy (maximum optimization)
+/macos-resource-optimizer:2-optimize --strategy aggressive
+```
+
+### Safety Options
+
+```bash
+# Dry run (preview changes)
+/macos-resource-optimizer:2-optimize --dry-run
+
+# Require confirmation
+/macos-resource-optimizer:2-optimize --confirm
+
+# Unsafe optimizations allowed
+/macos-resource-optimizer:2-optimize --unsafe
+```
+
+### Focus Options
+
+```bash
+# Optimize specific component
+/macos-resource-optimizer:2-optimize --component cpu
+
+# Multiple components
+/macos-resource-optimizer:2-optimize --component cpu --component memory
+
+# All components
+/macos-resource-optimizer:2-optimize --all
+```
+
+### Output Options
+
+```bash
+# JSON output
+/macos-resource-optimizer:2-optimize --json
+
+# Detailed output
+/macos-resource-optimizer:2-optimize --verbose
+
+# Quiet mode
+/macos-resource-optimizer:2-optimize --quiet
+```
+
+## Detailed Output Example
+
+```json
+{
+  "status": "success",
+  "execution_time_seconds": 2.0,
+  "timestamp": "2024-01-15T10:35:00Z",
+  "optimizations": {
+    "cpu": {
+      "frequency_scaling": {
+        "applied": true,
+        "from": 3.5,
+        "to": 2.8,
+        "impact": "5% improvement"
+      },
+      "process_priorities": {
+        "applied": true,
+        "processes_adjusted": 3,
+        "impact": "responsive improvement"
+      },
+      "load_balancing": {
+        "applied": true,
+        "impact": "balanced load"
+      }
+    },
+    "memory": {
+      "cache_clearing": {
+        "applied": true,
+        "freed_mb": 512,
+        "impact": "512MB freed"
+      },
+      "compression": {
+        "applied": true,
+        "status": "enabled"
+      },
+      "swap_optimization": {
+        "applied": true,
+        "impact": "reduced swap usage"
+      }
+    },
+    "disk": {
+      "cache_cleanup": {
+        "applied": true,
+        "freed_gb": 2.3,
+        "impact": "2.3GB freed"
+      }
+    },
+    "battery": {
+      "power_profile": {
+        "applied": true,
+        "from": "performance",
+        "to": "balanced",
+        "impact": "20% battery improvement"
+      }
+    },
+    "thermal": {
+      "fan_control": {
+        "applied": true,
+        "status": "optimized"
+      }
+    }
+  },
+  "summary": {
+    "total_optimizations": 12,
+    "successful": 12,
+    "failed": 0,
+    "estimated_overall_improvement": "18%"
+  },
+  "before_metrics": {
+    "cpu_usage": 45.2,
+    "memory_usage": 75.0,
+    "disk_usage": 65.0,
+    "temperature": 65.5
+  },
+  "after_metrics": {
+    "cpu_usage": 38.5,
+    "memory_usage": 62.0,
+    "disk_usage": 62.0,
+    "temperature": 58.2
+  },
+  "improvements": [
+    "CPU usage reduced by 6.7%",
+    "Memory usage reduced by 13.0%",
+    "Disk space freed: 2.3GB",
+    "Temperature reduced by 7.3°C"
+  ]
+}
+```
+
+## Optimization Strategies
+
+### Conservative Strategy
+
+Best for:
+- Production systems
+- Critical services
+- Stability-first scenarios
+
+Changes:
+- Minimal system modifications
+- Safe, proven optimizations
+- Low risk
+
+### Balanced Strategy (Default)
+
+Best for:
+- General use
+- Most users
+- Mixed workloads
+
+Changes:
+- Standard optimizations
+- Moderate risk
+- Good performance/safety balance
+
+### Aggressive Strategy
+
+Best for:
+- Gaming/high-performance needs
+- Development systems
+- Maximum optimization
+
+Changes:
+- Extensive optimizations
+- Higher risk
+- Maximum performance
+
+## Change Log
+
+All changes are logged and reversible:
+
+```bash
+# View optimization history
+/macos-resource-optimizer:2-optimize --show-history
+
+# Revert last optimization
+/macos-resource-optimizer:2-optimize --revert
+
+# Revert all optimizations
+/macos-resource-optimizer:2-optimize --revert-all
+```
+
+## Safety Features
+
+### Automatic Rollback
+
+If optimization causes issues:
+- System detects problems
+- Automatic rollback triggers
+- Safe state restored
+- User notified
+
+### Compatibility Check
+
+Before applying optimizations:
+- System compatibility verified
+- Conflicts detected
+- Safety warnings issued
+- User confirmation requested if needed
+
+### Monitoring
+
+During optimization:
+- Real-time metric collection
+- Problem detection
+- Automatic mitigation
+- Change logging
+
+## Performance Impact
+
+### Speed
+
+- **Execution time**: 1.5-2.5 seconds
+- **No system stalls**: Non-blocking operations
+- **Background friendly**: Can run during work
+
+### Resource Usage
+
+- **CPU during optimization**: < 10%
+- **Memory during optimization**: < 100MB
+- **Disk I/O**: Minimal
+
+## Metrics
+
+### Typical Improvements
+
+- CPU usage: 5-15% reduction
+- Memory usage: 10-20% reduction
+- Disk efficiency: 15-30% improvement
+- Battery life: 8-12% improvement
+- Temperature: 5-10°C reduction
+
+### Measurement
+
+Improvements measured by comparing before/after metrics:
+
+```
+Before Optimization → Run optimize → After Optimization → Compare
+```
+
+## Best Practices
+
+1. **Run after analysis**: Use analyze results to plan optimizations
+2. **Start conservative**: Try conservative strategy first
+3. **Monitor impact**: Check performance after optimization
+4. **Regular runs**: Run weekly for sustained performance
+5. **Backup settings**: Save configuration before major changes
+
+## Troubleshooting
+
+### Optimization Failed
+
+```bash
+# View detailed error
+/macos-resource-optimizer:2-optimize --verbose
+
+# Revert to safe state
+/macos-resource-optimizer:2-optimize --revert
+```
+
+### No Improvement Detected
+
+```bash
+# Check system load
+/macos-resource-optimizer:1-analyze
+
+# Try more aggressive strategy
+/macos-resource-optimizer:2-optimize --strategy aggressive
+```
+
+### System Issues After Optimization
+
+```bash
+# Automatic rollback
+/macos-resource-optimizer:2-optimize --revert
+
+# Manual revert to previous state
+/macos-resource-optimizer:2-optimize --revert-all
+```
+
+## Next Steps
+
+After optimization:
+
+1. Monitor with [monitor](/commands/monitor)
+2. Generate [report](/commands/report)
+3. Verify improvements with [analyze](/commands/analyze)
+
+## Related Commands
+
+- [analyze](/commands/analyze) - Analyze system state
+- [monitor](/commands/monitor) - Monitor improvements
+- [report](/commands/report) - Generate reports
+
+See [Troubleshooting](/guides/troubleshooting) for more help.

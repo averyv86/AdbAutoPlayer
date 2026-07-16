@@ -1,0 +1,530 @@
+# Troubleshooting Guide
+
+Solutions for common issues with macOS Resource Optimizer.
+
+## Initialization Issues
+
+### Issue: "Python not found"
+
+**Error message**: `ModuleNotFoundError: No module named 'python'`
+
+**Cause**: Python not installed or not in PATH
+
+**Solution**:
+
+```bash
+# Check Python installation
+python3 --version
+
+# If not installed, use Homebrew
+brew install python@3.11
+
+# Verify installation
+python3 --version
+```
+
+### Issue: "Dependencies missing"
+
+**Error message**: `ImportError: No module named 'asyncio'`
+
+**Cause**: Dependencies not installed
+
+**Solution**:
+
+```bash
+# Reinstall dependencies
+cd .claude/skills/macos-resource-optimizer/.data
+uv pip install -r requirements.txt
+
+# Verify installation
+python -m pip list
+```
+
+### Issue: "Permission denied"
+
+**Error message**: `PermissionError: [Errno 13] Permission denied`
+
+**Cause**: Insufficient file permissions
+
+**Solution**:
+
+```bash
+# Grant execute permissions
+chmod +x .claude/skills/macos-resource-optimizer/.data/bin/*
+
+# Verify permissions
+ls -la .claude/skills/macos-resource-optimizer/.data/bin/
+```
+
+## Analysis Issues
+
+### Issue: "Analysis fails to complete"
+
+**Error message**: `TimeoutError: Analysis took too long`
+
+**Cause**: System under heavy load or slow storage
+
+**Solution**:
+
+```bash
+# Try quick analysis
+/macos-resource-optimizer:1-analyze --quick
+
+# Close unnecessary applications and try again
+# Try during low-load period
+/macos-resource-optimizer:1-analyze
+
+# Use dry-run to diagnose
+/macos-resource-optimizer:1-analyze --dry-run
+```
+
+### Issue: "Memory analysis shows incorrect values"
+
+**Error message**: `Index out of range at metrics[X]`
+
+**Cause**: RAM configuration not properly detected
+
+**Solution**:
+
+```bash
+# Force re-detection
+/macos-resource-optimizer:0-init --check-deps
+
+# Run analysis with detailed output
+/macos-resource-optimizer:1-analyze --verbose
+
+# Submit detailed feedback
+/macos-resource-optimizer:9-feedback --type bug "Memory analysis shows X GB but system has Y GB"
+```
+
+### Issue: "Disk analysis shows wrong free space"
+
+**Error message**: `Disk free space calculation error`
+
+**Cause**: Multiple drives or mounted volumes
+
+**Solution**:
+
+```bash
+# Analyze specific disk
+/macos-resource-optimizer:1-analyze --category disk --verbose
+
+# Check mounted volumes
+df -h
+
+# Ensure all volumes are visible to optimizer
+```
+
+## Optimization Issues
+
+### Issue: "Optimization fails to apply changes"
+
+**Error message**: `Failed to apply optimization: Permission denied`
+
+**Cause**: Insufficient system permissions
+
+**Solution**:
+
+```bash
+# Verify sudo access (if required)
+sudo -v
+
+# Try conservative optimization
+/macos-resource-optimizer:2-optimize --strategy conservative
+
+# Check system logs
+log stream --predicate 'process == "macos-optimizer"'
+```
+
+### Issue: "System becomes slower after optimization"
+
+**Error message**: None, but performance decreased
+
+**Cause**: Optimization strategy too aggressive for system
+
+**Solution**:
+
+```bash
+# Revert last optimization
+/macos-resource-optimizer:2-optimize --revert
+
+# Check baseline
+/macos-resource-optimizer:1-analyze
+
+# Try less aggressive strategy
+/macos-resource-optimizer:2-optimize --strategy conservative
+
+# Monitor improvements
+/macos-resource-optimizer:3-monitor --interval 5
+```
+
+### Issue: "Temperature increases after optimization"
+
+**Error message**: `Thermal threshold exceeded`
+
+**Cause**: Thermal optimization not effective or system overheating
+
+**Solution**:
+
+```bash
+# Check thermal status
+/macos-resource-optimizer:1-analyze --category thermal
+
+# Clean fan vents (physical)
+# Allow system to cool down
+
+# Try thermal optimization
+/macos-resource-optimizer:2-optimize --component thermal --strategy aggressive
+
+# Check ambient temperature
+# Monitor in cool environment
+```
+
+### Issue: "Memory not being freed"
+
+**Error message**: `Memory compression failed`
+
+**Cause**: Limited available memory or system constraints
+
+**Solution**:
+
+```bash
+# Check memory status
+/macos-resource-optimizer:1-analyze --category memory --detailed
+
+# Close unnecessary applications
+
+# Clear caches manually
+purge
+
+# Try memory optimization
+/macos-resource-optimizer:2-optimize --component memory --strategy aggressive
+
+# Monitor memory
+/macos-resource-optimizer:3-monitor --component memory
+```
+
+## Monitoring Issues
+
+### Issue: "Monitor fails to start"
+
+**Error message**: `Failed to start monitoring: Port already in use`
+
+**Cause**: Another monitor instance running or port conflict
+
+**Solution**:
+
+```bash
+# Check running processes
+ps aux | grep macos-optimizer
+
+# Kill existing process (if needed)
+pkill -f macos-optimizer
+
+# Restart monitor
+/macos-resource-optimizer:3-monitor
+
+# Use different port
+/macos-resource-optimizer:3-monitor --port 9000
+```
+
+### Issue: "Monitor shows incomplete data"
+
+**Error message**: `Warning: Missing metric data`
+
+**Cause**: Component failure or metric collection issue
+
+**Solution**:
+
+```bash
+# Check component status
+/macos-resource-optimizer:0-init --diagnose
+
+# Restart monitoring with verbose output
+/macos-resource-optimizer:3-monitor --verbose
+
+# Check system resources (not full disk/memory)
+df -h
+memory_pressure
+```
+
+### Issue: "Monitor consumes too much CPU"
+
+**Error message**: None, but CPU usage high during monitoring
+
+**Cause**: Monitoring interval too short or system under load
+
+**Solution**:
+
+```bash
+# Increase monitoring interval
+/macos-resource-optimizer:3-monitor --interval 30
+
+# Check what's consuming CPU
+/macos-resource-optimizer:3-monitor --component cpu --interval 5
+
+# Reduce monitoring duration
+/macos-resource-optimizer:3-monitor --duration 1800 --interval 30
+```
+
+## Reporting Issues
+
+### Issue: "Report generation fails"
+
+**Error message**: `Failed to generate report`
+
+**Cause**: Insufficient data or corrupted metrics
+
+**Solution**:
+
+```bash
+# Run analysis first
+/macos-resource-optimizer:1-analyze
+
+# Try generating report
+/macos-resource-optimizer:4-report --type summary
+
+# If still fails, try different format
+/macos-resource-optimizer:4-report --format json
+
+# Check available data
+/macos-resource-optimizer:4-report --list-archived
+```
+
+### Issue: "Report shows no improvements"
+
+**Error message**: None, but improvements are 0%
+
+**Cause**: Insufficient data or no actual improvements
+
+**Solution**:
+
+```bash
+# Establish baseline
+/macos-resource-optimizer:1-analyze > baseline.json
+
+# Apply optimization
+/macos-resource-optimizer:2-optimize
+
+# Wait for impact
+sleep 300
+
+# Generate comparison
+/macos-resource-optimizer:4-report --type comparison
+
+# If still no improvement, try different strategy
+/macos-resource-optimizer:2-optimize --strategy aggressive
+```
+
+## Configuration Issues
+
+### Issue: "Invalid configuration"
+
+**Error message**: `Configuration error: Invalid syntax at line X`
+
+**Cause**: Malformed JSON configuration file
+
+**Solution**:
+
+```bash
+# Validate configuration
+/macos-resource-optimizer:0-init --validate-config
+
+# View configuration
+cat .claude/skills/macos-resource-optimizer/.data/config.json
+
+# Validate JSON syntax
+python -m json.tool .claude/skills/macos-resource-optimizer/.data/config.json
+
+# Reset to defaults
+/macos-resource-optimizer:0-init --reset-config
+
+# Edit configuration carefully
+nano .claude/skills/macos-resource-optimizer/.data/config.json
+```
+
+### Issue: "Settings not applied"
+
+**Error message**: None, but settings unchanged
+
+**Cause**: Configuration not reloaded
+
+**Solution**:
+
+```bash
+# Reinitialize with new config
+/macos-resource-optimizer:0-init
+
+# Verify configuration loaded
+/macos-resource-optimizer:0-init --validate-config
+
+# Apply with explicit config
+/macos-resource-optimizer:2-optimize --config /path/to/config.json
+```
+
+## System-Specific Issues
+
+### Issue: "Fails on M1/M2 Mac"
+
+**Error message**: `Architecture mismatch or unsupported feature`
+
+**Cause**: Compatibility issue with Apple Silicon
+
+**Solution**:
+
+```bash
+# Verify system information
+/macos-resource-optimizer:0-init
+
+# Use native architecture
+arch -arm64e bash
+
+# Submit detailed report
+/macos-resource-optimizer:9-feedback --type bug "Fails on Apple Silicon" --include-system-info
+```
+
+### Issue: "Fails on Intel Mac"
+
+**Error message**: `Feature not available on Intel architecture`
+
+**Cause**: Feature requires Apple Silicon
+
+**Solution**:
+
+```bash
+# Check available features
+/macos-resource-optimizer:0-init --diagnose
+
+# Use compatible optimizations
+/macos-resource-optimizer:2-optimize --strategy conservative
+
+# Check version compatibility
+/macos-resource-optimizer:1-analyze --verbose
+```
+
+## Performance Issues
+
+### Slow Optimization
+
+If optimization takes > 3 seconds:
+
+```bash
+# Check system load
+top -l 1 | head -15
+
+# Check disk I/O
+iostat 1 5
+
+# Try again during low-load period
+/macos-resource-optimizer:2-optimize
+
+# Use quick mode
+/macos-resource-optimizer:2-optimize --quick
+```
+
+### High Memory Usage
+
+If optimizer uses > 100MB:
+
+```bash
+# Check memory details
+/macos-resource-optimizer:3-monitor --component memory
+
+# Reduce monitoring interval
+/macos-resource-optimizer:3-monitor --interval 30
+
+# Check for memory leaks
+/macos-resource-optimizer:0-init --diagnose
+```
+
+## Debugging
+
+### Enable Verbose Output
+
+```bash
+# All commands support --verbose
+/macos-resource-optimizer:1-analyze --verbose
+/macos-resource-optimizer:2-optimize --verbose
+/macos-resource-optimizer:3-monitor --verbose
+/macos-resource-optimizer:4-report --verbose
+```
+
+### View System Logs
+
+```bash
+# View optimizer logs
+log stream --predicate 'process == "macos-optimizer"'
+
+# View specific error logs
+log show --predicate 'process == "macos-optimizer" AND eventType == error' --last 1h
+```
+
+### Diagnostic Information
+
+```bash
+# Run full diagnostics
+/macos-resource-optimizer:0-init --diagnose
+
+# Generate diagnostic report
+/macos-resource-optimizer:4-report --type technical
+```
+
+## Getting Help
+
+### Before Submitting Feedback
+
+1. Check [FAQ](/guides/faq)
+2. Review this troubleshooting guide
+3. Try [Diagnostic Command](#diagnostic-information)
+4. Gather system information
+
+### Submit Detailed Feedback
+
+```bash
+/macos-resource-optimizer:9-feedback --type bug \
+  --include-system-info \
+  --attach-logs \
+  "Description of your issue"
+```
+
+### Include Information
+
+When reporting issues, include:
+- macOS version
+- System model
+- Optimizer version
+- Steps to reproduce
+- Error messages
+- System logs
+- Diagnostic output
+
+## Common Solutions Checklist
+
+- [ ] Verify Python installation
+- [ ] Reinstall dependencies
+- [ ] Check file permissions
+- [ ] Run diagnostics
+- [ ] Check system resources
+- [ ] Try conservative strategy
+- [ ] Review system logs
+- [ ] Submit feedback with details
+
+## Next Steps
+
+1. Try solutions above
+2. Check [FAQ](/guides/faq) for more help
+3. Review [Commands](/commands/index) reference
+4. Submit [feedback](/commands/feedback) if unresolved
+
+## Emergency Revert
+
+If system becomes unstable:
+
+```bash
+# Revert all optimizations
+/macos-resource-optimizer:2-optimize --revert-all
+
+# System should return to previous state
+```
+
+Still having issues? Submit detailed feedback with system information.

@@ -1,0 +1,383 @@
+# Strategy API
+
+Decision-making engine for system optimization planning.
+
+## Overview
+
+The Strategy module:
+- Analyzes system state
+- Plans optimizations
+- Estimates improvements
+- Generates recommendations
+- Manages optimization strategies
+
+## Class Definition
+
+```python
+from macos_optimizer.strategy import Strategy
+
+class Strategy:
+    """Optimization planning and decision engine"""
+
+    def __init__(self, config: Dict = None):
+        """Initialize strategy with configuration"""
+        pass
+```
+
+## Core Methods
+
+### analyze(metrics: Dict) → Dict
+
+Analyze system metrics and identify issues.
+
+```python
+strategy = Strategy()
+
+# Analyze metrics from analyzer
+metrics = analyzer.collect()
+analysis = strategy.analyze(metrics)
+```
+
+Returns analysis with identified issues:
+```json
+{
+  "issues": [
+    {
+      "component": "memory",
+      "severity": "high",
+      "description": "Memory usage 75%"
+    }
+  ],
+  "recommendations": [
+    "Clear application caches",
+    "Close unused applications"
+  ]
+}
+```
+
+### plan_optimizations(analysis: Dict, strategy: str = 'balanced') → Dict
+
+Plan optimizations based on analysis.
+
+```python
+# Plan optimizations
+plan = strategy.plan_optimizations(analysis, strategy='balanced')
+```
+
+Strategies:
+- `'conservative'`: Minimal, safe changes
+- `'balanced'`: Standard optimizations
+- `'aggressive'`: Maximum performance
+
+Returns optimization plan:
+```json
+{
+  "optimizations": [
+    {
+      "component": "memory",
+      "action": "clear_caches",
+      "impact": "Free 1-2GB"
+    }
+  ],
+  "estimated_time": 2.0,
+  "estimated_improvement": 15
+}
+```
+
+### estimate_improvement(optimizations: List) → Dict
+
+Estimate improvement from optimizations.
+
+```python
+improvement = strategy.estimate_improvement(plan['optimizations'])
+```
+
+Returns:
+```json
+{
+  "cpu_improvement": 5.2,
+  "memory_improvement": 12.5,
+  "disk_improvement": 18.0,
+  "overall_improvement": 11.9
+}
+```
+
+### generate_recommendations(analysis: Dict) → List
+
+Generate actionable recommendations.
+
+```python
+recommendations = strategy.generate_recommendations(analysis)
+```
+
+Returns:
+```json
+[
+  "Close browser tabs (using 2GB memory)",
+  "Clear cache files (freeing 5GB disk)",
+  "Disable background sync (saving battery)",
+  "Reduce screen brightness (extending battery life)"
+]
+```
+
+## Strategy Levels
+
+### Conservative Strategy
+
+Minimal, safe optimizations:
+
+```python
+strategy_obj = Strategy()
+
+plan = strategy_obj.plan_optimizations(
+    analysis,
+    strategy='conservative'
+)
+
+# Changes applied:
+# - Clear temporary files only
+# - Light memory compression
+# - No system parameter changes
+```
+
+### Balanced Strategy (Recommended)
+
+Moderate optimizations:
+
+```python
+plan = strategy_obj.plan_optimizations(
+    analysis,
+    strategy='balanced'
+)
+
+# Changes applied:
+# - Clear caches
+# - Memory compression
+# - Process optimization
+# - Safe system adjustments
+```
+
+### Aggressive Strategy
+
+Maximum optimizations:
+
+```python
+plan = strategy_obj.plan_optimizations(
+    analysis,
+    strategy='aggressive'
+)
+
+# Changes applied:
+# - Extensive cache clearing
+# - Aggressive compression
+# - Frequency scaling
+# - System parameter tuning
+```
+
+## Decision Logic
+
+### Impact Assessment
+
+```python
+# Assess impact of optimization
+impact = strategy_obj.assess_impact(
+    component='memory',
+    optimization='clear_caches'
+)
+
+# Returns impact metrics:
+# {
+#   "estimated_memory_freed": 2000,  # MB
+#   "system_impact": "low",
+#   "reversibility": True,
+#   "duration": 1.5  # seconds
+# }
+```
+
+### Safety Verification
+
+```python
+# Verify safety of optimizations
+safety = strategy_obj.verify_safety(plan)
+
+# Returns:
+# {
+#   "is_safe": True,
+#   "warnings": [],
+#   "incompatibilities": []
+# }
+```
+
+## Usage Examples
+
+### Complete Analysis and Planning
+
+```python
+from macos_optimizer.strategy import Strategy
+from macos_optimizer.experts.analyzer import Analyzer
+
+# Initialize
+strategy = Strategy()
+analyzer = Analyzer()
+
+# Collect metrics
+metrics = analyzer.collect()
+
+# Analyze
+analysis = strategy.analyze(metrics)
+
+# Plan optimizations
+plan = strategy.plan_optimizations(
+    analysis,
+    strategy='balanced'
+)
+
+# Generate recommendations
+recommendations = strategy.generate_recommendations(analysis)
+
+# Estimate improvements
+improvement = strategy.estimate_improvement(plan['optimizations'])
+
+print(f"Estimated improvement: {improvement['overall_improvement']}%")
+```
+
+### Component-Specific Planning
+
+```python
+# Plan CPU optimizations
+cpu_analysis = strategy.analyze_component(metrics, 'cpu')
+cpu_plan = strategy.plan_optimizations(
+    cpu_analysis,
+    strategy='aggressive',
+    component='cpu'
+)
+
+# Plan memory optimizations
+memory_analysis = strategy.analyze_component(metrics, 'memory')
+memory_plan = strategy.plan_optimizations(
+    memory_analysis,
+    strategy='conservative',
+    component='memory'
+)
+```
+
+### Scenario-Based Planning
+
+```python
+# Plan for gaming
+gaming_plan = strategy.plan_for_scenario('gaming', metrics)
+
+# Plan for office work
+office_plan = strategy.plan_for_scenario('office', metrics)
+
+# Plan for battery optimization
+battery_plan = strategy.plan_for_scenario('battery', metrics)
+```
+
+## Configuration
+
+### Custom Strategy Rules
+
+```python
+config = {
+    'strategy': {
+        'conservative': {
+            'memory_threshold': 90,
+            'cpu_threshold': 95,
+            'thermal_threshold': 90
+        },
+        'balanced': {
+            'memory_threshold': 75,
+            'cpu_threshold': 80,
+            'thermal_threshold': 85
+        },
+        'aggressive': {
+            'memory_threshold': 60,
+            'cpu_threshold': 70,
+            'thermal_threshold': 80
+        }
+    }
+}
+
+strategy = Strategy(config=config)
+```
+
+## Async Operations
+
+```python
+# Async planning
+plan = await strategy.plan_optimizations_async(analysis)
+
+# Async recommendations
+recommendations = await strategy.generate_recommendations_async(analysis)
+
+# Async improvement estimation
+improvement = await strategy.estimate_improvement_async(optimizations)
+```
+
+## Caching
+
+### Strategy Results Caching
+
+```python
+# Get cached plan
+plan = strategy.get_cached_plan('balanced')
+
+# Invalidate cache
+strategy.invalidate_plan_cache('balanced')
+
+# Clear all cache
+strategy.clear_cache()
+```
+
+## Advanced Features
+
+### Custom Strategies
+
+```python
+# Define custom strategy
+custom_strategy = {
+    'name': 'development',
+    'cpu_limit': 70,
+    'memory_limit': 80,
+    'disk_limit': 85,
+    'prioritize': ['memory', 'cpu'],
+    'avoid': ['critical_files']
+}
+
+strategy.register_custom_strategy('development', custom_strategy)
+
+# Use custom strategy
+plan = strategy.plan_optimizations(
+    analysis,
+    strategy='development'
+)
+```
+
+### Multi-Objective Optimization
+
+```python
+# Optimize for multiple objectives
+plan = strategy.plan_multi_objective(
+    analysis,
+    objectives={
+        'performance': 0.6,  # 60% priority
+        'battery': 0.3,      # 30% priority
+        'thermal': 0.1       # 10% priority
+    }
+)
+```
+
+## Performance
+
+Strategy execution times:
+- Analyze metrics: ~100ms
+- Plan optimizations: ~50ms
+- Estimate improvement: ~30ms
+- Generate recommendations: ~20ms
+
+## See Also
+
+- [Coordinator API](/api/coordinator)
+- [Experts API](/api/experts)
+- [Performance Tuning Guide](/guides/performance-tuning)

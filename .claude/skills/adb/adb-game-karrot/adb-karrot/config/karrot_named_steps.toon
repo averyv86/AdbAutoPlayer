@@ -1,0 +1,256 @@
+# Karrot Named Steps - TOON Format
+# Reusable workflow steps for Karrot automation
+# Resolution: BlueStacks Air 1440x2560
+# Last Updated: 2025-12-03
+
+---
+meta:
+  version: "1.0.0"
+  states_file: "karrot_states.toon"
+  description: "Named reusable workflow steps"
+
+# Named Steps Definition
+steps:
+  # Launch and Initialize
+  launch_app:
+    id: "launch_app"
+    description: "Launch Karrot app from scratch"
+    actions:
+      - type: "force_stop"
+        package: "com.towneers.www"
+      - type: "force_stop"
+        package: "com.android.vending"
+      - type: "force_stop"
+        package: "com.uncube.launcher3"
+      - type: "wait"
+        seconds: 0.5
+      - type: "start_activity"
+        package: "com.towneers.www"
+        activity: ".launcher.LauncherActivity"
+      - type: "wait"
+        seconds: 3
+      - type: "verify_state"
+        expected: ["welcome", "home", "neighborhood_search"]
+    on_failure: "retry"
+    max_retries: 3
+
+  # Welcome Screen Actions
+  tap_get_started:
+    id: "tap_get_started"
+    description: "Tap Get Started button on welcome screen"
+    preconditions:
+      state: "welcome"
+    actions:
+      - type: "tap"
+        element: "get_started_btn"
+        from_state: "welcome"
+      - type: "wait"
+        seconds: 2
+      - type: "verify_state"
+        expected: ["neighborhood_search", "login_phone"]
+    on_failure: "screenshot_and_retry"
+    max_retries: 2
+
+  tap_login_link:
+    id: "tap_login_link"
+    description: "Tap 'Have an account? Log in' link"
+    preconditions:
+      state: "welcome"
+    actions:
+      - type: "tap"
+        element: "login_link"
+        from_state: "welcome"
+      - type: "wait"
+        seconds: 2
+      - type: "verify_state"
+        expected: ["login_phone"]
+    on_failure: "screenshot_and_retry"
+    max_retries: 2
+
+  # Neighborhood Search Actions
+  search_neighborhood:
+    id: "search_neighborhood"
+    description: "Search for neighborhood (서초동)"
+    preconditions:
+      state: "neighborhood_search"
+    actions:
+      - type: "tap"
+        element: "search_box"
+        from_state: "neighborhood_search"
+      - type: "wait"
+        seconds: 1
+      - type: "input_text"
+        text: "서초동"
+      - type: "wait"
+        seconds: 2
+      - type: "verify_state"
+        expected: ["neighborhood_results"]
+    on_failure: "screenshot_and_retry"
+    max_retries: 2
+
+  select_neighborhood:
+    id: "select_neighborhood"
+    description: "Select first neighborhood result"
+    preconditions:
+      state: "neighborhood_results"
+    actions:
+      - type: "tap"
+        element: "first_result"
+        from_state: "neighborhood_results"
+      - type: "wait"
+        seconds: 2
+      - type: "verify_state"
+        expected: ["login_phone", "home"]
+    on_failure: "screenshot_and_retry"
+    max_retries: 2
+
+  tap_find_nearby:
+    id: "tap_find_nearby"
+    description: "Tap Find Nearby Neighborhoods button"
+    preconditions:
+      state: "neighborhood_search"
+    actions:
+      - type: "tap"
+        element: "find_nearby_btn"
+        from_state: "neighborhood_search"
+      - type: "wait"
+        seconds: 3
+      - type: "verify_state"
+        expected: ["neighborhood_results", "login_phone"]
+    on_failure: "screenshot_and_retry"
+    max_retries: 2
+
+  # Phone Login Actions
+  enter_phone_number:
+    id: "enter_phone_number"
+    description: "Enter phone number for login"
+    preconditions:
+      state: "login_phone"
+    actions:
+      - type: "tap"
+        element: "phone_input"
+        from_state: "login_phone"
+      - type: "wait"
+        seconds: 0.5
+      - type: "input_text"
+        text: "01039705176"
+        use_setting: "phone"
+      - type: "wait"
+        seconds: 1
+      - type: "tap"
+        element: "confirm_btn"
+        from_state: "login_phone"
+      - type: "wait"
+        seconds: 3
+      - type: "verify_state"
+        expected: ["verification_code"]
+    on_failure: "screenshot_and_retry"
+    max_retries: 2
+
+  # Verification Actions
+  wait_for_sms:
+    id: "wait_for_sms"
+    description: "Wait for SMS verification code"
+    preconditions:
+      state: "verification_code"
+    actions:
+      - type: "wait"
+        seconds: 10
+      - type: "check_sms"
+        pattern: "\\d{6}"
+    timeout_sec: 120
+    on_failure: "notify_user"
+
+  # Recovery Actions
+  recover_from_crash:
+    id: "recover_from_crash"
+    description: "Recover from app crash"
+    preconditions:
+      state: "crashed"
+    actions:
+      - type: "keyevent"
+        code: "KEYCODE_BACK"
+      - type: "wait"
+        seconds: 0.5
+      - type: "keyevent"
+        code: "KEYCODE_BACK"
+      - type: "wait"
+        seconds: 0.5
+      - type: "run_step"
+        step: "launch_app"
+    on_failure: "notify_user"
+    max_retries: 3
+
+  go_back:
+    id: "go_back"
+    description: "Press back button"
+    actions:
+      - type: "keyevent"
+        code: "KEYCODE_BACK"
+      - type: "wait"
+        seconds: 1
+
+# Workflows (Sequences of Steps)
+workflows:
+  # Full Login Flow
+  full_login:
+    id: "full_login"
+    description: "Complete login flow from app launch to verification"
+    steps:
+      - "launch_app"
+      - "tap_get_started"
+      - "search_neighborhood"
+      - "select_neighborhood"
+      - "enter_phone_number"
+      - "wait_for_sms"
+    on_step_failure: "retry_step"
+    max_step_retries: 2
+
+  # Quick Login (Already registered)
+  quick_login:
+    id: "quick_login"
+    description: "Quick login for returning users"
+    steps:
+      - "launch_app"
+      - "tap_login_link"
+      - "enter_phone_number"
+      - "wait_for_sms"
+    on_step_failure: "retry_step"
+
+  # Recovery Workflow
+  crash_recovery:
+    id: "crash_recovery"
+    description: "Full crash recovery workflow"
+    steps:
+      - "recover_from_crash"
+    loop_until_success: true
+    max_loops: 5
+
+# State Transitions Map
+transitions:
+  welcome:
+    get_started_btn: "neighborhood_search"
+    login_link: "login_phone"
+  neighborhood_search:
+    search_box: "neighborhood_results"
+    find_nearby_btn: "neighborhood_results"
+    back_btn: "welcome"
+  neighborhood_results:
+    first_result: "login_phone"
+    back_btn: "neighborhood_search"
+  login_phone:
+    confirm_btn: "verification_code"
+    back_btn: "neighborhood_search"
+  verification_code:
+    confirm_btn: "home"
+  crashed:
+    recover: "welcome"
+
+# Auto-save Settings
+auto_save:
+  enabled: true
+  save_on_state_change: true
+  save_on_tap: true
+  save_on_error: true
+  state_file: "/tmp/karrot-last-state.json"
+  progress_file: "/tmp/karrot-workflow-progress.json"

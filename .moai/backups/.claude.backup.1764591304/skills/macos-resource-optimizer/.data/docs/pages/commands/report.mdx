@@ -1,0 +1,462 @@
+# Command 4: report
+
+Generate comprehensive analysis reports with detailed insights.
+
+## Syntax
+
+```bash
+/macos-resource-optimizer:4-report [options]
+```
+
+## Description
+
+The report command:
+- Generates detailed system analysis reports
+- Includes before/after comparisons
+- Provides optimization recommendations
+- Exports in multiple formats
+- Documents system history
+
+## Basic Usage
+
+```bash
+# Generate standard report
+/macos-resource-optimizer:4-report
+```
+
+Expected output:
+```
+macOS Resource Optimizer - Analysis Report
+Generated: 2024-01-15 10:50:00
+
+=== EXECUTIVE SUMMARY ===
+Overall Status: Good
+Optimizations Applied: 12
+Estimated Improvement: 18%
+
+=== DETAILED METRICS ===
+CPU Usage: 38.5% (was 45.2%) ↓ 6.7%
+Memory: 62.0% (was 75.0%) ↓ 13.0%
+Disk: 62.0% (was 65.0%) ↓ 3.0%
+Temperature: 58.2°C (was 65.5°C) ↓ 7.3°C
+
+=== RECOMMENDATIONS ===
+- Continue monitoring system performance
+- Run optimization weekly for sustained results
+- Consider increasing available disk space
+```
+
+## Report Types
+
+### Summary Report
+
+Quick overview of current state:
+
+```bash
+# Generate summary
+/macos-resource-optimizer:4-report --type summary
+
+# Output: High-level metrics and status
+```
+
+### Detailed Report
+
+Comprehensive analysis:
+
+```bash
+# Generate detailed report
+/macos-resource-optimizer:4-report --type detailed
+
+# Output: All metrics, trends, and recommendations
+```
+
+### Comparison Report
+
+Before/after analysis:
+
+```bash
+# Generate comparison
+/macos-resource-optimizer:4-report --type comparison
+
+# Output: Before/after metrics with improvements
+```
+
+### Trend Report
+
+Historical trend analysis:
+
+```bash
+# Generate trend report
+/macos-resource-optimizer:4-report --type trend
+
+# Output: Historical data with trend analysis
+```
+
+### Executive Report
+
+High-level business perspective:
+
+```bash
+# Generate executive report
+/macos-resource-optimizer:4-report --type executive
+
+# Output: Summary suitable for management
+```
+
+## Report Formats
+
+### HTML Report
+
+```bash
+# Generate HTML report
+/macos-resource-optimizer:4-report --format html
+
+# Output file
+/macos-resource-optimizer:4-report --format html --output report.html
+```
+
+### JSON Report
+
+```bash
+# Generate JSON report
+/macos-resource-optimizer:4-report --format json
+
+# Output file
+/macos-resource-optimizer:4-report --format json --output report.json
+```
+
+### PDF Report
+
+```bash
+# Generate PDF report
+/macos-resource-optimizer:4-report --format pdf
+
+# Output file
+/macos-resource-optimizer:4-report --format pdf --output report.pdf
+```
+
+### CSV Report
+
+```bash
+# Generate CSV data
+/macos-resource-optimizer:4-report --format csv
+
+# Output file
+/macos-resource-optimizer:4-report --format csv --output metrics.csv
+```
+
+### Markdown Report
+
+```bash
+# Generate Markdown report
+/macos-resource-optimizer:4-report --format markdown
+
+# Output file
+/macos-resource-optimizer:4-report --format markdown --output report.md
+```
+
+## Report Options
+
+### Time Period
+
+```bash
+# Last hour
+/macos-resource-optimizer:4-report --period hour
+
+# Last day
+/macos-resource-optimizer:4-report --period day
+
+# Last week
+/macos-resource-optimizer:4-report --period week
+
+# Last month
+/macos-resource-optimizer:4-report --period month
+
+# Custom period
+/macos-resource-optimizer:4-report --period custom --start "2024-01-01" --end "2024-01-15"
+```
+
+### Components to Include
+
+```bash
+# Include specific components
+/macos-resource-optimizer:4-report --component cpu --component memory
+
+# All components
+/macos-resource-optimizer:4-report --all-components
+
+# Specific metrics only
+/macos-resource-optimizer:4-report --metrics cpu_usage,memory_usage,temperature
+```
+
+### Comparison Options
+
+```bash
+# Compare with baseline
+/macos-resource-optimizer:4-report --compare-baseline
+
+# Compare specific dates
+/macos-resource-optimizer:4-report --compare-with "2024-01-01"
+
+# Compare before/after optimization
+/macos-resource-optimizer:4-report --compare-optimization
+```
+
+### Output Options
+
+```bash
+# Save to file
+/macos-resource-optimizer:4-report --output /path/to/report.html
+
+# Display in browser
+/macos-resource-optimizer:4-report --display
+
+# Email report
+/macos-resource-optimizer:4-report --email user@example.com
+
+# Include charts
+/macos-resource-optimizer:4-report --with-charts
+
+# Include recommendations
+/macos-resource-optimizer:4-report --with-recommendations
+```
+
+## Sample HTML Report Structure
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>macOS Resource Optimizer Report</title>
+</head>
+<body>
+  <h1>System Analysis Report</h1>
+
+  <section>
+    <h2>Executive Summary</h2>
+    <p>Overall System Status: Good</p>
+  </section>
+
+  <section>
+    <h2>Detailed Metrics</h2>
+    <table>
+      <tr>
+        <th>Component</th>
+        <th>Current</th>
+        <th>Previous</th>
+        <th>Improvement</th>
+      </tr>
+      <tr>
+        <td>CPU Usage</td>
+        <td>38.5%</td>
+        <td>45.2%</td>
+        <td>↓ 6.7%</td>
+      </tr>
+      <!-- More rows -->
+    </table>
+  </section>
+
+  <section>
+    <h2>Performance Charts</h2>
+    <chart type="line">CPU Usage Over Time</chart>
+    <chart type="bar">Component Comparison</chart>
+  </section>
+
+  <section>
+    <h2>Recommendations</h2>
+    <ul>
+      <li>Continue monitoring performance</li>
+      <li>Run weekly optimizations</li>
+    </ul>
+  </section>
+</body>
+</html>
+```
+
+## Sample JSON Report
+
+```json
+{
+  "report": {
+    "generated_at": "2024-01-15T10:50:00Z",
+    "period": "day",
+    "summary": {
+      "overall_status": "good",
+      "total_optimizations": 12,
+      "estimated_improvement_percent": 18
+    },
+    "metrics": {
+      "cpu": {
+        "current": 38.5,
+        "previous": 45.2,
+        "improvement": -6.7
+      },
+      "memory": {
+        "current": 62.0,
+        "previous": 75.0,
+        "improvement": -13.0
+      }
+    },
+    "recommendations": [
+      "Continue monitoring system performance",
+      "Run optimization weekly"
+    ],
+    "charts": {
+      "cpu_trend": {
+        "type": "line",
+        "title": "CPU Usage Over Time"
+      }
+    }
+  }
+}
+```
+
+## Advanced Features
+
+### Scheduled Reports
+
+```bash
+# Generate daily report
+/macos-resource-optimizer:4-report --schedule daily
+
+# Generate weekly report
+/macos-resource-optimizer:4-report --schedule weekly
+
+# Generate monthly report
+/macos-resource-optimizer:4-report --schedule monthly
+```
+
+### Custom Templates
+
+```bash
+# Use custom report template
+/macos-resource-optimizer:4-report --template /path/to/template.html
+
+# List available templates
+/macos-resource-optimizer:4-report --list-templates
+```
+
+### Distribution
+
+```bash
+# Send via email
+/macos-resource-optimizer:4-report --email admin@example.com
+
+# Upload to cloud
+/macos-resource-optimizer:4-report --upload s3://bucket/reports/
+
+# Post to webhook
+/macos-resource-optimizer:4-report --webhook https://example.com/reports
+```
+
+### Data Analysis
+
+```bash
+# Include statistical analysis
+/macos-resource-optimizer:4-report --statistics
+
+# Include predictions
+/macos-resource-optimizer:4-report --predictions
+
+# Include anomalies
+/macos-resource-optimizer:4-report --anomalies
+```
+
+## Report Contents
+
+### Standard Report Includes
+
+- Executive summary
+- Current system metrics
+- Before/after comparisons
+- Performance trends
+- Optimization history
+- Recommendations
+- Charts and visualizations
+
+### Executive Report Includes
+
+- High-level summary
+- Key metrics only
+- Performance improvements
+- Business impact
+- Budget implications
+
+### Technical Report Includes
+
+- All detailed metrics
+- System configuration
+- Performance analysis
+- Trend data
+- Optimization details
+- Technical recommendations
+
+## Performance Impact
+
+- **Generation time**: 0.5-2 seconds
+- **Report file size**: 50KB-5MB depending on format
+- **System impact**: Minimal
+
+## Use Cases
+
+### Weekly Performance Report
+
+```bash
+/macos-resource-optimizer:4-report --type summary --period week --format html
+```
+
+### Optimization Documentation
+
+```bash
+/macos-resource-optimizer:4-report --type comparison --format pdf --output before-after.pdf
+```
+
+### Trend Analysis
+
+```bash
+/macos-resource-optimizer:4-report --type trend --period month --with-charts
+```
+
+### Management Summary
+
+```bash
+/macos-resource-optimizer:4-report --type executive --format html --email manager@company.com
+```
+
+## Report Archival
+
+```bash
+# Archive reports
+/macos-resource-optimizer:4-report --archive
+
+# View archived reports
+/macos-resource-optimizer:4-report --list-archived
+
+# Restore archived report
+/macos-resource-optimizer:4-report --restore report-id
+```
+
+## Sharing Reports
+
+```bash
+# Generate shareable link
+/macos-resource-optimizer:4-report --shareable
+
+# Generate PDF for printing
+/macos-resource-optimizer:4-report --format pdf --optimize-for print
+```
+
+## Next Steps
+
+- Share reports with team members
+- Use reports for capacity planning
+- Track improvements over time
+- Archive for compliance
+
+## Related Commands
+
+- [analyze](/commands/analyze) - Collect metrics
+- [monitor](/commands/monitor) - Continuous monitoring
+- [optimize](/commands/optimize) - Apply optimizations
+
+See [Troubleshooting](/guides/troubleshooting) for help.

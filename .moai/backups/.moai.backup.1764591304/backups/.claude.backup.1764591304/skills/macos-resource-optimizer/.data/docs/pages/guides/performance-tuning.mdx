@@ -1,0 +1,519 @@
+# Performance Tuning Guide
+
+Advanced strategies for maximizing macOS Resource Optimizer performance.
+
+## Tuning Philosophy
+
+Effective tuning balances three factors:
+
+1. **Performance**: System speed and responsiveness
+2. **Stability**: System reliability and safety
+3. **Efficiency**: Resource utilization
+
+## CPU Performance Tuning
+
+### Understanding CPU Metrics
+
+```json
+{
+  "usage_percent": 45.2,
+  "temperature_celsius": 65.5,
+  "frequency_ghz": 3.2,
+  "thermal_headroom": "good",
+  "p_cores_active": 4,
+  "e_cores_active": 8
+}
+```
+
+### Optimization Strategies
+
+#### Conservative (Safety First)
+
+```json
+{
+  "cpu": {
+    "frequency_scaling": "enabled",
+    "max_frequency": 2.4,
+    "thermal_threshold": 85,
+    "processes_managed": 1
+  }
+}
+```
+
+Use when:
+- Running critical applications
+- On battery power
+- System feels unstable
+
+#### Balanced (Recommended)
+
+```json
+{
+  "cpu": {
+    "frequency_scaling": "adaptive",
+    "max_frequency": 3.2,
+    "thermal_threshold": 80,
+    "processes_managed": 3
+  }
+}
+```
+
+Use when:
+- Normal daily use
+- Mixed workload
+- Default setting
+
+#### Aggressive (Performance)
+
+```json
+{
+  "cpu": {
+    "frequency_scaling": "disabled",
+    "max_frequency": 3.5,
+    "thermal_threshold": 75,
+    "processes_managed": 5
+  }
+}
+```
+
+Use when:
+- Heavy computing tasks
+- Gaming sessions
+- Plugin development
+
+### CPU Tuning Commands
+
+```bash
+# Check current CPU state
+/macos-resource-optimizer:1-analyze --category cpu
+
+# Apply conservative CPU tuning
+/macos-resource-optimizer:2-optimize --component cpu --strategy conservative
+
+# Apply aggressive tuning
+/macos-resource-optimizer:2-optimize --component cpu --strategy aggressive
+
+# Monitor CPU performance
+/macos-resource-optimizer:3-monitor --component cpu --interval 1
+```
+
+## Memory Performance Tuning
+
+### Memory Optimization Levels
+
+#### Level 1: Light (2-5 minutes)
+
+```json
+{
+  "memory": {
+    "cache_clear": "partial",
+    "compression": "enabled",
+    "swap_optimize": false
+  }
+}
+```
+
+Effects:
+- 2-3% memory freed
+- Minimal impact
+- Safe for all systems
+
+#### Level 2: Standard (5-10 minutes)
+
+```json
+{
+  "memory": {
+    "cache_clear": "full",
+    "compression": "aggressive",
+    "swap_optimize": true
+  }
+}
+```
+
+Effects:
+- 8-12% memory freed
+- Moderate impact
+- Good performance gain
+
+#### Level 3: Deep (10-30 minutes)
+
+```json
+{
+  "memory": {
+    "cache_clear": "deep",
+    "compression": "extreme",
+    "swap_optimize": "aggressive",
+    "garbage_collect": true
+  }
+}
+```
+
+Effects:
+- 15-25% memory freed
+- Significant system usage
+- Best results but slower
+
+### Memory Tuning Workflow
+
+```bash
+# 1. Analyze memory usage
+/macos-resource-optimizer:1-analyze --category memory
+
+# 2. Identify problem applications
+/macos-resource-optimizer:1-analyze --detailed --category memory
+
+# 3. Apply optimization
+/macos-resource-optimizer:2-optimize --component memory --strategy balanced
+
+# 4. Monitor improvements
+/macos-resource-optimizer:3-monitor --component memory
+
+# 5. Generate report
+/macos-resource-optimizer:4-report --type comparison
+```
+
+## Disk Performance Tuning
+
+### Disk Space Optimization
+
+#### Phase 1: Quick Cleanup
+
+```bash
+# Remove temporary files
+/macos-resource-optimizer:2-optimize --component disk --strategy conservative
+```
+
+Frees: 500MB - 1GB
+
+#### Phase 2: Cache Cleanup
+
+```bash
+# Clear application caches
+/macos-resource-optimizer:2-optimize --component disk --strategy balanced
+```
+
+Frees: 2-5GB
+
+#### Phase 3: Deep Clean
+
+```bash
+# Deep cleanup (be careful!)
+/macos-resource-optimizer:2-optimize --component disk --strategy aggressive
+```
+
+Frees: 10-20GB
+
+### Disk I/O Optimization
+
+#### Monitor I/O Performance
+
+```bash
+/macos-resource-optimizer:1-analyze --category disk --detailed
+```
+
+Look for:
+- High read/write times
+- Excessive I/O wait
+- Fragmentation levels
+
+#### Reduce I/O Bottlenecks
+
+```bash
+# Optimize disk I/O
+/macos-resource-optimizer:2-optimize --component disk
+```
+
+Effects:
+- Faster app launches
+- Smoother file operations
+- Better overall responsiveness
+
+### Disk Maintenance Schedule
+
+```bash
+# Daily
+/macos-resource-optimizer:2-optimize --component disk --strategy conservative
+
+# Weekly
+/macos-resource-optimizer:2-optimize --component disk --strategy balanced
+
+# Monthly
+/macos-resource-optimizer:2-optimize --component disk --strategy aggressive
+```
+
+## Thermal Management Tuning
+
+### Understanding Temperatures
+
+```
+Optimal:   < 60°C
+Good:      60-75°C
+Fair:      75-85°C
+Critical:  > 85°C
+```
+
+### Temperature Optimization
+
+```bash
+# Check current temperatures
+/macos-resource-optimizer:1-analyze --category thermal
+
+# Conservative cooling
+/macos-resource-optimizer:2-optimize --component thermal --strategy conservative
+
+# Aggressive cooling
+/macos-resource-optimizer:2-optimize --component thermal --strategy aggressive
+```
+
+### Thermal Tuning by Scenario
+
+#### Gaming
+
+```bash
+/macos-resource-optimizer:2-optimize --strategy aggressive --component thermal
+```
+
+Settings:
+- Higher temperature threshold (85°C)
+- Faster fan ramp-up
+- More aggressive cooling
+
+#### Development
+
+```bash
+/macos-resource-optimizer:2-optimize --strategy balanced --component thermal
+```
+
+Settings:
+- Balanced temperatures (80°C)
+- Moderate fan speed
+- Good performance/cooling
+
+#### Office Work
+
+```bash
+/macos-resource-optimizer:2-optimize --strategy conservative --component thermal
+```
+
+Settings:
+- Lower temperature target (75°C)
+- Quieter operation
+- Extended equipment life
+
+## Battery Life Optimization
+
+### Battery Optimization Strategies
+
+#### Light Use (Everyday)
+
+```bash
+/macos-resource-optimizer:2-optimize --component battery --strategy conservative
+```
+
+Expected improvement: 8-12% more battery life
+
+#### Moderate Use (Work)
+
+```bash
+/macos-resource-optimizer:2-optimize --component battery --strategy balanced
+```
+
+Expected improvement: 5-10% more battery life
+
+#### Gaming/Heavy Use
+
+```bash
+/macos-resource-optimizer:2-optimize --component battery --strategy aggressive
+```
+
+Expected improvement: 15-20% more battery life (with reduced performance)
+
+### Battery Monitoring
+
+```bash
+# Check battery health
+/macos-resource-optimizer:1-analyze --category battery
+
+# Monitor battery over time
+/macos-resource-optimizer:3-monitor --component battery --duration 3600
+
+# Generate battery report
+/macos-resource-optimizer:4-report --component battery --period week
+```
+
+## Network Performance Tuning
+
+### Network Optimization
+
+```bash
+# Analyze network performance
+/macos-resource-optimizer:1-analyze --category network
+
+# Apply network optimizations
+/macos-resource-optimizer:2-optimize --component network
+
+# Monitor network
+/macos-resource-optimizer:3-monitor --component network
+```
+
+### DNS Optimization
+
+```json
+{
+  "network": {
+    "dns_optimization": true,
+    "dns_server": "8.8.8.8",
+    "connection_pooling": true,
+    "bandwidth_throttling": false
+  }
+}
+```
+
+Effects:
+- Faster DNS resolution
+- Better page load times
+- Improved responsiveness
+
+## Custom Configuration Tuning
+
+### Creating a Performance Profile
+
+```json
+{
+  "profile": "gaming",
+  "cpu": {
+    "strategy": "aggressive",
+    "max_frequency": 3.5,
+    "thermal_threshold": 75
+  },
+  "memory": {
+    "strategy": "balanced",
+    "compression": "enabled"
+  },
+  "thermal": {
+    "strategy": "aggressive",
+    "fan_mode": "active"
+  },
+  "network": {
+    "strategy": "balanced",
+    "connection_pooling": true
+  }
+}
+```
+
+Load custom profile:
+
+```bash
+/macos-resource-optimizer:0-init --profile gaming
+/macos-resource-optimizer:2-optimize --use-profile gaming
+```
+
+### Creating Profiles for Different Use Cases
+
+#### Work Profile
+
+```bash
+# Office work optimization
+/macos-resource-optimizer:2-optimize --strategy balanced
+```
+
+#### Creative Profile
+
+```bash
+# Video/audio editing optimization
+/macos-resource-optimizer:2-optimize --strategy aggressive
+```
+
+#### Server Profile
+
+```bash
+# Background services optimization
+/macos-resource-optimizer:2-optimize --strategy conservative
+```
+
+## Monitoring and Measurement
+
+### Baseline Establishment
+
+```bash
+# Create initial baseline
+/macos-resource-optimizer:1-analyze > baseline.json
+
+# Apply optimizations
+/macos-resource-optimizer:2-optimize
+
+# Compare results
+/macos-resource-optimizer:1-analyze > after.json
+```
+
+### Performance Comparison
+
+```bash
+# Generate comparison report
+/macos-resource-optimizer:4-report --type comparison
+```
+
+Look for:
+- CPU improvement: 5-15%
+- Memory improvement: 10-20%
+- Disk improvement: 15-30%
+- Battery improvement: 8-12%
+
+### Long-term Monitoring
+
+```bash
+# Weekly monitoring
+/macos-resource-optimizer:3-monitor --duration 604800 --interval 3600
+
+# Generate weekly report
+/macos-resource-optimizer:4-report --period week
+```
+
+## Troubleshooting Performance Issues
+
+### System Becomes Slower After Optimization
+
+1. Check optimization impact: `/macos-resource-optimizer:1-analyze`
+2. Revert to conservative: `/macos-resource-optimizer:2-optimize --strategy conservative`
+3. Gradually increase aggressiveness
+
+### High Temperature Despite Optimization
+
+1. Check thermal status: `/macos-resource-optimizer:1-analyze --category thermal`
+2. Verify cooling: Check fan speed and operation
+3. Apply thermal optimization: `/macos-resource-optimizer:2-optimize --component thermal --strategy aggressive`
+
+### Memory Still High After Optimization
+
+1. Identify memory hogs: `/macos-resource-optimizer:1-analyze --category memory --detailed`
+2. Close unused applications
+3. Apply memory optimization: `/macos-resource-optimizer:2-optimize --component memory --strategy aggressive`
+
+## Best Practices
+
+1. **Measure First**: Always baseline before optimization
+2. **Change One Thing**: Optimize one component at a time
+3. **Monitor Results**: Track improvements with monitoring
+4. **Be Conservative**: Start with conservative strategy
+5. **Document Changes**: Keep records of modifications
+6. **Review Regularly**: Check performance weekly
+
+## Performance Tuning Checklist
+
+- [ ] Establish baseline metrics
+- [ ] Identify problem areas
+- [ ] Choose optimization strategy
+- [ ] Apply optimizations
+- [ ] Monitor for improvements
+- [ ] Adjust as needed
+- [ ] Document results
+- [ ] Schedule regular reviews
+
+## Next Steps
+
+- Implement tuning strategy
+- Monitor improvements
+- Adjust based on results
+- Share feedback on effectiveness
+
+See [Troubleshooting](/guides/troubleshooting) for problem solving.

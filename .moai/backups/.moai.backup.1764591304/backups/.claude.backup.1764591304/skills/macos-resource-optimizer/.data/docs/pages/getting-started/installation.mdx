@@ -1,0 +1,157 @@
+# Installation Guide
+
+Complete step-by-step installation instructions for macOS Resource Optimizer v7.0.
+
+## System Requirements
+
+### Minimum Requirements
+- macOS 10.15 (Catalina)
+- Python 3.9
+- 2GB RAM
+- 100MB disk space
+
+### Recommended Requirements
+- macOS 13+ (Ventura or newer)
+- Python 3.11+
+- 4GB RAM
+- SSD storage
+
+## Installation Methods
+
+### Method 1: Using UV (Recommended)
+
+```bash
+# Navigate to project directory
+cd .claude/skills/macos-resource-optimizer/.data
+
+# Create virtual environment
+uv venv
+
+# Activate environment
+source .venv/bin/activate  # macOS/Linux
+# OR
+.venv\Scripts\activate     # Windows
+
+# Install dependencies
+uv pip install -r requirements.txt
+```
+
+### Method 2: Using pip
+
+```bash
+cd .claude/skills/macos-resource-optimizer/.data
+
+# Create virtual environment
+python3 -m venv .venv
+
+# Activate environment
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Method 3: Using conda
+
+```bash
+cd .claude/skills/macos-resource-optimizer/.data
+
+# Create conda environment
+conda env create -f environment.yml
+
+# Activate environment
+conda activate macos-optimizer
+```
+
+## Verification
+
+### Check Installation
+
+```bash
+# Verify Python version
+python --version  # Should be 3.9+
+
+# Verify Claude Code
+which claude-code
+
+# Verify MoAI-ADK
+/macos-resource-optimizer:0-init
+```
+
+### Expected Output
+
+```
+Initializing macOS Resource Optimizer v7.0...
+Status: success
+Execution Time: 1.2 seconds
+Python: 3.11.x
+MoAI-ADK: 0.30.2+
+```
+
+## Troubleshooting Installation
+
+### Issue: Python not found
+
+```bash
+# Verify Python installation
+python3 --version
+
+# If not installed, use Homebrew
+brew install python@3.11
+```
+
+### Issue: Permission denied
+
+```bash
+# Grant execute permissions
+chmod +x .claude/skills/macos-resource-optimizer/.data/bin/*
+```
+
+### Issue: Module not found
+
+```bash
+# Reinstall dependencies
+pip install --upgrade -r requirements.txt
+```
+
+## Next Steps
+
+Once installation is complete:
+
+1. [Configure](/getting-started/configuration) your system preferences
+2. [Run your first analysis](/getting-started/first-run)
+3. Review [Architecture](/architecture/overview) to understand system design
+
+## Advanced Installation
+
+### Development Installation
+
+```bash
+# Clone with development dependencies
+git clone <repository>
+cd .claude/skills/macos-resource-optimizer/.data
+
+# Install with dev tools
+uv pip install -r requirements-dev.txt
+
+# Run tests
+pytest tests/ -v
+```
+
+### Docker Installation
+
+```bash
+# Build Docker image
+docker build -t macos-optimizer:7.0 .
+
+# Run container
+docker run -it macos-optimizer:7.0 /macos-resource-optimizer:1-analyze
+```
+
+## Getting Help
+
+- Check [Troubleshooting](/guides/troubleshooting) guide
+- Review error messages in detail
+- Submit issue with `/macos-resource-optimizer:9-feedback`
+
+Need additional help? Refer to the [FAQ](/guides/faq) section.

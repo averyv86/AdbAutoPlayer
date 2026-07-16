@@ -1,0 +1,85 @@
+exclude: (^|/)\.idea/|(^|/)wailsjs/|.*\.md5$
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'
+      - id: end-of-file-fixer
+      - id: check-json
+      - id: check-yaml
+      - id: check-toml
+      - id: pretty-format-json
+        exclude: '^(frontend/package-lock\.json|frontend/package\.json|build/windows/info\.json|wails\.json)$'
+        args:
+          - "--autofix"
+          - "--no-ensure-ascii"
+
+  # Shell scripts
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+
+  # Python
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        args: [ "--profile", "black" ]
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.12.3
+    hooks:
+      - id: ruff
+        args: [ --fix ]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: ty
+        name: ty-check
+        language: system
+        types: [ python ]
+        entry: uvx ty check
+
+  # uv
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.9.11
+    hooks:
+      - id: uv-lock
+
+  # Rust / Tauri
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: v1.0
+    hooks:
+      - id: fmt
+      - id: clippy
+      - id: cargo-check
+
+  # Frontend
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry:  pnpm --prefix frontend run prettier-write
+        language: system
+        files: frontend/
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: svelte-check
+        name: svelte-check
+        entry: pnpm --prefix frontend run check
+        language: system
+        files: frontend/
+        pass_filenames: false
+      - id: image-check
+        name: Ensure only PNG images
+        language: fail
+        entry: 'Only PNG images are allowed. Invalid files:'
+        files: \.(jpe?g|bmp|gif|webp|tiff?)$
+        types: [file]

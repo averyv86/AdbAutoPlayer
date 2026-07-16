@@ -1,0 +1,297 @@
+# Integration Flow
+
+Complete workflow of how commands flow through the two-layer architecture.
+
+## Command Execution Flow
+
+### Example: /macos-resource-optimizer:1-analyze Command
+
+```
+Step 1: Command Entry
+│
+├─ User enters: /macos-resource-optimizer:1-analyze
+│
+│
+Step 2: MoAI-ADK Layer (Top)
+│
+├─ Coordinator receives command
+├─ Parses command string
+├─ Validates parameters
+├─ Checks permissions
+│
+│
+Step 3: Strategy Layer
+│
+├─ Strategy.analyze() called
+├─ Prepares expert instructions
+├─ Sets execution parameters
+├─ Initializes metrics collection
+│
+│
+Step 4: Python Engine (Bottom) - Parallel Execution
+│
+├─ CPU Analyzer (async)
+│  ├─ Get CPU usage
+│  ├─ Get temperatures
+│  ├─ Analyze frequency scaling
+│  └─ Return metrics
+│
+├─ Memory Analyzer (async)
+│  ├─ Get memory usage
+│  ├─ Analyze swap
+│  ├─ Check compression
+│  └─ Return metrics
+│
+├─ Disk Analyzer (async)
+│  ├─ Get disk usage
+│  ├─ Check free space
+│  ├─ Analyze I/O
+│  └─ Return metrics
+│
+├─ Battery Analyzer (async)
+│  ├─ Get battery status
+│  ├─ Check health
+│  ├─ Estimate time remaining
+│  └─ Return metrics
+│
+├─ Thermal Analyzer (async)
+│  ├─ Get core temperatures
+│  ├─ Check thermal status
+│  ├─ Analyze trends
+│  └─ Return metrics
+│
+└─ Network Analyzer (async)
+   ├─ Check connectivity
+   ├─ Measure bandwidth
+   ├─ Analyze DNS
+   └─ Return metrics
+│
+│
+Step 5: Metrics Collection
+│
+├─ All results collected via asyncio.gather()
+├─ Results validated
+├─ Cached in MetricsCache
+├─ Timestamps recorded
+│
+│
+Step 6: Result Aggregation
+│
+├─ All metrics combined
+├─ Status determined
+├─ Anomalies detected
+├─ Recommendations generated
+│
+│
+Step 7: MoAI-ADK Response Layer
+│
+├─ Coordinator formats response
+├─ Generates JSON output
+├─ Adds metadata
+├─ Returns to user
+│
+│
+Step 8: Output
+│
+└─ User receives analysis results
+   ├─ JSON formatted metrics
+   ├─ Status indicators
+   ├─ Recommendations
+   └─ Execution time
+```
+
+## Detailed Message Flow
+
+### Request Message
+
+```json
+{
+  "command": "/macos-resource-optimizer:1-analyze",
+  "parameters": {},
+  "context": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "user_id": "default",
+    "session_id": "sess-12345"
+  }
+}
+```
+
+### Processing Path
+
+```
+Coordinator.parse_command()
+    ↓
+Coordinator.validate()
+    ↓
+Strategy.analyze()
+    ↓
+Experts[all].measure() // Parallel execution
+    ↓
+asyncio.gather() // Wait for all results
+    ↓
+MetricsCache.store() // Cache results
+    ↓
+Aggregator.combine() // Merge metrics
+    ↓
+Reporter.generate() // Format output
+    ↓
+Coordinator.format_response()
+```
+
+### Response Message
+
+```json
+{
+  "status": "success",
+  "execution_time_seconds": 1.8,
+  "timestamp": "2024-01-15T10:30:01.8Z",
+  "categories": {
+    "cpu": { "usage_percent": 45.2, "status": "normal" },
+    "memory": { "usage_percent": 75.0, "status": "high" },
+    "disk": { "usage_percent": 65.0, "status": "normal" },
+    "battery": { "percentage": 87, "status": "good" },
+    "thermal": { "max_temperature": 68.0, "status": "normal" },
+    "network": { "connection_quality": "excellent", "status": "normal" }
+  },
+  "recommendations": [
+    "Consider closing unused applications",
+    "Memory usage is higher than recommended"
+  ]
+}
+```
+
+## Optimization Flow (/macos-resource-optimizer:2-optimize)
+
+```
+Analysis Results
+    ↓
+Strategy.plan_optimizations()
+    ├─ Identify problem areas
+    ├─ Generate action plan
+    ├─ Prioritize changes
+    └─ Estimate improvements
+    ↓
+Risk Assessment
+    ├─ Check safety levels
+    ├─ Verify compatibility
+    ├─ Review impacts
+    └─ Get approval if needed
+    ↓
+Execute Optimizations (Parallel)
+    ├─ CPU adjustments
+    ├─ Memory cleanup
+    ├─ Disk optimization
+    ├─ Battery tuning
+    ├─ Thermal management
+    └─ Network optimization
+    ↓
+Verify Changes
+    ├─ Measure impact
+    ├─ Validate results
+    ├─ Log changes
+    └─ Cache new metrics
+    ↓
+Generate Report
+    ├─ Before/after comparison
+    ├─ List optimizations applied
+    ├─ Calculate improvements
+    └─ Generate recommendations
+```
+
+## Caching Strategy
+
+### Cache Levels
+
+```
+L1: Session Cache (0.1s TTL)
+    ├─ Current command results
+    └─ Most recent metrics
+
+L2: Metrics Cache (5s TTL)
+    ├─ System snapshots
+    ├─ Historical trends
+    └─ Aggregated metrics
+
+L3: Configuration Cache (lifetime)
+    ├─ User preferences
+    ├─ System profiles
+    └─ Optimization settings
+```
+
+### Cache Hit Scenarios
+
+```
+Rapid commands (< 5 seconds apart)
+    ↓ Metrics retrieved from L1/L2
+    ↓ 2500× faster response
+    ↓ Reduced system load
+
+Historical analysis
+    ↓ Trends from L2 cache
+    ↓ Pattern recognition
+    ↓ Smart recommendations
+```
+
+## Error Handling Flow
+
+### Exception Handling
+
+```
+Expert raises exception
+    ↓
+Coordinator catches error
+    ├─ Log error details
+    ├─ Continue other experts
+    └─ Mark expert as failed
+    ↓
+Aggregator processes results
+    ├─ Include successful results
+    ├─ Flag failed components
+    └─ Provide partial response
+    ↓
+User receives result with status
+    ├─ "partial" status
+    ├─ Successfully analyzed components
+    └─ Failed component information
+```
+
+## Performance Timeline
+
+```
+T+0ms:   Command received
+T+50ms:  Parsed and validated
+T+100ms: Strategy prepared
+T+150ms: Experts start (parallel)
+T+1750ms: Experts finish (asyncio.gather)
+T+1800ms: Metrics aggregated
+T+1850ms: Results formatted
+T+1900ms: Response ready
+
+Total: ~1.9 seconds (1800ms analysis + overhead)
+```
+
+## Integration Points
+
+### Claude Code Integration
+
+- Command parsing
+- Parameter validation
+- Response formatting
+
+### Python Engine Integration
+
+- Expert invocation
+- Metric collection
+- Result aggregation
+
+### MoAI-ADK Integration
+
+- Command routing
+- Coordinator pattern
+- Response formatting
+
+## Next Steps
+
+- Review [Commands](/commands/analyze) documentation
+- Explore [API Reference](/api/coordinator)
+- Check [Architecture Overview](/architecture/index)

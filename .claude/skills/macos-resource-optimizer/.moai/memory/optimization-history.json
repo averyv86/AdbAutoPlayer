@@ -1,0 +1,297 @@
+[
+  {
+    "timestamp": "2025-12-01T16:55:40.931815",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 63.2,
+      "swap_percent": 87.5,
+      "swap_used_gb": 9.63
+    },
+    "after_metrics": {
+      "memory_percent": 63.5,
+      "swap_percent": 87.5,
+      "swap_used_gb": 9.63
+    },
+    "actions_taken": [
+      "purge",
+      "system_cache_cleanup"
+    ],
+    "apps_affected": [
+      "com.apple.Virtualization.VirtualMachine",
+      "node",
+      "Electron"
+    ],
+    "success": true,
+    "improvement_percent": 0.3,
+    "execution_time_seconds": 0.5,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T17:04:45.806048",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 78.8,
+      "swap_percent": 96.6,
+      "memory_gb": 18.73,
+      "swap_gb": 13.53
+    },
+    "after_metrics": {
+      "memory_percent": 50.8,
+      "swap_percent": 86.8,
+      "memory_gb": 23.71,
+      "swap_gb": 9.55
+    },
+    "actions_taken": [
+      "pkill-9-Chrome",
+      "pkill-9-Notion",
+      "pkill-9-Neo4j",
+      "pkill-9-Slack",
+      "pkill-9-Gather",
+      "pkill-9-Firefox"
+    ],
+    "apps_affected": [
+      "Chrome",
+      "Notion",
+      "Neo4j",
+      "Slack",
+      "Gather",
+      "Firefox",
+      "mediaanalysisd"
+    ],
+    "success": true,
+    "improvement_percent": 27.2,
+    "execution_time_seconds": 45.0,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T17:07:42.459633",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 78.8,
+      "swap_percent": 96.6,
+      "memory_gb": 18.73,
+      "swap_gb": 13.53,
+      "available_gb": 13.57
+    },
+    "after_metrics": {
+      "memory_percent": 46.6,
+      "swap_percent": 86.7,
+      "memory_gb": 21.13,
+      "swap_gb": 9.53,
+      "available_gb": 34.21
+    },
+    "actions_taken": [
+      "Memory optimization",
+      "Cache purge",
+      "Inactive app suspension"
+    ],
+    "apps_affected": [
+      "System Cache",
+      "Inactive Apps"
+    ],
+    "success": true,
+    "improvement_percent": 32.2,
+    "execution_time_seconds": 45.0,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T19:36:38.277101",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 59.1
+    },
+    "after_metrics": {
+      "memory_percent": 59.1
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": 0.0,
+    "execution_time_seconds": 0.03898119926452637,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T19:38:44.219166",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 59.2
+    },
+    "after_metrics": {
+      "memory_percent": 59.2
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": 0.0,
+    "execution_time_seconds": 0.039800167083740234,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T19:44:05.767736",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 58.7
+    },
+    "after_metrics": {
+      "memory_percent": 58.7
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": 0.0,
+    "execution_time_seconds": 0.03918910026550293,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T20:02:25.328588",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 51.0
+    },
+    "after_metrics": {
+      "memory_percent": 51.0
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": 0.0,
+    "execution_time_seconds": 0.04227113723754883,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T20:02:48.780634",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 50.4
+    },
+    "after_metrics": {
+      "memory_percent": 50.4
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": 0.0,
+    "execution_time_seconds": 0.04345202445983887,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T20:54:06.039672",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 55.1
+    },
+    "after_metrics": {
+      "memory_percent": 55.1
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": 0.0,
+    "execution_time_seconds": 0.04169011116027832,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T20:54:45.744859",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 54.5
+    },
+    "after_metrics": {
+      "memory_percent": 54.5
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": 0.0,
+    "execution_time_seconds": 0.03987693786621094,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T20:55:05.829840",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 54.8
+    },
+    "after_metrics": {
+      "memory_percent": 54.8
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": 0.0,
+    "execution_time_seconds": 0.0400848388671875,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T20:55:36.458186",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 54.5
+    },
+    "after_metrics": {
+      "memory_percent": 54.7
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": -0.20000000000000284,
+    "execution_time_seconds": 1.7691998481750488,
+    "user_feedback": null
+  },
+  {
+    "timestamp": "2025-12-01T20:56:19.204794",
+    "category": "memory",
+    "before_metrics": {
+      "memory_percent": 56.5
+    },
+    "after_metrics": {
+      "memory_percent": 56.5
+    },
+    "actions_taken": [
+      "browser_tab_suspension"
+    ],
+    "apps_affected": [
+      "Chrome"
+    ],
+    "success": true,
+    "improvement_percent": 0.0,
+    "execution_time_seconds": 0.04107189178466797,
+    "user_feedback": null
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "env": {
+    "MOAI_CONVERSATION_LANG": "ko",
+    "MOAI_AGENT_PROMPT_LANG": "ko",
+    "MOAI_CONVERSATION_LANG_NAME": "Korean",
+    "MOAI_USER_NAME": "SuperDev",
+    "MOAI_CONFIG_SOURCE": "config"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(for script in analyze_all.py analyze_battery.py analyze_category.py analyze_cpu.py analyze_disk.py analyze_memory.py analyze_network.py analyze_thermal.py monitor.py optimize.py report.py status.py)",
+      "Bash(do)",
+      "Bash(if [ -f \"/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/scripts/$script\" ])",
+      "Bash(then)",
+      "Bash(else)",
+      "Bash(fi)",
+      "Bash(for skill in /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/moai-toolkit-*)",
+      "Bash(done)",
+      "Bash(for skill in /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/moai-workflow-*)",
+      "Bash(paste:*)",
+      "Bash(pgrep:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

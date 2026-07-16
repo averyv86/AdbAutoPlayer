@@ -1,0 +1,271 @@
+================================================================================
+KARROT (당근마켓) APP - COMPREHENSIVE ACTIVITY MAPPING
+================================================================================
+
+DEVICE: BlueStacks Air Emulator
+PACKAGE: com.towneers.www
+SCAN DATE: 2025-12-03
+APK SIZE: 95.4 MB
+
+================================================================================
+CRITICAL ACTIVITIES (ENTRY POINTS)
+================================================================================
+
+1. LauncherActivity
+   Full Name: com.towneers.www.launcher.LauncherActivity
+   Purpose: App entry point, splash screen, initial initialization
+   Orientation: Unspecified
+   Entry Point: YES - Launched from home screen
+   Critical: YES
+
+2. GuideActivity  
+   Full Name: com.towneers.www.guide.GuideActivity
+   Purpose: Onboarding flow, phone verification, terms acceptance
+   Orientation: Portrait
+   Entry Point: From LauncherActivity
+   Critical: YES
+
+3. JpSignUpActivity
+   Full Name: com.towneers.www.account.entry.jp.JpSignUpActivity
+   Purpose: Phone login, SMS OTP verification, account creation
+   Orientation: Portrait
+   Entry Point: From GuideActivity
+   Critical: YES
+   UI Coords @ 1440x2560:
+     - Phone input: (410, 254)
+     - Confirm button: (720, 2520)
+     - Back button: (40, 56)
+
+================================================================================
+NAVIGATION ACTIVITIES
+================================================================================
+
+4. DeepLinkActivity
+   Full Name: com.towneers.www.deeplink.DeepLinkActivity
+   Purpose: Handle karrot:// deep links
+   Protocol: karrot://
+   Examples: karrot://article/123, karrot://profile/user_id
+
+5. AppLinkActivity
+   Full Name: com.towneers.www.applink.AppLinkActivity
+   Purpose: Handle https:// app links
+   Domains: karrot.co.kr, www.karrot.co.kr
+   Examples: https://www.karrot.co.kr/article/123
+
+6. OneLinkActivity
+   Full Name: com.towneers.www.appsflyer.OneLinkActivity
+   Purpose: AppsFlyer marketing link handling
+   Domain: karrot.onelink.me
+
+================================================================================
+CONTENT ACTIVITIES
+================================================================================
+
+7. ArticleDetailActivity
+   Full Name: com.towneers.www.article.detail.presentation.ArticleDetailActivity
+   Purpose: Display marketplace listings/articles
+   Input: Article ID from intent
+   Content: Images, price, description, comments
+
+8. ProfileEntryActivity
+   Full Name: com.towneers.www.profileentry.ProfileEntryActivity
+   Purpose: Display user profile, listings, ratings
+   Input: User ID or neighborhood ID from intent
+   Content: User info, active listings, reputation
+
+================================================================================
+EXTERNAL SDK ACTIVITIES
+================================================================================
+
+9. EffectOneExportActivity
+   Full Name: com.karrot.www.videoeditor.byteplus.export.EffectOneExportActivity
+   Purpose: Video editing and export (BytePlus SDK)
+
+10. LineAuthenticationCallbackActivity
+    Full Name: com.linecorp.linesdk.auth.internal.LineAuthenticationCallbackActivity
+    Purpose: LINE OAuth integration
+
+================================================================================
+ACTIVITY LAUNCH SEQUENCE
+================================================================================
+
+Normal User Flow:
+  1. LauncherActivity (5-10s)
+     └─ Check Play Integrity API
+     └─ Load app state
+  
+  2. GuideActivity (Variable)
+     └─ Show onboarding if first launch
+     └─ Location permission request
+     └─ Terms acceptance
+  
+  3. JpSignUpActivity (15-30s)
+     └─ Phone number input
+     └─ SMS OTP verification
+     └─ Account creation/login
+  
+  4. Main Feed/Home (Not in dumpsys list)
+     └─ Neighborhood marketplace
+     └─ Article listings
+
+Detection Scenario (Without Bypass):
+  LauncherActivity → Play Integrity Check → Error -18 → App Crash
+  (Process dies after 2-3 seconds)
+
+Bypass Scenario (With PlayIntegrityFork + Shamiko):
+  LauncherActivity → Play Integrity Check (bypassed) → GuideActivity
+  → JpSignUpActivity → Login flow
+
+================================================================================
+INTENT EXAMPLES FOR AUTOMATION
+================================================================================
+
+# Launch main app
+adb shell am start -n com.towneers.www/.launcher.LauncherActivity
+
+# Direct to signup (skip guide)
+adb shell am start -n com.towneers.www/.account.entry.jp.JpSignUpActivity
+
+# Deep link to article
+adb shell am start -a android.intent.action.VIEW -d "karrot://article/123456"
+
+# Deep link to profile
+adb shell am start -a android.intent.action.VIEW -d "karrot://profile/user789"
+
+# HTTPS app link
+adb shell am start -a android.intent.action.VIEW -d "https://www.karrot.co.kr/article/123456"
+
+# AppsFlyer link
+adb shell am start -a android.intent.action.VIEW -d "https://karrot.onelink.me/?id=test"
+
+================================================================================
+DETECTION POINTS IN ACTIVITIES
+================================================================================
+
+Activity              | Detection Method        | Error Code | Impact
+---------------------|-------------------------|------------|-------------------
+LauncherActivity      | Play Integrity API      | -18        | App crash on detection
+GuideActivity         | Device property checks  | N/A        | Show error screen
+JpSignUpActivity      | LIAPP security check    | N/A        | Block login attempt
+
+Detection Keywords to Monitor:
+  - PlayIntegrity errors
+  - LIAPP (com.lockincomp.wfcwxdz)
+  - "error 18" or "CLIENT_TRANSIENT_ERROR"
+  - "root detected"
+  - "emulator detected"
+
+Bypass Requirements:
+  - Magisk (v26+) with Zygisk enabled
+  - PlayIntegrityFork module installed
+  - Shamiko module (for LIAPP hiding)
+  - HideMyApplist (optional)
+
+================================================================================
+PERMISSIONS REQUIRED
+================================================================================
+
+Activity                | Permissions
+------------------------|-----------------------------------------------------------
+LauncherActivity        | None
+GuideActivity           | ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION
+JpSignUpActivity        | RECEIVE_SMS, READ_SMS, SEND_SMS
+ArticleDetailActivity   | CAMERA, READ_EXTERNAL_STORAGE
+ProfileEntryActivity    | READ_CONTACTS, ACCESS_FINE_LOCATION
+
+================================================================================
+SERVICES & RECEIVERS (Non-Activity Components)
+================================================================================
+
+Services:
+  - HoianFirebaseMessagingService (Firebase messaging)
+  - MyConnectionService (Chat voice)
+  - FirebaseMessagingService (Firebase)
+
+Receivers:
+  - SMSRetrieverReceiver
+  - LocaleChangeReceiver
+  - PedometerReceiver
+  - VideoUploadReceiver
+
+Providers:
+  - FileProvider
+  - FirebaseInitProvider
+
+================================================================================
+TESTING COMMANDS
+================================================================================
+
+# Monitor activity transitions
+adb logcat -c
+adb shell am start -n com.towneers.www/.launcher.LauncherActivity
+sleep 10
+adb logcat -d | grep -E "ActivityRecord|START.*com.towneers"
+
+# Check for detection
+adb logcat | grep -iE "error.*18|PlayIntegrity|LIAPP|root.*detected"
+
+# Dump all activities
+adb shell dumpsys activity activities | grep "com.towneers"
+
+# Package dump
+adb shell dumpsys package com.towneers.www | grep -E "Activity|activity"
+
+# Get currently running app
+adb shell dumpsys activity | grep "mFocusedApp"
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+Total Activities Found: 10 (7 Karrot + 2 External SDK + 1 Hidden MainActivity)
+
+Primary User Flow:
+  LauncherActivity → GuideActivity → JpSignUpActivity → MainFeed
+
+Detection Challenges:
+  - Play Integrity API (Error -18 on emulator)
+  - LIAPP security SDK (com.lockincomp.wfcwxdz)
+  - Build.prop property checks
+  - Emulator fingerprint detection
+
+Hidden Activities:
+  - MainFeedActivity or MainActivity (not in dumpsys list)
+    - Likely the main home/feed screen
+    - May be in a different package structure
+    - Contains marketplace listings
+
+Navigation Paths:
+  - Deep links (karrot://) → DeepLinkActivity
+  - App links (https://) → AppLinkActivity
+  - Marketing links → OneLinkActivity
+  - Content clicks → ArticleDetailActivity
+  - User taps → ProfileEntryActivity
+
+Technology Stack:
+  - Firebase Cloud Messaging
+  - Persona SDK (ID verification)
+  - LINE OAuth integration
+  - AppsFlyer attribution
+  - BytePlus video processing
+  - LIAPP security framework
+
+================================================================================
+DOCUMENT REFERENCE
+================================================================================
+
+Full Documentation: KARROT_ACTIVITIES_MAP.md (589 lines)
+Includes:
+  - Detailed activity descriptions
+  - Activity stack diagrams
+  - Intent filter specifications
+  - Bypass implications
+  - Testing recommendations
+  - Permission requirements
+  - Security detection analysis
+
+================================================================================
+Last Updated: 2025-12-03 22:56:00 UTC
+Scan Method: ADB dumpsys + logcat monitoring + dynamic testing
+Confidence Level: HIGH (verified via multiple sources)
+================================================================================

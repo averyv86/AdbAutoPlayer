@@ -1,0 +1,712 @@
+# Metadata
+created_at:1764505149.054993
+updated_at:1764505397.9881148
+
+# Shells
+id:agent_python_zombies_1764505149054
+n:python_zombies
+c:uv run agent_python_zombies.py
+t:1764505149.0552168
+s:completed
+sc:0
+ca:1764505150.727891
+id:agent_node_process_scanner_1764505149057
+n:node_process_scanner
+c:uv run agent_node_process_scanner.py
+t:1764505149.057625
+s:completed
+sc:0
+ca:1764505151.185826
+id:agent_test_zombies_1764505149059
+n:test_zombies
+c:uv run agent_test_zombies.py
+t:1764505149.059673
+s:failed
+sc:2
+ca:1764505149.090632
+id:agent_workerd_zombies_1764505149061
+n:workerd_zombies
+c:uv run agent_workerd_zombies.py
+t:1764505149.061706
+s:completed
+sc:0
+ca:1764505151.5236359
+id:agent_browser_helpers_1764505149063
+n:browser_helpers
+c:uv run agent_browser_helpers.py
+t:1764505149.063941
+s:completed
+sc:0
+ca:1764505151.659415
+id:agent_language_servers_1764505149065
+n:language_servers
+c:uv run agent_language_servers.py
+t:1764505149.066026
+s:completed
+sc:0
+ca:1764505150.685038
+id:agent_electron_helpers_1764505149068
+n:electron_helpers
+c:uv run agent_electron_helpers.py
+t:1764505149.068393
+s:completed
+sc:0
+ca:1764505150.890968
+id:agent_generic_idle_1764505149070
+n:generic_idle
+c:uv run agent_generic_idle.py
+t:1764505149.0706701
+s:failed
+sc:-2
+ca:1764505151.219669
+id:agent_network_connection_leaks_1764505149073
+n:network_connection_leaks
+c:uv run agent_network_connection_leaks.py
+t:1764505149.073285
+s:failed
+sc:-1
+ca:1764505164.0933938
+id:agent_orphaned_process_groups_1764505149076
+n:orphaned_process_groups
+c:uv run agent_orphaned_process_groups.py
+t:1764505149.076738
+s:failed
+sc:-2
+ca:1764505152.837565
+id:agent_docker_container_scanner_1764505149079
+n:docker_container_scanner
+c:uv run agent_docker_container_scanner.py
+t:1764505149.079485
+s:completed
+sc:0
+ca:1764505151.183378
+id:agent_database_connection_pooler_1764505149081
+n:database_connection_pooler
+c:uv run agent_database_connection_pooler.py
+t:1764505149.081698
+s:failed
+sc:-1
+ca:1764505164.09435
+id:agent_jvm_memory_hog_detector_1764505149083
+n:jvm_memory_hog_detector
+c:uv run agent_jvm_memory_hog_detector.py
+t:1764505149.0840619
+s:completed
+sc:0
+ca:1764505150.230168
+id:agent_ssh_git_process_zombies_1764505149086
+n:ssh_git_process_zombies
+c:uv run agent_ssh_git_process_zombies.py
+t:1764505149.086596
+s:completed
+sc:0
+ca:1764505151.875254
+id:agent_memory_pressure_detector_1764505164097
+n:memory_pressure_detector
+c:uv run agent_memory_pressure_detector.py
+t:1764505164.097177
+s:failed
+sc:-2
+ca:1764505164.732831
+id:agent_browser_tab_manager_1764505164100
+n:browser_tab_manager
+c:uv run agent_browser_tab_manager.py
+t:1764505164.10063
+s:failed
+sc:-2
+ca:1764505167.378646
+id:agent_browser_helper_consolidator_1764505164103
+n:browser_helper_consolidator
+c:uv run agent_browser_helper_consolidator.py
+t:1764505164.10373
+s:failed
+sc:-2
+ca:1764505166.1742148
+id:agent_browser_cache_optimizer_1764505164106
+n:browser_cache_optimizer
+c:uv run agent_browser_cache_optimizer.py
+t:1764505164.10656
+s:completed
+sc:0
+ca:1764505165.062151
+id:agent_inactive_app_detector_1764505164109
+n:inactive_app_detector
+c:uv run agent_inactive_app_detector.py
+t:1764505164.109556
+s:completed
+sc:0
+ca:1764505165.0422919
+id:agent_electron_app_optimizer_1764505164112
+n:electron_app_optimizer
+c:uv run agent_electron_app_optimizer.py
+t:1764505164.112704
+s:failed
+sc:-2
+ca:1764505166.167459
+id:agent_background_app_suspender_1764505164115
+n:background_app_suspender
+c:uv run agent_background_app_suspender.py
+t:1764505164.115753
+s:failed
+sc:-2
+ca:1764505166.016153
+id:agent_swap_optimizer_1764505164118
+n:swap_optimizer
+c:uv run agent_swap_optimizer.py
+t:1764505164.118675
+s:failed
+sc:-2
+ca:1764505165.047345
+id:agent_memory_leak_hunter_1764505164121
+n:memory_leak_hunter
+c:uv run agent_memory_leak_hunter.py
+t:1764505164.121778
+s:failed
+sc:-2
+ca:1764505164.7240121
+id:agent_python_zombies_1764505228912
+n:python_zombies
+c:uv run agent_python_zombies.py
+t:1764505228.912354
+s:completed
+sc:0
+ca:1764505229.439275
+id:agent_node_process_scanner_1764505228915
+n:node_process_scanner
+c:uv run agent_node_process_scanner.py
+t:1764505228.915116
+s:completed
+sc:0
+ca:1764505229.42283
+id:agent_test_zombies_1764505228917
+n:test_zombies
+c:uv run agent_test_zombies.py
+t:1764505228.917134
+s:failed
+sc:2
+ca:1764505228.949162
+id:agent_workerd_zombies_1764505228919
+n:workerd_zombies
+c:uv run agent_workerd_zombies.py
+t:1764505228.919193
+s:completed
+sc:0
+ca:1764505229.507954
+id:agent_browser_helpers_1764505228921
+n:browser_helpers
+c:uv run agent_browser_helpers.py
+t:1764505228.921393
+s:completed
+sc:0
+ca:1764505229.4330938
+id:agent_language_servers_1764505228923
+n:language_servers
+c:uv run agent_language_servers.py
+t:1764505228.923839
+s:completed
+sc:0
+ca:1764505230.09647
+id:agent_electron_helpers_1764505228926
+n:electron_helpers
+c:uv run agent_electron_helpers.py
+t:1764505228.926719
+s:completed
+sc:0
+ca:1764505229.5027819
+id:agent_generic_idle_1764505228929
+n:generic_idle
+c:uv run agent_generic_idle.py
+t:1764505228.929445
+s:failed
+sc:-2
+ca:1764505230.5188658
+id:agent_network_connection_leaks_1764505228932
+n:network_connection_leaks
+c:uv run agent_network_connection_leaks.py
+t:1764505228.9321349
+s:failed
+sc:-1
+ca:1764505243.9513721
+id:agent_orphaned_process_groups_1764505228934
+n:orphaned_process_groups
+c:uv run agent_orphaned_process_groups.py
+t:1764505228.934607
+s:failed
+sc:-2
+ca:1764505231.591916
+id:agent_docker_container_scanner_1764505228936
+n:docker_container_scanner
+c:uv run agent_docker_container_scanner.py
+t:1764505228.936985
+s:completed
+sc:0
+ca:1764505229.6209931
+id:agent_database_connection_pooler_1764505228939
+n:database_connection_pooler
+c:uv run agent_database_connection_pooler.py
+t:1764505228.939761
+s:failed
+sc:1
+ca:1764505229.5174348
+id:agent_jvm_memory_hog_detector_1764505228942
+n:jvm_memory_hog_detector
+c:uv run agent_jvm_memory_hog_detector.py
+t:1764505228.942385
+s:completed
+sc:0
+ca:1764505229.461662
+id:agent_ssh_git_process_zombies_1764505228944
+n:ssh_git_process_zombies
+c:uv run agent_ssh_git_process_zombies.py
+t:1764505228.944931
+s:completed
+sc:0
+ca:1764505229.612868
+id:agent_memory_pressure_detector_1764505243955
+n:memory_pressure_detector
+c:uv run agent_memory_pressure_detector.py
+t:1764505243.955293
+s:failed
+sc:-2
+ca:1764505244.573298
+id:agent_browser_tab_manager_1764505243960
+n:browser_tab_manager
+c:uv run agent_browser_tab_manager.py
+t:1764505243.9608
+s:failed
+sc:-2
+ca:1764505247.327491
+id:agent_browser_helper_consolidator_1764505243964
+n:browser_helper_consolidator
+c:uv run agent_browser_helper_consolidator.py
+t:1764505243.9649699
+s:failed
+sc:-2
+ca:1764505246.1612842
+id:agent_browser_cache_optimizer_1764505243968
+n:browser_cache_optimizer
+c:uv run agent_browser_cache_optimizer.py
+t:1764505243.9692109
+s:completed
+sc:0
+ca:1764505244.616517
+id:agent_inactive_app_detector_1764505243973
+n:inactive_app_detector
+c:uv run agent_inactive_app_detector.py
+t:1764505243.973942
+s:completed
+sc:0
+ca:1764505244.566705
+id:agent_electron_app_optimizer_1764505243978
+n:electron_app_optimizer
+c:uv run agent_electron_app_optimizer.py
+t:1764505243.9785259
+s:failed
+sc:-2
+ca:1764505246.160091
+id:agent_background_app_suspender_1764505243982
+n:background_app_suspender
+c:uv run agent_background_app_suspender.py
+t:1764505243.983078
+s:failed
+sc:-2
+ca:1764505245.976799
+id:agent_swap_optimizer_1764505243987
+n:swap_optimizer
+c:uv run agent_swap_optimizer.py
+t:1764505243.9877849
+s:failed
+sc:-2
+ca:1764505244.839543
+id:agent_memory_leak_hunter_1764505243992
+n:memory_leak_hunter
+c:uv run agent_memory_leak_hunter.py
+t:1764505243.992275
+s:failed
+sc:-2
+ca:1764505244.564925
+id:agent_timemachine_snapshot_cleaner_1764505247328
+n:timemachine_snapshot_cleaner
+c:uv run agent_timemachine_snapshot_cleaner.py
+t:1764505247.3288908
+s:completed
+sc:0
+ca:1764505247.9714072
+id:agent_developer_cache_cleaner_1764505247330
+n:developer_cache_cleaner
+c:uv run agent_developer_cache_cleaner.py
+t:1764505247.3310301
+s:completed
+sc:0
+ca:1764505277.273304
+id:agent_xcode_cache_cleaner_1764505247332
+n:xcode_cache_cleaner
+c:uv run agent_xcode_cache_cleaner.py
+t:1764505247.3330638
+s:completed
+sc:0
+ca:1764505248.5234098
+id:agent_build_cache_cleaner_1764505247335
+n:build_cache_cleaner
+c:uv run agent_build_cache_cleaner.py
+t:1764505247.335148
+s:completed
+sc:0
+ca:1764505247.427161
+id:agent_system_log_cleaner_1764505247337
+n:system_log_cleaner
+c:uv run agent_system_log_cleaner.py
+t:1764505247.337392
+s:completed
+sc:0
+ca:1764505247.72494
+id:agent_docker_deep_cleanup_1764505247339
+n:docker_deep_cleanup
+c:uv run agent_docker_deep_cleanup.py
+t:1764505247.339926
+s:completed
+sc:0
+ca:1764505247.561381
+id:agent_swap_purgeable_hunter_1764505277276
+n:swap_purgeable_hunter
+c:uv run agent_swap_purgeable_hunter.py
+t:1764505277.276097
+s:completed
+sc:0
+ca:1764505277.338393
+id:agent_window_server_optimizer_1764505277279
+n:window_server_optimizer
+c:uv run agent_window_server_optimizer.py
+t:1764505277.279289
+s:failed
+sc:-2
+ca:1764505278.676193
+id:agent_spotlight_mds_hunter_1764505277281
+n:spotlight_mds_hunter
+c:uv run agent_spotlight_mds_hunter.py
+t:1764505277.281882
+s:completed
+sc:0
+ca:1764505277.691189
+id:agent_memory_leak_hunter_1764505277284
+n:memory_leak_hunter
+c:uv run agent_memory_leak_hunter.py
+t:1764505277.284628
+s:failed
+sc:-2
+ca:1764505277.478273
+id:agent_chrome_deep_cleanup_1764505278677
+n:chrome_deep_cleanup
+c:uv run agent_chrome_deep_cleanup.py
+t:1764505278.677702
+s:completed
+sc:0
+ca:1764505279.8528252
+id:agent_safari_optimizer_1764505278679
+n:safari_optimizer
+c:uv run agent_safari_optimizer.py
+t:1764505278.6801128
+s:completed
+sc:0
+ca:1764505278.856162
+id:agent_firefox_deep_cleanup_1764505278682
+n:firefox_deep_cleanup
+c:uv run agent_firefox_deep_cleanup.py
+t:1764505278.6825228
+s:completed
+sc:0
+ca:1764505279.110144
+id:agent_messaging_app_hunter_1764505279854
+n:messaging_app_hunter
+c:uv run agent_messaging_app_hunter.py
+t:1764505279.854225
+s:completed
+sc:0
+ca:1764505281.0870788
+id:agent_vscode_deep_cleanup_1764505279856
+n:vscode_deep_cleanup
+c:uv run agent_vscode_deep_cleanup.py
+t:1764505279.8564858
+s:completed
+sc:0
+ca:1764505280.445311
+id:agent_dns_connection_scanner_1764505279858
+n:dns_connection_scanner
+c:uv run agent_dns_connection_scanner.py
+t:1764505279.858502
+s:completed
+sc:0
+ca:1764505280.601321
+id:agent_python_zombies_1764505346947
+n:python_zombies
+c:uv run agent_python_zombies.py
+t:1764505346.947587
+s:completed
+sc:0
+ca:1764505347.4143941
+id:agent_node_process_scanner_1764505346950
+n:node_process_scanner
+c:uv run agent_node_process_scanner.py
+t:1764505346.950443
+s:completed
+sc:0
+ca:1764505347.389355
+id:agent_test_zombies_1764505346952
+n:test_zombies
+c:uv run agent_test_zombies.py
+t:1764505346.9526908
+s:failed
+sc:2
+ca:1764505346.986528
+id:agent_workerd_zombies_1764505346954
+n:workerd_zombies
+c:uv run agent_workerd_zombies.py
+t:1764505346.954964
+s:completed
+sc:0
+ca:1764505347.5181398
+id:agent_browser_helpers_1764505346957
+n:browser_helpers
+c:uv run agent_browser_helpers.py
+t:1764505346.957406
+s:completed
+sc:0
+ca:1764505347.453099
+id:agent_language_servers_1764505346959
+n:language_servers
+c:uv run agent_language_servers.py
+t:1764505346.9598022
+s:completed
+sc:0
+ca:1764505348.111236
+id:agent_electron_helpers_1764505346962
+n:electron_helpers
+c:uv run agent_electron_helpers.py
+t:1764505346.962328
+s:completed
+sc:0
+ca:1764505347.515119
+id:agent_generic_idle_1764505346964
+n:generic_idle
+c:uv run agent_generic_idle.py
+t:1764505346.965024
+s:failed
+sc:-2
+ca:1764505348.515061
+id:agent_network_connection_leaks_1764505346967
+n:network_connection_leaks
+c:uv run agent_network_connection_leaks.py
+t:1764505346.96771
+s:failed
+sc:-1
+ca:1764505361.989983
+id:agent_orphaned_process_groups_1764505346970
+n:orphaned_process_groups
+c:uv run agent_orphaned_process_groups.py
+t:1764505346.970752
+s:failed
+sc:-2
+ca:1764505349.668166
+id:agent_docker_container_scanner_1764505346973
+n:docker_container_scanner
+c:uv run agent_docker_container_scanner.py
+t:1764505346.9734788
+s:completed
+sc:0
+ca:1764505347.619884
+id:agent_database_connection_pooler_1764505346976
+n:database_connection_pooler
+c:uv run agent_database_connection_pooler.py
+t:1764505346.976369
+s:failed
+sc:-1
+ca:1764505361.993132
+id:agent_jvm_memory_hog_detector_1764505346979
+n:jvm_memory_hog_detector
+c:uv run agent_jvm_memory_hog_detector.py
+t:1764505346.979203
+s:completed
+sc:0
+ca:1764505347.460947
+id:agent_ssh_git_process_zombies_1764505346981
+n:ssh_git_process_zombies
+c:uv run agent_ssh_git_process_zombies.py
+t:1764505346.981955
+s:completed
+sc:0
+ca:1764505347.624982
+id:agent_memory_pressure_detector_1764505362001
+n:memory_pressure_detector
+c:uv run agent_memory_pressure_detector.py
+t:1764505362.001407
+s:failed
+sc:-2
+ca:1764505362.5822852
+id:agent_browser_tab_manager_1764505362016
+n:browser_tab_manager
+c:uv run agent_browser_tab_manager.py
+t:1764505362.0170581
+s:failed
+sc:-2
+ca:1764505365.382571
+id:agent_browser_helper_consolidator_1764505362020
+n:browser_helper_consolidator
+c:uv run agent_browser_helper_consolidator.py
+t:1764505362.020641
+s:failed
+sc:-2
+ca:1764505364.063164
+id:agent_browser_cache_optimizer_1764505362024
+n:browser_cache_optimizer
+c:uv run agent_browser_cache_optimizer.py
+t:1764505362.024367
+s:completed
+sc:0
+ca:1764505362.9186041
+id:agent_inactive_app_detector_1764505362027
+n:inactive_app_detector
+c:uv run agent_inactive_app_detector.py
+t:1764505362.027769
+s:completed
+sc:0
+ca:1764505363.15172
+id:agent_electron_app_optimizer_1764505362031
+n:electron_app_optimizer
+c:uv run agent_electron_app_optimizer.py
+t:1764505362.031327
+s:failed
+sc:-2
+ca:1764505364.210248
+id:agent_background_app_suspender_1764505362034
+n:background_app_suspender
+c:uv run agent_background_app_suspender.py
+t:1764505362.034922
+s:failed
+sc:-2
+ca:1764505364.061244
+id:agent_swap_optimizer_1764505362038
+n:swap_optimizer
+c:uv run agent_swap_optimizer.py
+t:1764505362.038829
+s:failed
+sc:-2
+ca:1764505362.893249
+id:agent_memory_leak_hunter_1764505362041
+n:memory_leak_hunter
+c:uv run agent_memory_leak_hunter.py
+t:1764505362.042059
+s:failed
+sc:-2
+ca:1764505362.576923
+id:agent_timemachine_snapshot_cleaner_1764505365384
+n:timemachine_snapshot_cleaner
+c:uv run agent_timemachine_snapshot_cleaner.py
+t:1764505365.384074
+s:completed
+sc:0
+ca:1764505365.881286
+id:agent_developer_cache_cleaner_1764505365386
+n:developer_cache_cleaner
+c:uv run agent_developer_cache_cleaner.py
+t:1764505365.386474
+s:completed
+sc:0
+ca:1764505394.997738
+id:agent_xcode_cache_cleaner_1764505365388
+n:xcode_cache_cleaner
+c:uv run agent_xcode_cache_cleaner.py
+t:1764505365.3886201
+s:completed
+sc:0
+ca:1764505366.503844
+id:agent_build_cache_cleaner_1764505365390
+n:build_cache_cleaner
+c:uv run agent_build_cache_cleaner.py
+t:1764505365.390795
+s:completed
+sc:0
+ca:1764505365.482962
+id:agent_system_log_cleaner_1764505365393
+n:system_log_cleaner
+c:uv run agent_system_log_cleaner.py
+t:1764505365.39327
+s:completed
+sc:0
+ca:1764505365.724556
+id:agent_docker_deep_cleanup_1764505365395
+n:docker_deep_cleanup
+c:uv run agent_docker_deep_cleanup.py
+t:1764505365.3960152
+s:completed
+sc:0
+ca:1764505365.51366
+id:agent_swap_purgeable_hunter_1764505394999
+n:swap_purgeable_hunter
+c:uv run agent_swap_purgeable_hunter.py
+t:1764505395
+s:completed
+sc:0
+ca:1764505395.056596
+id:agent_window_server_optimizer_1764505395002
+n:window_server_optimizer
+c:uv run agent_window_server_optimizer.py
+t:1764505395.00277
+s:failed
+sc:-2
+ca:1764505396.377955
+id:agent_spotlight_mds_hunter_1764505395004
+n:spotlight_mds_hunter
+c:uv run agent_spotlight_mds_hunter.py
+t:1764505395.0051131
+s:completed
+sc:0
+ca:1764505395.371789
+id:agent_memory_leak_hunter_1764505395007
+n:memory_leak_hunter
+c:uv run agent_memory_leak_hunter.py
+t:1764505395.008064
+s:failed
+sc:-2
+ca:1764505395.210737
+id:agent_chrome_deep_cleanup_1764505396379
+n:chrome_deep_cleanup
+c:uv run agent_chrome_deep_cleanup.py
+t:1764505396.3794172
+s:completed
+sc:0
+ca:1764505397.525406
+id:agent_safari_optimizer_1764505396381
+n:safari_optimizer
+c:uv run agent_safari_optimizer.py
+t:1764505396.381869
+s:completed
+sc:0
+ca:1764505396.55228
+id:agent_firefox_deep_cleanup_1764505396383
+n:firefox_deep_cleanup
+c:uv run agent_firefox_deep_cleanup.py
+t:1764505396.3841002
+s:completed
+sc:0
+ca:1764505396.797054
+id:agent_messaging_app_hunter_1764505397526
+n:messaging_app_hunter
+c:uv run agent_messaging_app_hunter.py
+t:1764505397.5268888
+s:completed
+sc:0
+ca:1764505397.850167
+id:agent_vscode_deep_cleanup_1764505397529
+n:vscode_deep_cleanup
+c:uv run agent_vscode_deep_cleanup.py
+t:1764505397.5293078
+s:completed
+sc:0
+ca:1764505397.9881148
+id:agent_dns_connection_scanner_1764505397531
+n:dns_connection_scanner
+c:uv run agent_dns_connection_scanner.py
+t:1764505397.531789
+s:completed
+sc:0
+ca:1764505397.6855419

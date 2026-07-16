@@ -6,15 +6,58 @@ __pycache__/
 .pytest_cache/
 .coverage
 htmlcov/
+/.venv/
 
-# Build and temp directories
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build and Output templates
 out/
 build/
 bin/
 /tmp/
 magisk_temp/
+node_modules/
+dist/
+dist-ssr/
+*.local
+.output/
+.vercel/
+.netlify/
+.wrangler/
+/.svelte-kit/
+/target/
 
-# OS files
+# OS & Editor directories and files
 .DS_Store
 Thumbs.db
 Desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Project Specific
+CLAUDE.local.md
+.moai/cache/
+.moai/logs/

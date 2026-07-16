@@ -1,0 +1,59 @@
+# Getting Started
+
+Welcome to macOS Resource Optimizer v7.0! This guide will help you get up and running quickly.
+
+## Prerequisites
+
+- macOS 10.15+ (Catalina or later)
+- Python 3.9 or higher
+- Claude Code CLI
+- MoAI-ADK 0.30.2 or higher
+
+## Installation Steps
+
+1. **Install Python Engine**
+   ```bash
+   cd .claude/skills/macos-resource-optimizer/.data
+   uv venv
+   source .venv/bin/activate
+   uv pip install -r requirements.txt
+   ```
+
+2. **Validate Setup**
+   ```bash
+   /macos-resource-optimizer:0-init
+   ```
+
+3. **Run First Analysis**
+   ```bash
+   /macos-resource-optimizer:1-analyze
+   ```
+
+## Expected Output
+
+A successful initialization returns:
+```json
+{
+  "status": "success",
+  "execution_time_seconds": 1.2,
+  "system_info": {
+    "os": "macOS 14.x",
+    "python_version": "3.9+",
+    "moai_version": "0.30.2"
+  }
+}
+```
+
+## Next Steps
+
+- Read [Installation Guide](/getting-started/installation) for detailed setup
+- Configure your preferences in [Configuration](/getting-started/configuration)
+- Run your first analysis in [First Run](/getting-started/first-run)
+
+## Need Help?
+
+Check the [Troubleshooting Guide](/guides/troubleshooting) or submit feedback:
+
+```bash
+/macos-resource-optimizer:9-feedback "Issue description"
+```

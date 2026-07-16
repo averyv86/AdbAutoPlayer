@@ -1,0 +1,84 @@
+id: adb-tap
+name: Tap Screen Position
+description: Simulate touch tap at specified coordinates on device screen
+category: control
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = default device)"
+    required: false
+  - name: x
+    type: integer
+    default: 0
+    description: "X coordinate in pixels"
+    required: true
+  - name: y
+    type: integer
+    default: 0
+    description: "Y coordinate in pixels"
+    required: true
+  - name: count
+    type: integer
+    default: 1
+    description: "Number of taps to perform"
+    required: false
+  - name: delay
+    type: integer
+    default: 100
+    description: "Delay between taps in milliseconds"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/control/tap.py
+  args: ["--device", "{{ device }}", "--x", "{{ x }}", "--y", "{{ y }}", "--count", "{{ count }}", "--delay", "{{ delay }}"]
+  timeout_seconds: 10
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Tap successful"
+    - "tap completed"
+  output_patterns:
+    - "Tapped at \(\d+, \d+\)"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 1
+  on_error:
+    - exit_code: 1
+      action: "Device not found or offline"
+    - exit_code: 2
+      action: "Invalid coordinates, outside screen bounds"
+    - exit_code: 3
+      action: "Touch input failed, check device permissions"
+
+outputs:
+  - name: tap_status
+    type: string
+    description: "Status of tap operation"
+  - name: taps_performed
+    type: integer
+    description: "Number of taps actually performed"
+  - name: coordinates
+    type: object
+    description: "Tap coordinates used"
+    properties:
+      x:
+        type: integer
+      y:
+        type: integer
+  - name: duration_ms
+    type: integer
+    description: "Total operation duration in milliseconds"
+
+validation:
+  - name: coordinate_bounds
+    rule: "x and y must be non-negative and within screen resolution"
+  - name: count_positive
+    rule: "count must be at least 1"
+  - name: delay_positive
+    rule: "delay must be non-negative"

@@ -1,0 +1,170 @@
+# ============================================================
+# WORKFLOW.toon Schema - Canonical Format
+# Version: 1.0.0
+# ============================================================
+#
+# This is the canonical schema for WORKFLOW.toon files.
+# Copy and adapt for your workflow.
+#
+# TOON Tabular Format:
+#   @section[count]{field1,field2,field3}:
+#   value1,value2,value3
+#
+# Variable Substitution:
+#   {project-root}  → Auto-detected project root
+#   {agent-path}    → Current agent directory
+#   {config:key}    → Value from .moai/config/
+#   {spec:id}       → Active SPEC identifier
+#   {timestamp}     → ISO timestamp
+# ============================================================
+
+# ─────────────────────────────────────────────────────────────
+# TIER 0: Minimal (1 step)
+# ─────────────────────────────────────────────────────────────
+
+# @metadata[1]{id,name,version,tier}:
+# WF-{ID},Workflow Name,1.0.0,tier-0
+#
+# @phases[1]{id,name,agent,mode,deps,step_file}:
+# 1,Action Name,{agent},sequential,[],step-01-{action}.md
+#
+# @exec[1]{complexity,parallel_default,token_limit}:
+# tier-0,1,30000
+#
+# @gates[1]{gate_id,validator,threshold}:
+# 1,test-pass,100
+
+# ─────────────────────────────────────────────────────────────
+# TIER 1: Simple (3-5 steps)
+# ─────────────────────────────────────────────────────────────
+
+# @metadata[1]{id,name,version,tier,instructions}:
+# WF-{ID},Workflow Name,1.0.0,tier-1,instructions.md
+#
+# @phases[3]{id,name,agent,mode,deps,step_file}:
+# 1,Plan,manager-strategy,sequential,[],step-01-plan.md
+# 2,Implement,expert-backend,sequential,[1],step-02-implement.md
+# 3,Validate,manager-tdd,sequential,[2],step-03-validate.md
+#
+# @files[N]{path,agent,operation}:
+# {project-root}/src/{file}.py,expert-backend,create
+# {project-root}/tests/test_{file}.py,manager-tdd,create
+#
+# @exec[1]{complexity,parallel_default,token_limit}:
+# tier-1,1,80000
+#
+# @gates[2]{gate_id,validator,threshold}:
+# 1,test-coverage,85
+# 2,trust-5,100
+
+# ─────────────────────────────────────────────────────────────
+# TIER 2: Medium (5-10 steps, parallel)
+# ─────────────────────────────────────────────────────────────
+
+# @metadata[1]{id,name,version,tier,instructions,checklist}:
+# WF-{ID},Workflow Name,1.0.0,tier-2,instructions.md,checklist.md
+#
+# @config[1]{source,artifacts_dir}:
+# {project-root}/.moai/config/defaults.toon,./artifacts
+#
+# @phases[6]{id,name,agent,mode,deps,max_parallel,step_file}:
+# 1,Strategy,manager-strategy,sequential,[],1,step-01-strategy.md
+# 2,Backend,expert-backend,parallel,[1],3,step-02-backend.md
+# 3,Frontend,expert-frontend,parallel,[1],3,step-03-frontend.md
+# 4,Integrate,expert-backend,sequential,[2,3],1,step-04-integrate.md
+# 5,Test,manager-tdd,sequential,[4],1,step-05-test.md
+# 6,Document,manager-docs,sequential,[5],1,step-06-docs.md
+#
+# @files[N]{path,agent,operation,priority}:
+# {project-root}/src/api/{module}.py,expert-backend,create,critical
+# {project-root}/src/components/{Module}.tsx,expert-frontend,create,critical
+# {project-root}/tests/test_{module}.py,manager-tdd,create,high
+#
+# @exec[1]{complexity,parallel_default,dynamic_adjust,token_limit}:
+# tier-2,3,true,150000
+#
+# @gates[4]{gate_id,validator,threshold}:
+# 1,architecture-clarity,90
+# 2,test-coverage,90
+# 3,type-check,100
+# 4,trust-5,100
+
+# ─────────────────────────────────────────────────────────────
+# TIER 3: Complex (10+ steps, multi-agent)
+# ─────────────────────────────────────────────────────────────
+
+# @metadata[1]{id,name,version,tier,instructions,checklist}:
+# WF-{ID},Workflow Name,1.0.0,tier-3,instructions.md,checklist.md
+#
+# @config[1]{source,artifacts_dir,architecture}:
+# {project-root}/.moai/config/{config}.toon,./artifacts,architecture.md
+#
+# @phases[12]{id,name,agent,mode,deps,max_parallel,step_file}:
+# 1,Architecture,manager-strategy,sequential,[],1,step-01-architecture.md
+# 2,Backend Core,expert-backend,parallel,[1],5,step-02-backend-core.md
+# 3,Backend API,expert-backend,parallel,[1],5,step-03-backend-api.md
+# 4,Frontend Core,expert-frontend,parallel,[1],5,step-04-frontend-core.md
+# 5,Frontend Pages,expert-frontend,parallel,[1],5,step-05-frontend-pages.md
+# 6,Database,expert-database,parallel,[1],5,step-06-database.md
+# 7,Security,expert-security,sequential,[2,3,4,5,6],1,step-07-security.md
+# 8,Integration,expert-backend,sequential,[7],1,step-08-integration.md
+# 9,Unit Tests,manager-tdd,sequential,[8],1,step-09-unit-tests.md
+# 10,E2E Tests,mcp-playwright,sequential,[9],1,step-10-e2e-tests.md
+# 11,Documentation,manager-docs,sequential,[10],1,step-11-docs.md
+# 12,Deploy Prep,expert-devops,sequential,[11],1,step-12-deploy.md
+#
+# @checkpoint[3]{checkpoint_id,after_phase,validation,rollback_enabled}:
+# 1,6,architecture-validation,true
+# 2,9,test-coverage-validation,true
+# 3,11,integration-validation,true
+#
+# @exec[1]{complexity,parallel_default,dynamic_adjust,token_limit,max_agents}:
+# tier-3,5,true,200000,10
+#
+# @resource_limits[1]{cpu_threshold,memory_threshold,token_threshold}:
+# 80,75,180000
+#
+# @gates[6]{gate_id,validator,threshold}:
+# 1,architecture-clarity,98
+# 2,test-coverage,95
+# 3,security-audit,100
+# 4,performance-benchmarks,90
+# 5,type-check,100
+# 6,trust-5,100
+
+# ============================================================
+# SECTION REFERENCE
+# ============================================================
+#
+# @metadata     - Workflow identity (id, name, version, tier)
+# @config       - External configuration references
+# @phases       - Workflow steps with agent assignments
+# @files        - File operations to perform
+# @exec         - Execution strategy settings
+# @gates        - Quality gates that must pass
+# @checkpoint   - State checkpoints for rollback (tier-3)
+# @resource_limits - Resource monitoring thresholds (tier-3)
+#
+# ============================================================
+# AGENT TYPES
+# ============================================================
+#
+# manager-strategy    - Planning and coordination
+# manager-tdd         - Testing and TDD cycles
+# manager-docs        - Documentation generation
+# manager-quality     - Quality validation
+# expert-backend      - Backend implementation
+# expert-frontend     - Frontend implementation
+# expert-database     - Database design
+# expert-security     - Security auditing
+# expert-devops       - DevOps and deployment
+# mcp-playwright      - E2E browser testing
+#
+# ============================================================
+# EXECUTION MODES
+# ============================================================
+#
+# sequential - Phases run one after another
+# parallel   - Phases can run simultaneously (respecting deps)
+#
+# ============================================================

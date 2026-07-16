@@ -1,0 +1,80 @@
+{
+  "_comment": "MoAI Resource Optimizer Configuration - Phase 3",
+  "version": "3.0.0",
+  "last_updated": "2025-12-01",
+
+  "tab_suspension": {
+    "enabled": true,
+    "auto_suspend": false,
+    "suspend_threshold_tabs": 10,
+    "suspend_threshold_memory_mb": 1000,
+    "protect_pinned": true,
+    "protect_active": true,
+    "protect_audible": true,
+    "browsers": ["chrome", "dia", "firefox", "safari"],
+    "dry_run_by_default": false
+  },
+
+  "memory_optimization": {
+    "enabled": true,
+    "auto_purge": false,
+    "purge_threshold_swap_percent": 90,
+    "purge_threshold_memory_percent": 85,
+    "require_sudo_confirmation": true
+  },
+
+  "process_management": {
+    "enabled": true,
+    "helper_cleanup_threshold": 50,
+    "inactive_app_threshold_minutes": 30,
+    "never_terminate": [
+      "Ghostty",
+      "Visual Studio Code",
+      "Chrome",
+      "Firefox",
+      "Safari",
+      "Dia",
+      "Terminal"
+    ]
+  },
+
+  "monitoring": {
+    "enabled": true,
+    "health_check_interval_seconds": 60,
+    "auto_optimize_on_critical": false,
+    "alert_thresholds": {
+      "memory_percent": 85,
+      "swap_percent": 80,
+      "disk_percent": 90
+    }
+  },
+
+  "learning": {
+    "enabled": true,
+    "record_all_optimizations": true,
+    "pattern_recognition_min_samples": 3,
+    "auto_apply_learned_patterns": false
+  },
+
+  "notifications": {
+    "enabled": true,
+    "use_osascript_popups": true,
+    "show_success_notifications": true,
+    "show_error_notifications": true,
+    "notification_timeout_seconds": 10
+  },
+
+  "error_handling": {
+    "enabled": true,
+    "log_errors": true,
+    "auto_recovery": true,
+    "graceful_degradation": true,
+    "max_retry_attempts": 3
+  },
+
+  "performance": {
+    "max_execution_time_seconds": 300,
+    "parallel_analysis": true,
+    "cache_analysis_results_seconds": 60
+  }
+}

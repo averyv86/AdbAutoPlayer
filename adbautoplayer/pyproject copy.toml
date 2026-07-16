@@ -1,0 +1,12 @@
+[project]
+name = "moai-ir-deck"
+version = "0.1.0"
+description = "Workspace containing moai-adk and related projects"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv.workspace]
+members = ["moai-adk"]
+
+[dependency-groups]
+dev = []

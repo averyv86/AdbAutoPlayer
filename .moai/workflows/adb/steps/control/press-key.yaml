@@ -1,0 +1,106 @@
+id: adb-press-key
+name: Press Device Key
+description: Simulate hardware key press (Home, Back, Power, etc.)
+category: control
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = default device)"
+    required: false
+  - name: key
+    type: string
+    default: "BACK"
+    description: "Key to press: BACK, HOME, POWER, MENU, VOLUME_UP, VOLUME_DOWN, ENTER, TAB, ESCAPE, DELETE"
+    required: true
+  - name: count
+    type: integer
+    default: 1
+    description: "Number of times to press the key"
+    required: false
+  - name: delay
+    type: integer
+    default: 100
+    description: "Delay between key presses in milliseconds"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/control/press_key.py
+  args: ["--device", "{{ device }}", "--key", "{{ key }}", "--count", "{{ count }}", "--delay", "{{ delay }}"]
+  timeout_seconds: 10
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Key press successful"
+    - "key sent"
+  output_patterns:
+    - "Pressed .+ key"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 1
+  on_error:
+    - exit_code: 1
+      action: "Device not found or offline"
+    - exit_code: 2
+      action: "Invalid key name, check key parameter"
+    - exit_code: 3
+      action: "Key press failed, check device state"
+
+outputs:
+  - name: key_press_status
+    type: string
+    description: "Status of key press operation"
+  - name: key_pressed
+    type: string
+    description: "Name of the key that was pressed"
+  - name: presses_performed
+    type: integer
+    description: "Number of key presses actually performed"
+  - name: duration_ms
+    type: integer
+    description: "Total operation duration in milliseconds"
+
+validation:
+  - name: valid_key
+    rule: "key must be one of: BACK, HOME, POWER, MENU, VOLUME_UP, VOLUME_DOWN, ENTER, TAB, ESCAPE, DELETE"
+  - name: count_positive
+    rule: "count must be at least 1"
+  - name: delay_range
+    rule: "delay must be between 0 and 1000 milliseconds"
+
+supported_keys:
+  - name: BACK
+    code: 4
+    description: "Back button"
+  - name: HOME
+    code: 3
+    description: "Home button"
+  - name: POWER
+    code: 26
+    description: "Power button"
+  - name: MENU
+    code: 82
+    description: "Menu button"
+  - name: VOLUME_UP
+    code: 24
+    description: "Volume up button"
+  - name: VOLUME_DOWN
+    code: 25
+    description: "Volume down button"
+  - name: ENTER
+    code: 66
+    description: "Enter key"
+  - name: TAB
+    code: 61
+    description: "Tab key"
+  - name: ESCAPE
+    code: 111
+    description: "Escape key"
+  - name: DELETE
+    code: 67
+    description: "Delete key"

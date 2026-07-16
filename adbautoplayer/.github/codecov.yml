@@ -1,0 +1,32 @@
+codecov:
+  branch: main
+
+coverage:
+  status:
+    project: off
+    patch: off
+
+ignore:
+  - "python/adb_auto_player/games"
+  - "python/adb_auto_player/game.py"
+  - "python/adb_auto_player/adb.py"
+  - "python/adb_auto_player/commands"
+  - "python/tests"
+  # Wails3
+  - "main.go"
+  - "internal/app"
+  - "internal/games"
+  - "internal/hotkeys"
+  - "internal/process"
+  # Wails2 remove later
+  - "app.go"
+  - "app*.go"
+  - "internal/processmanager.go"
+  - "internal/ipc"
+
+
+flags:
+  windows-latest:
+    carryforward: true
+  macos-latest:
+    carryforward: true

@@ -1,0 +1,1 @@
+"""AFK Journey Mixins Package."""

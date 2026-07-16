@@ -1,0 +1,90 @@
+name: Tests - Python
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-tests:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+        include:
+          - os: windows-latest
+            source_command: ".\\.venv\\Scripts\\Activate.ps1"
+          - os: macos-latest
+            source_command: "source .venv/bin/activate"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Python
+        uses: ./.github/actions/setup-tools
+        with:
+          tool: uv-python
+
+      - name: macOS install dependencies
+        if: runner.os == 'macOS'
+        id: brew_install
+        run: |
+          brew install tesseract
+          brew install --cask android-platform-tools
+        continue-on-error: true
+
+      - name: macOS install platform-tools fallback
+        if: runner.os == 'macOS' && steps.brew_install.outcome == 'failure'
+        run: |
+          echo "Homebrew installation failed, using direct download"
+
+          # Download and extract platform-tools to /usr/local/bin
+          curl -L https://dl.google.com/android/repository/platform-tools-latest-darwin.zip -o /tmp/platform-tools.zip
+          unzip -j /tmp/platform-tools.zip 'platform-tools/adb' 'platform-tools/fastboot' -d /usr/local/bin/
+
+          # Verify installation
+          adb --version || (echo "Fallback installation failed" && exit 1)
+
+      - name: Run Pytests for Codecov Test Analytics
+        id: run_tests
+        run: |
+          uv run pytest --disable-warnings --cov --junitxml=junit.xml -o junit_family=legacy
+        continue-on-error: true
+
+      - name: Run Pytests for Codecov Coverage
+        id: run_tests_coverage
+        run: |
+          uv run pytest --disable-warnings --cov --cov-branch --cov-report=xml
+        continue-on-error: true
+
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        with:
+          slug: AdbAutoPlayer/AdbAutoPlayer
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.os }}
+          files: "junit.xml"
+          disable_search: 'true'
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          slug: AdbAutoPlayer/AdbAutoPlayer
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.os }}
+          files: "coverage.xml"
+          disable_search: 'true'
+
+      - name: Check if tests failed
+        if: steps.run_tests.outcome == 'failure' || steps.run_tests_coverage.outcome == 'failure'
+        run: |
+          echo "One or more test steps failed"
+          exit 1

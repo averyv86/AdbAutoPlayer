@@ -1,0 +1,191 @@
+name: AFK Journey Battle Automation
+description: Automate battle execution with team formation and skill usage
+version: 1.0.0
+metadata:
+  game: afk-journey
+  workflow_type: battle-automation
+  difficulty: intermediate
+parameters:
+  device: 127.0.0.1:5555
+  stage_number: 1
+  max_battles: 10
+  auto_formation: true
+  skill_priority: balanced
+phases:
+- id: prepare_team
+  name: Prepare Battle Team
+  description: Setup team formation and equipment
+  steps:
+  - id: prepare_team_step1
+    name: Prepare Battle Team - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: prepare_team_step2
+    name: Prepare Battle Team - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: prepare_team_step3
+    name: Prepare Battle Team - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: prepare_team_step4
+    name: Prepare Battle Team - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: enter_battle
+  name: Enter Battle
+  description: Navigate to battle screen
+  steps:
+  - id: enter_battle_step1
+    name: Enter Battle - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: enter_battle_step2
+    name: Enter Battle - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: enter_battle_step3
+    name: Enter Battle - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: execute_battle
+  name: Execute Battle
+  description: Execute battle with skill usage
+  steps:
+  - id: execute_battle_step1
+    name: Execute Battle - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: execute_battle_step2
+    name: Execute Battle - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: execute_battle_step3
+    name: Execute Battle - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: execute_battle_step4
+    name: Execute Battle - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: execute_battle_step5
+    name: Execute Battle - Step 5
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: execute_battle_step6
+    name: Execute Battle - Step 6
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: collect_rewards
+  name: Collect Rewards
+  description: Claim battle rewards
+  steps:
+  - id: collect_rewards_step1
+    name: Collect Rewards - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: collect_rewards_step2
+    name: Collect Rewards - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: collect_rewards_step3
+    name: Collect Rewards - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+validation:
+- phase: phase_1
+  condition: phase_1_complete == true
+  on_failure: continue
+- phase: phase_2
+  condition: phase_2_complete == true
+  on_failure: continue
+- phase: phase_3
+  condition: phase_3_complete == true
+  on_failure: continue
+- phase: phase_4
+  condition: phase_4_complete == true
+  on_failure: abort
+recovery:
+- on_error: any
+  action: retry
+  max_attempts: 3
+- on_error: timeout
+  action: reset_and_retry
+  max_attempts: 2
+- on_error: device_disconnected
+  action: abort
+  max_attempts: 1
+outputs:
+- name: battle-automation_status
+  format: json
+  description: Workflow execution status
+- name: battle-automation_log
+  format: text
+  description: Detailed execution log
+- name: battle-automation_metrics
+  format: table
+  description: Performance metrics

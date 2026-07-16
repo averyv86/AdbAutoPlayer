@@ -1,0 +1,324 @@
+# Command 3: monitor
+
+Continuous performance monitoring with real-time metrics.
+
+## Syntax
+
+```bash
+/macos-resource-optimizer:3-monitor [options]
+```
+
+## Description
+
+The monitor command:
+- Provides real-time system metrics
+- Tracks performance trends
+- Generates alerts for issues
+- Logs historical data
+- Enables proactive optimization
+
+## Basic Usage
+
+```bash
+# Start monitoring
+/macos-resource-optimizer:3-monitor
+```
+
+Expected output:
+```
+macOS Resource Optimizer - Monitor Mode
+Started: 2024-01-15 10:40:00
+
+CPU:     45.2% | Temp: 65.5°C | Status: Normal
+Memory:  75.0% | Available: 2.0GB | Swap: 0.5GB
+Disk:    65.0% | Free: 175GB | I/O: 2.1%
+Battery: 87%   | Status: Charging | Health: Good
+Thermal: 68°C  | Fan: 35% | Status: Normal
+Network: Excellent | Latency: 15ms | Bandwidth: Good
+
+Next update: 5 seconds
+```
+
+## Monitoring Intervals
+
+### Real-Time Metrics (1-second intervals)
+
+```bash
+# Ultra-frequent updates
+/macos-resource-optimizer:3-monitor --interval 1
+```
+
+### Standard Intervals (5-second intervals)
+
+```bash
+# Standard monitoring (default)
+/macos-resource-optimizer:3-monitor --interval 5
+```
+
+### Extended Intervals (30-second intervals)
+
+```bash
+# Low-frequency monitoring
+/macos-resource-optimizer:3-monitor --interval 30
+```
+
+### Custom Intervals
+
+```bash
+# Custom interval (in seconds)
+/macos-resource-optimizer:3-monitor --interval 10
+```
+
+## Monitoring Options
+
+### Duration
+
+```bash
+# Monitor for specific duration
+/macos-resource-optimizer:3-monitor --duration 3600  # 1 hour
+/macos-resource-optimizer:3-monitor --duration 86400 # 24 hours
+
+# Monitor indefinitely
+/macos-resource-optimizer:3-monitor --indefinite
+```
+
+### Focus Components
+
+```bash
+# Monitor specific component
+/macos-resource-optimizer:3-monitor --component cpu
+
+# Multiple components
+/macos-resource-optimizer:3-monitor --component cpu --component memory
+
+# All components
+/macos-resource-optimizer:3-monitor --all
+```
+
+### Alert Thresholds
+
+```bash
+# Set custom thresholds
+/macos-resource-optimizer:3-monitor --cpu-threshold 80
+/macos-resource-optimizer:3-monitor --memory-threshold 85
+/macos-resource-optimizer:3-monitor --temp-threshold 85
+
+# Disable alerts
+/macos-resource-optimizer:3-monitor --no-alerts
+```
+
+### Output Options
+
+```bash
+# Dashboard mode (visual)
+/macos-resource-optimizer:3-monitor --dashboard
+
+# JSON streaming
+/macos-resource-optimizer:3-monitor --json
+
+# CSV export
+/macos-resource-optimizer:3-monitor --csv
+
+# Log file
+/macos-resource-optimizer:3-monitor --log /path/to/logfile
+```
+
+## Alert System
+
+### Alert Levels
+
+**Normal (Green)**
+- All metrics within acceptable range
+- No action needed
+
+**Warning (Yellow)**
+- Metric approaching threshold
+- Monitor closely
+
+**Critical (Red)**
+- Metric exceeds safe limits
+- Action recommended
+
+### Alert Examples
+
+```
+WARNING: CPU temperature approaching threshold (80°C)
+WARNING: Memory usage high (82%)
+CRITICAL: Disk nearly full (90%)
+CRITICAL: Battery critical (10%)
+```
+
+### Alert Actions
+
+Alerts can trigger:
+- Display notifications
+- Run automatic optimizations
+- Log to file
+- Execute custom scripts
+
+## Real-Time Dashboard
+
+```bash
+/macos-resource-optimizer:3-monitor --dashboard
+```
+
+Output:
+```
+╔════════════════════════════════════════════════════════╗
+║   macOS Resource Optimizer - Realtime Dashboard        ║
+╠════════════════════════════════════════════════════════╣
+║                                                        ║
+║  CPU Usage:                                            ║
+║  ████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 45.2%     ║
+║  Temperature: 65.5°C [||||||||░░░░░░░░]               ║
+║                                                        ║
+║  Memory Usage:                                         ║
+║  ███████████████░░░░░░░░░░░░░░░░░░░░░░░░░ 75.0%     ║
+║  Available: 2.0 GB / 8.0 GB                           ║
+║                                                        ║
+║  Disk Usage:                                           ║
+║  ██████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 65.0%     ║
+║  Free: 175 GB / 500 GB                                ║
+║                                                        ║
+║  Battery:                                              ║
+║  ███████████████░░░░░░░░░░░░░░░░░░░░░░░░░ 87%       ║
+║  Status: Charging | Health: Good                      ║
+║                                                        ║
+║  Network: Excellent (Latency: 15ms)                   ║
+║  Last Updated: 2024-01-15 10:42:15 UTC                ║
+║                                                        ║
+╚════════════════════════════════════════════════════════╝
+```
+
+## Historical Data
+
+### View Trends
+
+```bash
+# Last hour
+/macos-resource-optimizer:3-monitor --history 3600
+
+# Last day
+/macos-resource-optimizer:3-monitor --history 86400
+
+# Custom period
+/macos-resource-optimizer:3-monitor --history 7200  # 2 hours
+```
+
+### Data Export
+
+```bash
+# Export to CSV
+/macos-resource-optimizer:3-monitor --export csv --output metrics.csv
+
+# Export to JSON
+/macos-resource-optimizer:3-monitor --export json --output metrics.json
+
+# Export to database
+/macos-resource-optimizer:3-monitor --export database
+```
+
+## Performance Tracking
+
+### Baseline Comparison
+
+```bash
+# Compare against baseline
+/macos-resource-optimizer:3-monitor --baseline
+
+# Set new baseline
+/macos-resource-optimizer:3-monitor --set-baseline
+```
+
+### Trend Analysis
+
+```bash
+# Analyze trends
+/macos-resource-optimizer:3-monitor --analyze-trends
+
+# Generate trend report
+/macos-resource-optimizer:3-monitor --trend-report
+```
+
+## Advanced Features
+
+### Custom Alerts
+
+```bash
+# Execute script on alert
+/macos-resource-optimizer:3-monitor --on-alert "script.sh"
+
+# Send webhook on alert
+/macos-resource-optimizer:3-monitor --webhook https://example.com/alert
+```
+
+### Background Monitoring
+
+```bash
+# Run as background service
+/macos-resource-optimizer:3-monitor --background
+
+# Stop background service
+/macos-resource-optimizer:3-monitor --stop-background
+```
+
+### Integration
+
+```bash
+# Send to monitoring system
+/macos-resource-optimizer:3-monitor --send-to prometheus
+
+# Slack notifications
+/macos-resource-optimizer:3-monitor --slack-webhook <url>
+```
+
+## Performance Impact
+
+- **CPU overhead**: < 2% during monitoring
+- **Memory overhead**: ~30MB
+- **Disk I/O**: Minimal
+- **Battery impact**: Negligible
+
+## Use Cases
+
+### Development Monitoring
+
+Track performance while coding:
+```bash
+/macos-resource-optimizer:3-monitor --component cpu --component memory
+```
+
+### Testing Performance
+
+Monitor during test runs:
+```bash
+/macos-resource-optimizer:3-monitor --duration 3600 --log test-metrics.log
+```
+
+### Production Tracking
+
+Long-term monitoring:
+```bash
+/macos-resource-optimizer:3-monitor --background --indefinite
+```
+
+### Problem Diagnosis
+
+Capture metrics during issues:
+```bash
+/macos-resource-optimizer:3-monitor --verbose --json
+```
+
+## Next Steps
+
+- Generate [report](/commands/report) from monitoring data
+- Apply [optimizations](/commands/optimize) based on trends
+- Review [architecture](/architecture/overview)
+
+## Related Commands
+
+- [analyze](/commands/analyze) - One-time analysis
+- [optimize](/commands/optimize) - Apply optimizations
+- [report](/commands/report) - Generate reports
+
+See [Troubleshooting](/guides/troubleshooting) for help.

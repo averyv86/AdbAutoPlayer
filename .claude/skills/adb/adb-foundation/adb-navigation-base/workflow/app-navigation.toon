@@ -1,0 +1,242 @@
+name: App Navigation and Screen Management
+description: Launch apps, navigate between screens, and manage application state
+version: 1.0.0
+
+metadata:
+  category: app-automation
+  skill: adb-navigation-base
+  difficulty: beginner
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  package_name:
+    type: string
+    default: "com.daangn.android.app"
+    description: App package name
+  activity:
+    type: string
+    default: ".MainActivity"
+    description: Activity name (. prefix for relative to package)
+  action:
+    type: string
+    default: "launch"
+    description: "Action: launch, back, home, recent, wait_for_screen"
+  timeout:
+    type: integer
+    default: 30
+    description: Action timeout in seconds
+
+phases:
+  - id: prepare_navigation
+    name: Prepare for Navigation
+    description: Verify device state and app availability
+    steps:
+      - id: verify_device
+        name: Verify Device Accessible
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "getprop ro.serialno"
+          timeout: 5
+        on_success: continue
+        on_failure: abort
+
+      - id: check_package
+        name: Check Package Installed
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "pm list packages | grep {{ package_name }}"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: launch_app
+    name: Launch Application
+    description: Start app with specified activity
+    steps:
+      - id: launch_app_activity
+        name: Launch App Activity
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "am start -n {{ package_name }}/{{ activity }} 2>/dev/null || echo 'launch_error'"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: wait_app_ready
+        name: Wait for App Ready
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: screen_change
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: verify_app_launched
+        name: Verify App Launched
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "dumpsys window windows | grep -E 'mCurrentFocus|com.daangn'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+  - id: navigate_back
+    name: Navigate Back
+    description: Go to previous screen
+    steps:
+      - id: press_back
+        name: Press Back Button
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "input keyevent KEYCODE_BACK"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: wait_back_response
+        name: Wait for Back Navigation
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: screen_change
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+  - id: navigate_home
+    name: Navigate to Home Screen
+    description: Return to system home
+    steps:
+      - id: press_home
+        name: Press Home Button
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "input keyevent KEYCODE_HOME"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: wait_home
+        name: Wait for Home Screen
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: screen_change
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+  - id: show_recents
+    name: Show Recent Apps
+    description: Open recent applications list
+    steps:
+      - id: press_recents
+        name: Press Recent Apps Button
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "input keyevent KEYCODE_APP_SWITCH"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: wait_recents
+        name: Wait for Recents Screen
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: screen_change
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+  - id: wait_for_screen
+    name: Wait for Specific Screen
+    description: Wait for screen state change or specific content
+    steps:
+      - id: wait_screen_ready
+        name: Wait for Screen Ready
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: screen_change
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: capture_state
+        name: Capture Screen State
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/current_state.png"
+        on_success: continue
+        on_failure: continue
+
+  - id: finalize_navigation
+    name: Finalize Navigation
+    description: Confirm navigation completion
+    steps:
+      - id: get_current_activity
+        name: Get Current Activity
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "dumpsys window windows | grep mCurrentFocus | tail -1"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: capture_final
+        name: Capture Final State
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/final_state.png"
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: launch_app
+    condition: "action == 'launch'"
+    on_failure: skip
+
+  - phase: navigate_back
+    condition: "action == 'back'"
+    on_failure: skip
+
+  - phase: navigate_home
+    condition: "action == 'home'"
+    on_failure: skip
+
+recovery:
+  - on_error: launch_app_activity
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: press_back
+    action: log_and_continue
+    max_attempts: 1
+
+outputs:
+  - name: navigation_result
+    format: json
+    description: Navigation success/failure status
+
+  - name: current_activity
+    format: table
+    description: Current app and activity information
+
+  - name: navigation_log
+    format: text
+    description: Navigation actions performed and results

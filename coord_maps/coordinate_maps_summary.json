@@ -1,0 +1,28 @@
+{
+  "source_resolution": [
+    2560,
+    1440
+  ],
+  "target_resolutions": [
+    [
+      1280,
+      720
+    ],
+    [
+      1920,
+      1080
+    ],
+    [
+      2560,
+      1440
+    ]
+  ],
+  "maps_created": 3,
+  "elements_captured": 4,
+  "element_names": [
+    "Install",
+    "Method",
+    "Options",
+    "NEXT"
+  ]
+}

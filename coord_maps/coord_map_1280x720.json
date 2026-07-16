@@ -1,0 +1,70 @@
+{
+  "source_resolution": [
+    2560,
+    1440
+  ],
+  "target_resolution": [
+    1280,
+    720
+  ],
+  "scale_x": 0.5,
+  "scale_y": 0.5,
+  "elements": {
+    "Install": {
+      "name": "Install",
+      "bounds": {
+        "left": 68,
+        "top": 40,
+        "right": 124,
+        "bottom": 63
+      },
+      "center_x": 96,
+      "center_y": 51,
+      "width": 56,
+      "height": 23
+    },
+    "Method": {
+      "name": "Method",
+      "bounds": {
+        "left": 84,
+        "top": 200,
+        "right": 1264,
+        "bottom": 248
+      },
+      "center_x": 674,
+      "center_y": 224,
+      "width": 1180,
+      "height": 48
+    },
+    "Options": {
+      "name": "Options",
+      "bounds": {
+        "left": 84,
+        "top": 88,
+        "right": 1176,
+        "bottom": 136
+      },
+      "center_x": 630,
+      "center_y": 112,
+      "width": 1092,
+      "height": 48
+    },
+    "NEXT": {
+      "name": "NEXT",
+      "bounds": {
+        "left": 1176,
+        "top": 88,
+        "right": 1264,
+        "bottom": 136
+      },
+      "center_x": 1220,
+      "center_y": 112,
+      "width": 88,
+      "height": 48
+    }
+  },
+  "metadata": {
+    "description": "Coordinate mapping from 2560x1440 to 1280x720",
+    "created_at": "2025-12-02T02:10:12.776806"
+  }
+}

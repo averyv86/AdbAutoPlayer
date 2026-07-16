@@ -1,0 +1,17 @@
+[
+  {
+    "pattern_id": "recurring_memory_chrome",
+    "pattern_type": "recurring_issue",
+    "category": "memory",
+    "description": "Chrome repeatedly consumes high memory",
+    "frequency": 11,
+    "success_rate": 1.0,
+    "avg_improvement": 2.454545454545454,
+    "recommended_action": "Restart Chrome when memory usage exceeds learned threshold",
+    "confidence_score": 1.0,
+    "last_seen": "2025-12-01T20:56:19.205429",
+    "apps_involved": [
+      "Chrome"
+    ]
+  }
+]

@@ -1,0 +1,409 @@
+# Experts API
+
+Specialized optimization modules for each system component.
+
+## Overview
+
+The Experts module provides:
+- Component-specific optimization
+- Metric collection
+- Independent specialists
+- Parallel execution
+- Graceful error handling
+
+## Available Experts
+
+### CPU Optimizer
+
+Manages processor efficiency.
+
+```python
+from macos_optimizer.experts.cpu import CPUOptimizer
+
+cpu_expert = CPUOptimizer()
+
+# Analyze
+cpu_metrics = await cpu_expert.analyze()
+
+# Optimize
+result = await cpu_expert.optimize(strategy='balanced')
+
+# Monitor
+async for metrics in cpu_expert.monitor(interval=1):
+    print(f"CPU: {metrics['usage_percent']}%")
+```
+
+**Capabilities**:
+- Frequency scaling
+- Process priority optimization
+- Thread pool tuning
+- Load balancing
+
+### Memory Optimizer
+
+Optimizes RAM usage.
+
+```python
+from macos_optimizer.experts.memory import MemoryOptimizer
+
+memory_expert = MemoryOptimizer()
+
+# Analyze
+memory_metrics = await memory_expert.analyze()
+
+# Optimize
+result = await memory_expert.optimize(strategy='balanced')
+
+# Get memory freed
+print(f"Freed: {result['memory_freed_mb']}MB")
+```
+
+**Capabilities**:
+- Cache clearing
+- Memory compression
+- Swap optimization
+- Garbage collection
+
+### Disk Optimizer
+
+Manages storage efficiency.
+
+```python
+from macos_optimizer.experts.disk import DiskOptimizer
+
+disk_expert = DiskOptimizer()
+
+# Analyze
+disk_metrics = await disk_expert.analyze()
+
+# Optimize
+result = await disk_expert.optimize(strategy='balanced')
+
+# Get space freed
+print(f"Freed: {result['space_freed_gb']}GB")
+```
+
+**Capabilities**:
+- Temporary file cleanup
+- Cache clearing
+- Fragmentation reduction
+- Space optimization
+
+### Battery Optimizer
+
+Extends battery life.
+
+```python
+from macos_optimizer.experts.battery import BatteryOptimizer
+
+battery_expert = BatteryOptimizer()
+
+# Analyze
+battery_metrics = await battery_expert.analyze()
+
+# Optimize for battery
+result = await battery_expert.optimize(strategy='aggressive')
+
+# Get battery improvement
+print(f"Est. improvement: {result['improvement_percent']}%")
+```
+
+**Capabilities**:
+- Power profile adjustment
+- Screen brightness optimization
+- Background task throttling
+- CPU frequency limiting
+
+### Thermal Optimizer
+
+Manages heat dissipation.
+
+```python
+from macos_optimizer.experts.thermal import ThermalOptimizer
+
+thermal_expert = ThermalOptimizer()
+
+# Analyze
+thermal_metrics = await thermal_expert.analyze()
+
+# Optimize thermal management
+result = await thermal_expert.optimize(strategy='aggressive')
+
+# Get temperature improvement
+print(f"Max temp: {result['max_temperature']}°C")
+```
+
+**Capabilities**:
+- Temperature monitoring
+- Fan control
+- Thermal throttling management
+- Cooling optimization
+
+### Network Optimizer
+
+Optimizes network performance.
+
+```python
+from macos_optimizer.experts.network import NetworkOptimizer
+
+network_expert = NetworkOptimizer()
+
+# Analyze
+network_metrics = await network_expert.analyze()
+
+# Optimize network
+result = await network_expert.optimize(strategy='balanced')
+
+# Get performance metrics
+print(f"Latency: {result['latency_ms']}ms")
+```
+
+**Capabilities**:
+- DNS optimization
+- Connection pooling
+- Bandwidth management
+- Latency reduction
+
+## Common Methods
+
+### analyze()
+
+Collect metrics from component.
+
+```python
+metrics = await expert.analyze()
+
+# Returns component-specific metrics
+# Example for CPU:
+# {
+#   "usage_percent": 45.2,
+#   "temperature": 65.5,
+#   "frequency": 3.2,
+#   "status": "normal"
+# }
+```
+
+### optimize(strategy: str = 'balanced')
+
+Apply optimizations.
+
+```python
+result = await expert.optimize(strategy='balanced')
+
+# Returns:
+# {
+#   "status": "success",
+#   "optimizations_applied": 3,
+#   "estimated_improvement": 15,
+#   "before": {...},
+#   "after": {...}
+# }
+```
+
+### monitor(interval: int = 5)
+
+Continuous monitoring.
+
+```python
+async for metrics in expert.monitor(interval=5):
+    print(f"Current: {metrics}")
+
+# Can be used for real-time tracking
+```
+
+### revert()
+
+Revert last optimization.
+
+```python
+result = await expert.revert()
+
+# Returns:
+# {
+#   "status": "success",
+#   "changes_reverted": 3
+# }
+```
+
+## Parallel Execution
+
+All experts run simultaneously:
+
+```python
+from macos_optimizer.experts import (
+    CPUOptimizer, MemoryOptimizer, DiskOptimizer,
+    BatteryOptimizer, ThermalOptimizer, NetworkOptimizer
+)
+import asyncio
+
+# Create experts
+cpu = CPUOptimizer()
+memory = MemoryOptimizer()
+disk = DiskOptimizer()
+battery = BatteryOptimizer()
+thermal = ThermalOptimizer()
+network = NetworkOptimizer()
+
+# Run all in parallel
+results = await asyncio.gather(
+    cpu.analyze(),
+    memory.analyze(),
+    disk.analyze(),
+    battery.analyze(),
+    thermal.analyze(),
+    network.analyze()
+)
+
+print(f"All analyzed in parallel: {len(results)} results")
+```
+
+## Usage Examples
+
+### Analyze All Components
+
+```python
+experts = [
+    CPUOptimizer(),
+    MemoryOptimizer(),
+    DiskOptimizer(),
+    BatteryOptimizer(),
+    ThermalOptimizer(),
+    NetworkOptimizer()
+]
+
+results = await asyncio.gather(*[e.analyze() for e in experts])
+```
+
+### Component-Specific Optimization
+
+```python
+# Optimize only memory
+memory_expert = MemoryOptimizer()
+result = await memory_expert.optimize(strategy='aggressive')
+
+print(f"Memory freed: {result['memory_freed_mb']}MB")
+```
+
+### Full Optimization Workflow
+
+```python
+expert = CPUOptimizer()
+
+# 1. Analyze current state
+before = await expert.analyze()
+
+# 2. Apply optimization
+result = await expert.optimize(strategy='balanced')
+
+# 3. Analyze after optimization
+after = await expert.analyze()
+
+# 4. Calculate improvement
+improvement = {
+    'temperature': before['temperature'] - after['temperature'],
+    'frequency': before['frequency'] - after['frequency']
+}
+
+print(f"Temperature improved by: {improvement['temperature']}°C")
+```
+
+## Error Handling
+
+```python
+from macos_optimizer.errors import ExpertError
+
+try:
+    result = await expert.optimize()
+except ExpertError as e:
+    print(f"Expert error: {e.message}")
+    # Fallback to conservative approach
+    result = await expert.optimize(strategy='conservative')
+```
+
+## Configuration
+
+### Expert-Specific Configuration
+
+```python
+config = {
+    'cpu': {
+        'max_frequency': 3.2,
+        'thermal_threshold': 85,
+        'processes_managed': 3
+    },
+    'memory': {
+        'compression_level': 'balanced',
+        'swap_optimize': True
+    }
+}
+
+cpu_expert = CPUOptimizer(config=config['cpu'])
+memory_expert = MemoryOptimizer(config=config['memory'])
+```
+
+## Performance
+
+Typical execution times:
+- CPUOptimizer: 200-400ms
+- MemoryOptimizer: 300-500ms
+- DiskOptimizer: 400-600ms
+- BatteryOptimizer: 100-200ms
+- ThermalOptimizer: 150-300ms
+- NetworkOptimizer: 200-400ms
+
+**Parallel execution** (all together): ~500-600ms total (6× speedup)
+
+## Advanced Features
+
+### Custom Expert
+
+```python
+class CustomOptimizer(Expert):
+    """Custom optimization expert"""
+
+    async def analyze(self) -> Dict:
+        # Custom analysis logic
+        return {...}
+
+    async def optimize(self, strategy: str) -> Dict:
+        # Custom optimization logic
+        return {...}
+
+# Register expert
+from macos_optimizer.experts import register_expert
+register_expert('custom', CustomOptimizer())
+```
+
+### Expert Chaining
+
+```python
+# Run experts sequentially with dependencies
+cpu_result = await cpu_expert.analyze()
+
+if cpu_result['temperature'] > 80:
+    # Apply thermal optimization
+    thermal_result = await thermal_expert.optimize(strategy='aggressive')
+```
+
+## Monitoring Integration
+
+```python
+# Continuous optimization with monitoring
+async def optimize_with_monitoring():
+    expert = MemoryOptimizer()
+
+    # Start optimization
+    opt_result = await expert.optimize()
+
+    # Monitor impact
+    async for metrics in expert.monitor(duration=300, interval=10):
+        improvement = initial_metrics - metrics['usage_percent']
+        print(f"Improvement: {improvement}%")
+```
+
+## See Also
+
+- [Coordinator API](/api/coordinator)
+- [Strategy API](/api/strategy)
+- [Architecture Overview](/architecture/overview)
+- [Performance Tuning](/guides/performance-tuning)

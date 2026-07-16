@@ -1,0 +1,111 @@
+# Architectural Change Workflow Template (15+ files)
+# Hybrid phased parallel execution (5-10 agents, multiple phases)
+# Use when: System-wide changes, major refactoring, architectural redesign
+
+@metadata[1]{template_id,name,complexity,file_count,agent_count}:
+ARCH-CHANGE,Architectural Change,architectural,16+,5-10
+
+@phases[6]{id,agents,mode,deps,max_parallel,description}:
+1,manager-strategy,sequential,[],1,"Comprehensive architecture analysis and migration planning"
+2,"expert-backend|expert-frontend|expert-database|expert-devops",parallel,[1],4,"Phase 1: Core infrastructure parallel migration"
+3,expert-security,sequential,[2],1,"Security audit and hardening post-migration"
+4,manager-tdd,sequential,[2,3],1,"Comprehensive test suite regeneration and validation"
+5,manager-quality,sequential,[4],1,"Quality validation, integration testing, performance benchmarks"
+6,manager-git,sequential,[5],1,"Git operations, branch management, PR creation"
+
+@agent_pool[8]{agent,domain,priority,parallel_group,capabilities}:
+manager-strategy,architecture,critical,0,"architecture-analysis|migration-planning|risk-assessment"
+expert-backend,backend,critical,1,"api-redesign|service-refactoring|integration"
+expert-frontend,frontend,critical,1,"component-restructure|state-migration|routing-redesign"
+expert-database,database,critical,1,"schema-migration|data-migration|query-optimization"
+expert-devops,devops,high,1,"ci-cd-update|deployment-strategy|infrastructure-code"
+expert-security,security,critical,0,"security-audit|vulnerability-scan|access-control"
+manager-tdd,testing,critical,0,"test-migration|coverage-validation|e2e-testing"
+manager-quality,validation,critical,0,"trust-5-validation|performance-benchmarks|integration-testing"
+
+@exec_strategy[1]{mode,parallel_default,dynamic_adjust,max_concurrent}:
+hybrid,10,true,10
+
+@file_patterns[20]{pattern,agent,priority}:
+**/backend/**/*.py,expert-backend,critical
+**/api/**/*.py,expert-backend,critical
+**/services/**/*.py,expert-backend,critical
+**/models/**/*.py,expert-backend,high
+**/frontend/**/*.{ts,tsx,jsx},expert-frontend,critical
+**/components/**/*.tsx,expert-frontend,critical
+**/pages/**/*.tsx,expert-frontend,high
+**/hooks/**/*.ts,expert-frontend,medium
+**/store/**/*.ts,expert-frontend,high
+**/migrations/**/*.sql,expert-database,critical
+**/schema/**/*.sql,expert-database,critical
+**/procedures/**/*.sql,expert-database,high
+**/deploy/**/*,expert-devops,critical
+**/.github/**/*.yml,expert-devops,critical
+**/docker/**/*,expert-devops,high
+**/k8s/**/*.yaml,expert-devops,high
+**/auth/**/*,expert-security,critical
+**/security/**/*,expert-security,critical
+**/test_*.py,manager-tdd,high
+**/tests/**/*,manager-tdd,high
+
+@quality_gates[7]{gate_id,validator,threshold,required}:
+1,architecture-clarity,98,true
+2,migration-safety,95,true
+3,agent-boundary-clarity,95,true
+4,test-coverage,95,true
+5,trust-5-compliance,100,true
+6,security-audit-passed,100,true
+7,performance-benchmarks-met,90,true
+
+@resource_limits[1]{cpu_threshold,memory_threshold,token_threshold,disk_io_threshold}:
+80,75,150000,70
+
+@parallel_config[1]{min_agents,max_agents,default_agents,adjust_interval_sec}:
+2,10,5,180
+
+@checkpoint_strategy[3]{checkpoint_id,after_phase,validation,rollback_enabled}:
+1,2,architecture-validation,true
+2,4,test-coverage-validation,true
+3,5,integration-validation,true
+
+@example_files[20]{path,agent,operation}:
+src/backend/api/v2/routes.py,expert-backend,create
+src/backend/api/v2/handlers.py,expert-backend,create
+src/backend/services/auth_service.py,expert-backend,modify
+src/backend/services/user_service.py,expert-backend,modify
+src/backend/models/user.py,expert-backend,modify
+src/frontend/App.tsx,expert-frontend,modify
+src/frontend/components/Dashboard.tsx,expert-frontend,modify
+src/frontend/components/Layout.tsx,expert-frontend,create
+src/frontend/store/auth.ts,expert-frontend,modify
+src/frontend/hooks/useAuth.ts,expert-frontend,modify
+migrations/100_architecture_v2.sql,expert-database,create
+migrations/101_data_migration.sql,expert-database,create
+migrations/102_add_indexes.sql,expert-database,create
+deploy/kubernetes/deployment.yaml,expert-devops,modify
+deploy/kubernetes/service.yaml,expert-devops,create
+.github/workflows/ci.yml,expert-devops,modify
+security/access_control.py,expert-security,modify
+tests/test_architecture.py,manager-tdd,create
+tests/integration/test_migration.py,manager-tdd,create
+docs/MIGRATION_GUIDE.md,manager-docs,create
+
+@risk_assessment[4]{risk_level,mitigation,validation}:
+high,"Comprehensive testing before deployment","95%+ test coverage required"
+high,"Incremental migration with rollback plan","Checkpoint validation at each phase"
+medium,"Security audit post-migration","Security scan with zero critical issues"
+medium,"Performance degradation","Performance benchmarks must meet 90% threshold"
+
+# Template Usage:
+# builder-workflow detects 16+ files in SPEC
+# Comprehensive architectural change requiring multi-phase coordination
+# Phase 1: Deep architecture analysis and migration planning (sequential)
+# Phase 2: Core infrastructure parallel migration (backend, frontend, database, devops - max 4 concurrent)
+# Phase 3: Security audit and hardening (sequential, critical)
+# Phase 4: Comprehensive test regeneration (sequential)
+# Phase 5: Quality validation and integration testing (sequential)
+# Phase 6: Git operations and PR creation (sequential)
+# Very high complexity, ~4-8 hour execution
+# Checkpoint validation and rollback capability at critical phases
+# Dynamic parallelism with resource monitoring every 3 minutes
+# Risk assessment and mitigation strategies included

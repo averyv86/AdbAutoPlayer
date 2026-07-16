@@ -1,0 +1,53 @@
+[project]
+name = "adb-auto-player"
+version = "0.1.0"
+description = "ADB Auto Player project"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "ty>=0.0.1a22",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+]
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py312"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = [
+    "F",
+    "D",
+    "E",
+    "N",
+    "RUF",
+    "UP",
+    "PL",
+]
+ignore = [
+    "D100",
+    "D104",
+    "D107",
+    "D203",
+    "D406",
+    "D407",
+    "UP017",
+    "PLR0913",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"**/games/**/*.py" = ["D101", "D102", "D103"]
+"**/tests/**/*.py" = ["D101", "D102", "D103", "PLR0913", "PLR2004"]
+"**/__main__.py" = ["D101", "D102", "D103", "PLW0603"]

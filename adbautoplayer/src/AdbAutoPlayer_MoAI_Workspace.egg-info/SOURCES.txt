@@ -1,0 +1,7 @@
+LICENSE
+README.md
+pyproject.toml
+src/AdbAutoPlayer_MoAI_Workspace.egg-info/PKG-INFO
+src/AdbAutoPlayer_MoAI_Workspace.egg-info/SOURCES.txt
+src/AdbAutoPlayer_MoAI_Workspace.egg-info/dependency_links.txt
+src/AdbAutoPlayer_MoAI_Workspace.egg-info/top_level.txt

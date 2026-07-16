@@ -1,0 +1,61 @@
+# Authentication System Workflow Example (Complex)
+# Complete auth system (backend + frontend + database + security)
+# Execution: Full parallel
+
+@metadata[1]{id,name,complexity,file_count,agent_count}:
+AUTH-SYSTEM,User Authentication System,complex,12,4-5
+
+@phases[5]{id,agents,mode,deps,max_parallel,description}:
+1,manager-strategy,sequential,[],1,"Design authentication architecture (JWT, session, OAuth)"
+2,"expert-backend|expert-database",parallel,[1],2,"Implement auth API and database schema in parallel"
+3,expert-frontend,sequential,[2],1,"Implement login/register UI components"
+4,expert-security,sequential,[2,3],1,"Security audit and vulnerability assessment"
+5,manager-tdd,sequential,[4],1,"Complete test suite with security tests"
+
+@agent_pool[6]{agent,domain,priority,capabilities}:
+manager-strategy,architecture,critical,"auth-design|security-architecture|jwt-oauth"
+expert-backend,backend,critical,"fastapi|jwt|bcrypt|session-management"
+expert-database,database,critical,"postgresql|user-schema|migrations"
+expert-frontend,frontend,high,"react|login-forms|token-storage"
+expert-security,security,critical,"owasp-top-10|penetration-testing|auth-audit"
+manager-tdd,testing,critical,"pytest|security-tests|auth-testing"
+
+@exec_strategy[1]{mode,parallel_default,dynamic_adjust,max_concurrent}:
+parallel,3,true,5
+
+@files[12]{path,agent,operation}:
+src/backend/api/auth.py,expert-backend,create
+src/backend/api/users.py,expert-backend,create
+src/backend/middleware/auth.py,expert-backend,create
+src/backend/utils/jwt.py,expert-backend,create
+migrations/001_create_users.sql,expert-database,create
+migrations/002_add_sessions.sql,expert-database,create
+src/frontend/components/Login.tsx,expert-frontend,create
+src/frontend/components/Register.tsx,expert-frontend,create
+src/frontend/hooks/useAuth.ts,expert-frontend,create
+tests/test_auth_api.py,manager-tdd,create
+tests/test_auth_security.py,expert-security,create
+docs/AUTH_ARCHITECTURE.md,manager-docs,create
+
+@quality_gates[6]{gate_id,validator,threshold,required}:
+1,security-audit-passed,100,true
+2,test-coverage,95,true
+3,owasp-compliance,100,true
+4,jwt-implementation,95,true
+5,session-security,95,true
+6,trust-5-compliance,100,true
+
+@resource_limits[1]{cpu_threshold,memory_threshold,token_threshold}:
+80,75,150000
+
+@parallel_config[1]{min_agents,max_agents,default_agents}:
+1,5,3
+
+# Usage Example:
+# /moai:2-run SPEC-002
+#   → Detects auth-system workflow
+#   → builder-workflow executes 5 phases
+#   → Phase 2: backend + database parallel (2 agents)
+#   → Phase 4: Critical security audit (sequential)
+#   → ~2-4 hour execution
+#   → Produces: Complete auth system + security validated

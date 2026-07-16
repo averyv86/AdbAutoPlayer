@@ -1,0 +1,5 @@
+pyproject.toml
+adb_auto_player.egg-info/PKG-INFO
+adb_auto_player.egg-info/SOURCES.txt
+adb_auto_player.egg-info/dependency_links.txt
+adb_auto_player.egg-info/top_level.txt

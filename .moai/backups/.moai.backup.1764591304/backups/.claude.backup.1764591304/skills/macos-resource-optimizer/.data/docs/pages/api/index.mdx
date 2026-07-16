@@ -1,0 +1,310 @@
+# API Reference Overview
+
+Complete Python API reference for macOS Resource Optimizer.
+
+## API Architecture
+
+```
+Coordinator (Entry Point)
+    ↓
+Strategy (Decision Logic)
+    ↓
+Experts (Implementations)
+    ├─ CPU Optimizer
+    ├─ Memory Optimizer
+    ├─ Disk Optimizer
+    ├─ Battery Optimizer
+    ├─ Thermal Optimizer
+    └─ Network Optimizer
+```
+
+## Quick Start
+
+### Basic Usage
+
+```python
+from macos_optimizer import Coordinator
+
+# Create coordinator
+coordinator = Coordinator()
+
+# Initialize
+coordinator.init()
+
+# Analyze system
+results = coordinator.analyze()
+
+# Apply optimizations
+coordinator.optimize(strategy='balanced')
+
+# Monitor performance
+coordinator.monitor(duration=3600)
+```
+
+## API Modules
+
+### Coordinator
+
+Main entry point for all operations.
+
+- Parse commands
+- Route to appropriate handlers
+- Manage experts
+- Generate responses
+
+[Full documentation →](/api/coordinator)
+
+### Strategy
+
+Decision-making and planning logic.
+
+- Analyze system state
+- Plan optimizations
+- Estimate improvements
+- Generate recommendations
+
+[Full documentation →](/api/strategy)
+
+### Experts
+
+Specialized optimization modules.
+
+- CPU Optimizer
+- Memory Optimizer
+- Disk Optimizer
+- Battery Optimizer
+- Thermal Optimizer
+- Network Optimizer
+
+[Full documentation →](/api/experts)
+
+## Common Operations
+
+### Initialize System
+
+```python
+from macos_optimizer import Coordinator
+
+coordinator = Coordinator()
+result = coordinator.init()
+```
+
+### Analyze System
+
+```python
+analysis = coordinator.analyze()
+print(f"CPU Usage: {analysis['cpu']['usage_percent']}%")
+print(f"Memory Usage: {analysis['memory']['usage_percent']}%")
+```
+
+### Apply Optimizations
+
+```python
+optimizations = coordinator.optimize(strategy='balanced')
+print(f"Optimizations applied: {optimizations['count']}")
+```
+
+### Monitor Performance
+
+```python
+monitor = coordinator.monitor(duration=3600, interval=5)
+for metrics in monitor:
+    print(f"Current CPU: {metrics['cpu']['usage_percent']}%")
+```
+
+## Return Value Formats
+
+### Success Response
+
+```json
+{
+  "status": "success",
+  "data": {...},
+  "execution_time_seconds": 1.8,
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+### Error Response
+
+```json
+{
+  "status": "error",
+  "error": "Error message",
+  "error_code": "ERROR_CODE",
+  "execution_time_seconds": 0.5
+}
+```
+
+### Partial Success Response
+
+```json
+{
+  "status": "partial",
+  "data": {...},
+  "warnings": ["Warning 1", "Warning 2"],
+  "execution_time_seconds": 1.8
+}
+```
+
+## Error Handling
+
+### Try-Catch Pattern
+
+```python
+from macos_optimizer import Coordinator
+from macos_optimizer.errors import OptimizerError
+
+try:
+    coordinator = Coordinator()
+    result = coordinator.analyze()
+except OptimizerError as e:
+    print(f"Error: {e.message}")
+    print(f"Code: {e.error_code}")
+```
+
+## Asynchronous Operations
+
+### Using Async/Await
+
+```python
+import asyncio
+from macos_optimizer import Coordinator
+
+async def main():
+    coordinator = Coordinator()
+    result = await coordinator.analyze_async()
+    print(result)
+
+asyncio.run(main())
+```
+
+## Caching and Performance
+
+### Cache Usage
+
+```python
+from macos_optimizer import MetricsCache
+
+cache = MetricsCache()
+
+# Store metrics
+cache.store('cpu_metrics', cpu_data, ttl=5)
+
+# Retrieve metrics
+metrics = cache.get('cpu_metrics')
+
+# Clear cache
+cache.clear()
+```
+
+## Configuration
+
+### Custom Configuration
+
+```python
+from macos_optimizer import Coordinator
+
+config = {
+    'optimization_level': 'aggressive',
+    'auto_optimize': True,
+    'monitor_interval': 30
+}
+
+coordinator = Coordinator(config=config)
+```
+
+## Type Hints
+
+All API methods include type hints:
+
+```python
+def analyze() -> Dict[str, Any]: ...
+def optimize(strategy: str = 'balanced') -> Dict[str, Any]: ...
+def monitor(duration: int = 3600, interval: int = 5) -> Iterator[Dict[str, Any]]: ...
+```
+
+## API Versioning
+
+Current API version: **1.0.0**
+
+```python
+from macos_optimizer import __version__
+
+print(f"Optimizer version: {__version__}")
+```
+
+## API Reference Structure
+
+1. [Coordinator API](/api/coordinator)
+   - Main orchestration
+   - Command routing
+   - Response formatting
+
+2. [Strategy API](/api/strategy)
+   - System analysis
+   - Optimization planning
+   - Recommendation generation
+
+3. [Experts API](/api/experts)
+   - Individual optimizers
+   - Metric collection
+   - Optimization application
+
+## Example: Complete Workflow
+
+```python
+from macos_optimizer import Coordinator
+
+# Initialize
+coordinator = Coordinator()
+coordinator.init()
+
+# Analyze
+analysis = coordinator.analyze()
+print(f"Initial CPU: {analysis['cpu']['usage_percent']}%")
+
+# Optimize
+optimizations = coordinator.optimize(strategy='balanced')
+print(f"Applied {optimizations['count']} optimizations")
+
+# Monitor
+monitor = coordinator.monitor(duration=60, interval=10)
+for metrics in monitor:
+    print(f"Current CPU: {metrics['cpu']['usage_percent']}%")
+
+# Generate report
+report = coordinator.generate_report()
+print(report['summary'])
+```
+
+## Performance Characteristics
+
+| Operation | Time | Memory |
+|-----------|------|--------|
+| init() | 1.0s | 10MB |
+| analyze() | 1.8s | 20MB |
+| optimize() | 2.0s | 30MB |
+| monitor() | Continuous | 15MB |
+
+## Next Steps
+
+- Explore [Coordinator API](/api/coordinator)
+- Learn [Strategy API](/api/strategy)
+- Review [Experts API](/api/experts)
+- Check [Examples](#example-complete-workflow)
+
+## Documentation Standards
+
+All APIs follow:
+- PEP 8 naming conventions
+- Type hints on all functions
+- Comprehensive docstrings
+- Async/await support
+- Error handling
+
+## See Also
+
+- [Commands Reference](/commands/index)
+- [Architecture Overview](/architecture/overview)
+- [Code Examples](https://github.com/moai-adk/macos-resource-optimizer)

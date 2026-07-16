@@ -1,0 +1,221 @@
+name: Magisk Root Installation Automation
+description: Automate Magisk installation with module management
+version: 1.0.0
+metadata:
+  game: magisk
+  workflow_type: installer-automation
+  difficulty: advanced
+parameters:
+  device: 127.0.0.1:5555
+  auto_mount: true
+  safety_mode: true
+  module_list: ''
+phases:
+- id: device_check
+  name: Check Device State
+  description: Verify device and permissions
+  steps:
+  - id: device_check_step1
+    name: Check Device State - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: device_check_step2
+    name: Check Device State - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: device_check_step3
+    name: Check Device State - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: device_check_step4
+    name: Check Device State - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: mount_system
+  name: Mount System
+  description: Prepare system partition
+  steps:
+  - id: mount_system_step1
+    name: Mount System - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: mount_system_step2
+    name: Mount System - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: mount_system_step3
+    name: Mount System - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: install_root
+  name: Install Root
+  description: Execute Magisk installation
+  steps:
+  - id: install_root_step1
+    name: Install Root - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: install_root_step2
+    name: Install Root - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: install_root_step3
+    name: Install Root - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: install_root_step4
+    name: Install Root - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: install_root_step5
+    name: Install Root - Step 5
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: module_management
+  name: Module Management
+  description: Install required modules
+  steps:
+  - id: module_management_step1
+    name: Module Management - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: module_management_step2
+    name: Module Management - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: module_management_step3
+    name: Module Management - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: module_management_step4
+    name: Module Management - Step 4
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+- id: verify_installation
+  name: Verify Installation
+  description: Confirm successful installation
+  steps:
+  - id: verify_installation_step1
+    name: Verify Installation - Step 1
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: verify_installation_step2
+    name: Verify Installation - Step 2
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: continue
+  - id: verify_installation_step3
+    name: Verify Installation - Step 3
+    action: adb-automation
+    params:
+      device: '{{ device }}'
+      timeout: 30
+    on_success: continue
+    on_failure: abort
+validation:
+- phase: phase_1
+  condition: phase_1_complete == true
+  on_failure: continue
+- phase: phase_2
+  condition: phase_2_complete == true
+  on_failure: continue
+- phase: phase_3
+  condition: phase_3_complete == true
+  on_failure: continue
+- phase: phase_4
+  condition: phase_4_complete == true
+  on_failure: continue
+- phase: phase_5
+  condition: phase_5_complete == true
+  on_failure: abort
+recovery:
+- on_error: any
+  action: retry
+  max_attempts: 3
+- on_error: timeout
+  action: reset_and_retry
+  max_attempts: 2
+- on_error: device_disconnected
+  action: abort
+  max_attempts: 1
+outputs:
+- name: installer-automation_status
+  format: json
+  description: Workflow execution status
+- name: installer-automation_log
+  format: text
+  description: Detailed execution log
+- name: installer-automation_metrics
+  format: table
+  description: Performance metrics

@@ -1,0 +1,756 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.6, pytest-9.0.1, pluggy-1.6.0 -- /opt/homebrew/opt/python@3.13/bin/python3.13
+rootdir: /Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data
+configfile: pytest.ini
+plugins: anyio-4.10.0, mock-3.15.1, logfire-4.13.2, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 278 items
+
+tests/test_command_0_init.py::TestCommand0InitDelegation::test_init_validates_scripts_exist PASSED [  0%]
+tests/test_command_0_init.py::TestCommand0InitDelegation::test_status_script_execution WARNING [  0%]
+tests/test_command_0_init.py::TestCommand0InitDelegation::test_init_command_validates_python_version PASSED [  1%]
+tests/test_command_0_init.py::TestCommand0InitValidation::test_status_script_json_output_structure WARNING [  1%]
+tests/test_command_0_init.py::TestCommand0InitValidation::test_status_script_exit_codes WARNING [  1%]
+tests/test_command_0_init.py::TestCommand0InitValidation::test_uv_dependencies_available PASSED [  2%]
+tests/test_command_0_init.py::TestCommand0InitValidation::test_cache_script_initialization FAILED [  2%]
+tests/test_command_0_init.py::TestCommand0InitErrorHandling::test_status_script_handles_invalid_flags PASSED [  2%]
+tests/test_command_0_init.py::TestCommand0InitErrorHandling::test_script_timeout_handling WARNING [  3%]
+tests/test_command_0_init.py::TestCommand0InitErrorHandling::test_missing_script_handling PASSED [  3%]
+tests/test_command_0_init.py::TestCommand0InitErrorHandling::test_analyze_cpu_script_error_handling WARNING [  3%]
+tests/test_command_0_init.py::TestCommand0InitErrorHandling::test_subprocess_execution_resilience WARNING [  4%]
+tests/test_command_0_init.py::test_init_command_success_workflow WARNING [  4%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeDelegation::test_analyze_command_delegates_to_coordinator FAILED [  5%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeDelegation::test_analyze_command_delegates_with_parallel_execution FAILED [  5%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_contains_all_categories FAILED [  5%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_has_correct_metrics_per_category FAILED [  6%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_performance_within_target FAILED [  6%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_has_execution_time FAILED [  6%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_format_is_json_compatible FAILED [  7%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_coordinator_failure FAILED [  7%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_timeout_during_analysis FAILED [  7%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_partial_category_failure FAILED [  8%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_cache_read_failure FAILED [  8%]
+tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_expert_agent_crash FAILED [  8%]
+tests/test_command_1_analyze.py::test_analyze_command_success_workflow ERROR [  9%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeDelegation::test_optimize_command_delegates_sequential_workflow FAILED [  9%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeDelegation::test_optimize_delegates_with_sequential_phases FAILED [ 10%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeUserApproval::test_optimize_requests_user_approval_with_korean_ui FAILED [ 10%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeUserApproval::test_optimize_displays_optimization_plan_to_user FAILED [ 10%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeUserApproval::test_optimize_handles_user_rejection FAILED [ 11%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeUserApproval::test_optimize_approval_includes_risk_assessment FAILED [ 11%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_coordinator_analysis_failure FAILED [ 11%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_strategy_generation_failure FAILED [ 12%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_execution_failure_with_rollback FAILED [ 12%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_user_approval_timeout FAILED [ 12%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_concurrent_system_changes FAILED [ 13%]
+tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_insufficient_permissions FAILED [ 13%]
+tests/test_command_2_optimize.py::test_optimize_command_complete_workflow ERROR [ 14%]
+tests/test_command_3_monitor.py::TestCommand3MonitorContinuousLoop::test_monitor_command_establishes_continuous_loop FAILED [ 14%]
+tests/test_command_3_monitor.py::TestCommand3MonitorContinuousLoop::test_monitor_loop_sampling_interval FAILED [ 14%]
+tests/test_command_3_monitor.py::TestCommand3MonitorContinuousLoop::test_monitor_loop_iteration_tracking FAILED [ 15%]
+tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_generates_cpu_alert_on_threshold_exceeded FAILED [ 15%]
+tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_generates_memory_alert_on_threshold_exceeded FAILED [ 15%]
+tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_generates_thermal_alert_on_threshold_exceeded FAILED [ 16%]
+tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_no_alert_when_below_threshold FAILED [ 16%]
+tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_alert_includes_recommendations FAILED [ 16%]
+tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_user_interrupt FAILED [ 17%]
+tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_timeout FAILED [ 17%]
+tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_explicit_stop_command FAILED [ 17%]
+tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_coordinator_crash FAILED [ 18%]
+tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_system_error FAILED [ 18%]
+tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_saves_state_on_termination FAILED [ 19%]
+tests/test_command_3_monitor.py::test_monitor_command_continuous_operation ERROR [ 19%]
+tests/test_command_4_report.py::TestCommand4ReportMarkdownGeneration::test_report_command_generates_markdown_report FAILED [ 19%]
+tests/test_command_4_report.py::TestCommand4ReportMarkdownGeneration::test_report_markdown_includes_sections FAILED [ 20%]
+tests/test_command_4_report.py::TestCommand4ReportMarkdownGeneration::test_report_markdown_formatting_valid FAILED [ 20%]
+tests/test_command_4_report.py::TestCommand4ReportJsonOutput::test_report_command_generates_json_report FAILED [ 20%]
+tests/test_command_4_report.py::TestCommand4ReportJsonOutput::test_report_json_is_valid_serializable FAILED [ 21%]
+tests/test_command_4_report.py::TestCommand4ReportJsonOutput::test_report_json_includes_all_metrics FAILED [ 21%]
+tests/test_command_4_report.py::TestCommand4ReportJsonOutput::test_report_json_includes_timestamp FAILED [ 21%]
+tests/test_command_4_report.py::TestCommand4ReportHtmlRendering::test_report_command_generates_html_report FAILED [ 22%]
+tests/test_command_4_report.py::TestCommand4ReportHtmlRendering::test_report_html_includes_charts FAILED [ 22%]
+tests/test_command_4_report.py::TestCommand4ReportHtmlRendering::test_report_html_includes_responsive_design FAILED [ 23%]
+tests/test_command_4_report.py::TestCommand4ReportHtmlRendering::test_report_html_valid_structure FAILED [ 23%]
+tests/test_command_4_report.py::test_report_command_generates_all_formats ERROR [ 23%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackCollection::test_feedback_command_collects_structured_feedback FAILED [ 24%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackCollection::test_feedback_command_delegates_to_coordinator FAILED [ 24%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackCollection::test_feedback_includes_environment_information FAILED [ 24%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackCollection::test_feedback_includes_reproduction_steps FAILED [ 25%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_validates_required_fields FAILED [ 25%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_validates_category_values FAILED [ 25%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_validates_severity_levels FAILED [ 26%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_rejects_empty_description FAILED [ 26%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_validation_returns_suggestions FAILED [ 26%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_integrates_with_moai_feedback_command FAILED [ 27%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_submission_creates_improvement_ticket FAILED [ 27%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_links_to_improvement_tracking FAILED [ 28%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_enables_improvement_iteration FAILED [ 28%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_supports_batched_submissions FAILED [ 28%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackTypes::test_feedback_accepts_bug_reports FAILED [ 29%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackTypes::test_feedback_accepts_feature_requests FAILED [ 29%]
+tests/test_command_9_feedback.py::TestCommand9FeedbackTypes::test_feedback_accepts_security_reports FAILED [ 29%]
+tests/test_command_9_feedback.py::test_feedback_command_complete_workflow ERROR [ 30%]
+tests/test_expert_battery_optimizer.py::TestBatteryMetricsParsing::test_battery_metrics_parsing_success PASSED [ 30%]
+tests/test_expert_battery_optimizer.py::TestBatteryMetricsParsing::test_battery_metrics_consistency FAILED [ 30%]
+tests/test_expert_battery_optimizer.py::TestBatteryMetricsParsing::test_battery_metrics_while_charging PASSED [ 31%]
+tests/test_expert_battery_optimizer.py::TestBatteryMetricsParsing::test_battery_metrics_various_health_states PASSED [ 31%]
+tests/test_expert_battery_optimizer.py::TestBatteryMetricsParsing::test_battery_metrics_low_charge PASSED [ 32%]
+tests/test_expert_battery_optimizer.py::TestBatteryRecommendations::test_battery_recommendations_low_charge PASSED [ 32%]
+tests/test_expert_battery_optimizer.py::TestBatteryRecommendations::test_battery_recommendations_degraded_health PASSED [ 32%]
+tests/test_expert_battery_optimizer.py::TestBatteryRecommendations::test_battery_recommendations_high_temperature PASSED [ 33%]
+tests/test_expert_battery_optimizer.py::TestBatteryRecommendations::test_battery_recommendations_normal_condition PASSED [ 33%]
+tests/test_expert_battery_optimizer.py::TestBatterySubprocessTimeout::test_battery_analysis_timeout PASSED [ 33%]
+tests/test_expert_battery_optimizer.py::TestBatterySubprocessTimeout::test_battery_health_check_timeout WARNING [ 34%]
+tests/test_expert_battery_optimizer.py::TestBatterySubprocessTimeout::test_battery_analysis_timeout_with_default_values PASSED [ 34%]
+tests/test_expert_battery_optimizer.py::TestBatterySubprocessTimeout::test_battery_subprocess_error_handling PASSED [ 34%]
+tests/test_expert_battery_optimizer.py::TestBatteryCriticalThresholds::test_battery_critical_low_charge_detection PASSED [ 35%]
+tests/test_expert_battery_optimizer.py::TestBatteryCriticalThresholds::test_battery_critical_health_detection PASSED [ 35%]
+tests/test_expert_battery_optimizer.py::TestBatteryCriticalThresholds::test_battery_threshold_boundaries PASSED [ 35%]
+tests/test_expert_battery_optimizer.py::TestBatteryCriticalThresholds::test_battery_combined_critical_indicators PASSED [ 36%]
+tests/test_expert_battery_optimizer.py::TestBatteryCriticalThresholds::test_battery_overheating_critical_detection PASSED [ 36%]
+tests/test_expert_battery_optimizer.py::TestBatteryCriticalThresholds::test_battery_aging_degradation_critical PASSED [ 37%]
+tests/test_expert_battery_optimizer.py::TestBatteryCriticalThresholds::test_battery_imminent_failure_detection PASSED [ 37%]
+tests/test_expert_cpu_optimizer.py::TestCPUMetricsParsing::test_cpu_metrics_parsing_success PASSED [ 37%]
+tests/test_expert_cpu_optimizer.py::TestCPUMetricsParsing::test_cpu_metrics_parsing_with_different_core_counts PASSED [ 38%]
+tests/test_expert_cpu_optimizer.py::TestCPUMetricsParsing::test_cpu_metrics_parsing_invalid_json PASSED [ 38%]
+tests/test_expert_cpu_optimizer.py::TestCPUMetricsParsing::test_cpu_metrics_parsing_missing_fields PASSED [ 38%]
+tests/test_expert_cpu_optimizer.py::TestCPURecommendations::test_cpu_recommendations_high_usage PASSED [ 39%]
+tests/test_expert_cpu_optimizer.py::TestCPURecommendations::test_cpu_recommendations_normal_usage PASSED [ 39%]
+tests/test_expert_cpu_optimizer.py::TestCPURecommendations::test_cpu_recommendations_temperature_warning PASSED [ 39%]
+tests/test_expert_cpu_optimizer.py::TestCPURecommendations::test_cpu_recommendations_multiple_high_core_usage PASSED [ 40%]
+tests/test_expert_cpu_optimizer.py::TestCPUSubprocessTimeout::test_cpu_analysis_timeout PASSED [ 40%]
+tests/test_expert_cpu_optimizer.py::TestCPUSubprocessTimeout::test_cpu_analysis_timeout_recovery PASSED [ 41%]
+tests/test_expert_cpu_optimizer.py::TestCPUSubprocessTimeout::test_cpu_analysis_timeout_with_retry PASSED [ 41%]
+tests/test_expert_cpu_optimizer.py::TestCPUSubprocessTimeout::test_cpu_subprocess_execution_error PASSED [ 41%]
+tests/test_expert_cpu_optimizer.py::TestCPUCriticalThresholds::test_cpu_critical_usage_detection PASSED [ 42%]
+tests/test_expert_cpu_optimizer.py::TestCPUCriticalThresholds::test_cpu_critical_all_cores_maxed PASSED [ 42%]
+tests/test_expert_cpu_optimizer.py::TestCPUCriticalThresholds::test_cpu_threshold_boundaries PASSED [ 42%]
+tests/test_expert_cpu_optimizer.py::TestCPUCriticalThresholds::test_cpu_throttling_detection PASSED [ 43%]
+tests/test_expert_cpu_optimizer.py::TestCPUCriticalThresholds::test_cpu_combined_critical_indicators PASSED [ 43%]
+tests/test_expert_disk_optimizer.py::TestDiskMetricsParsing::test_disk_metrics_parsing_success PASSED [ 43%]
+tests/test_expert_disk_optimizer.py::TestDiskMetricsParsing::test_disk_metrics_consistency PASSED [ 44%]
+tests/test_expert_disk_optimizer.py::TestDiskMetricsParsing::test_disk_metrics_ssd_vs_hdd_speeds PASSED [ 44%]
+tests/test_expert_disk_optimizer.py::TestDiskMetricsParsing::test_disk_metrics_various_drive_sizes PASSED [ 44%]
+tests/test_expert_disk_optimizer.py::TestDiskRecommendations::test_disk_recommendations_high_usage PASSED [ 45%]
+tests/test_expert_disk_optimizer.py::TestDiskRecommendations::test_disk_recommendations_io_congestion FAILED [ 45%]
+tests/test_expert_disk_optimizer.py::TestDiskRecommendations::test_disk_recommendations_slow_performance PASSED [ 46%]
+tests/test_expert_disk_optimizer.py::TestDiskRecommendations::test_disk_recommendations_normal_usage PASSED [ 46%]
+tests/test_expert_disk_optimizer.py::TestDiskSubprocessTimeout::test_disk_analysis_timeout PASSED [ 46%]
+tests/test_expert_disk_optimizer.py::TestDiskSubprocessTimeout::test_disk_io_test_timeout WARNING [ 47%]
+tests/test_expert_disk_optimizer.py::TestDiskSubprocessTimeout::test_disk_analysis_timeout_with_fallback PASSED [ 47%]
+tests/test_expert_disk_optimizer.py::TestDiskSubprocessTimeout::test_disk_parallel_analysis_timeout WARNING [ 47%]
+tests/test_expert_disk_optimizer.py::TestDiskCriticalThresholds::test_disk_critical_full_detection PASSED [ 48%]
+tests/test_expert_disk_optimizer.py::TestDiskCriticalThresholds::test_disk_inode_exhaustion_critical PASSED [ 48%]
+tests/test_expert_disk_optimizer.py::TestDiskCriticalThresholds::test_disk_threshold_boundaries PASSED [ 48%]
+tests/test_expert_disk_optimizer.py::TestDiskCriticalThresholds::test_disk_performance_degradation_detection PASSED [ 49%]
+tests/test_expert_disk_optimizer.py::TestDiskCriticalThresholds::test_disk_write_slowdown_critical PASSED [ 49%]
+tests/test_expert_disk_optimizer.py::TestDiskCriticalThresholds::test_disk_combined_critical_indicators PASSED [ 50%]
+tests/test_expert_memory_optimizer.py::TestMemoryMetricsParsing::test_memory_metrics_parsing_success PASSED [ 50%]
+tests/test_expert_memory_optimizer.py::TestMemoryMetricsParsing::test_memory_metrics_consistency PASSED [ 50%]
+tests/test_expert_memory_optimizer.py::TestMemoryMetricsParsing::test_memory_metrics_edge_cases PASSED [ 51%]
+tests/test_expert_memory_optimizer.py::TestMemoryMetricsParsing::test_memory_metrics_various_system_sizes PASSED [ 51%]
+tests/test_expert_memory_optimizer.py::TestMemoryRecommendations::test_memory_recommendations_high_usage PASSED [ 51%]
+tests/test_expert_memory_optimizer.py::TestMemoryRecommendations::test_memory_recommendations_swap_usage PASSED [ 52%]
+tests/test_expert_memory_optimizer.py::TestMemoryRecommendations::test_memory_recommendations_page_faults PASSED [ 52%]
+tests/test_expert_memory_optimizer.py::TestMemoryRecommendations::test_memory_recommendations_low_usage PASSED [ 52%]
+tests/test_expert_memory_optimizer.py::TestMemorySubprocessTimeout::test_memory_analysis_timeout PASSED [ 53%]
+tests/test_expert_memory_optimizer.py::TestMemorySubprocessTimeout::test_memory_analysis_timeout_with_retry PASSED [ 53%]
+tests/test_expert_memory_optimizer.py::TestMemorySubprocessTimeout::test_memory_subprocess_error_handling PASSED [ 53%]
+tests/test_expert_memory_optimizer.py::TestMemorySubprocessTimeout::test_memory_analysis_partial_failure_recovery FAILED [ 54%]
+tests/test_expert_memory_optimizer.py::TestMemoryCriticalThresholds::test_memory_critical_pressure_detection PASSED [ 54%]
+tests/test_expert_memory_optimizer.py::TestMemoryCriticalThresholds::test_memory_swap_exhaustion_detection PASSED [ 55%]
+tests/test_expert_memory_optimizer.py::TestMemoryCriticalThresholds::test_memory_threshold_boundaries PASSED [ 55%]
+tests/test_expert_memory_optimizer.py::TestMemoryCriticalThresholds::test_memory_compression_effectiveness PASSED [ 55%]
+tests/test_expert_memory_optimizer.py::TestMemoryCriticalThresholds::test_memory_combined_critical_indicators PASSED [ 56%]
+tests/test_expert_network_optimizer.py::TestNetworkMetricsParsing::test_network_metrics_parsing_success PASSED [ 56%]
+tests/test_expert_network_optimizer.py::TestNetworkMetricsParsing::test_network_metrics_consistency PASSED [ 56%]
+tests/test_expert_network_optimizer.py::TestNetworkMetricsParsing::test_network_metrics_various_bandwidths PASSED [ 57%]
+tests/test_expert_network_optimizer.py::TestNetworkMetricsParsing::test_network_metrics_zero_traffic PASSED [ 57%]
+tests/test_expert_network_optimizer.py::TestNetworkRecommendations::test_network_recommendations_high_bandwidth_usage PASSED [ 57%]
+tests/test_expert_network_optimizer.py::TestNetworkRecommendations::test_network_recommendations_packet_loss PASSED [ 58%]
+tests/test_expert_network_optimizer.py::TestNetworkRecommendations::test_network_recommendations_high_latency PASSED [ 58%]
+tests/test_expert_network_optimizer.py::TestNetworkRecommendations::test_network_recommendations_normal_conditions PASSED [ 58%]
+tests/test_expert_network_optimizer.py::TestNetworkSubprocessTimeout::test_network_analysis_timeout PASSED [ 59%]
+tests/test_expert_network_optimizer.py::TestNetworkSubprocessTimeout::test_network_ping_timeout WARNING [ 59%]
+tests/test_expert_network_optimizer.py::TestNetworkSubprocessTimeout::test_network_analysis_timeout_with_cached_data PASSED [ 60%]
+tests/test_expert_network_optimizer.py::TestNetworkSubprocessTimeout::test_network_multiple_tests_timeout WARNING [ 60%]
+tests/test_expert_network_optimizer.py::TestNetworkCriticalThresholds::test_network_critical_packet_loss_detection FAILED [ 60%]
+tests/test_expert_network_optimizer.py::TestNetworkCriticalThresholds::test_network_critical_latency_detection PASSED [ 61%]
+tests/test_expert_network_optimizer.py::TestNetworkCriticalThresholds::test_network_threshold_boundaries PASSED [ 61%]
+tests/test_expert_network_optimizer.py::TestNetworkCriticalThresholds::test_network_combined_quality_issues PASSED [ 61%]
+tests/test_expert_network_optimizer.py::TestNetworkCriticalThresholds::test_network_severe_degradation_detection PASSED [ 62%]
+tests/test_expert_network_optimizer.py::TestNetworkCriticalThresholds::test_network_connection_failure_detection PASSED [ 62%]
+tests/test_expert_thermal_optimizer.py::TestThermalMetricsParsing::test_thermal_metrics_parsing_success PASSED [ 62%]
+tests/test_expert_thermal_optimizer.py::TestThermalMetricsParsing::test_thermal_metrics_consistency PASSED [ 63%]
+tests/test_expert_thermal_optimizer.py::TestThermalMetricsParsing::test_thermal_metrics_idle_vs_load PASSED [ 63%]
+tests/test_expert_thermal_optimizer.py::TestThermalMetricsParsing::test_thermal_metrics_throttling_detection PASSED [ 64%]
+tests/test_expert_thermal_optimizer.py::TestThermalMetricsParsing::test_thermal_metrics_various_conditions PASSED [ 64%]
+tests/test_expert_thermal_optimizer.py::TestThermalRecommendations::test_thermal_recommendations_high_cpu_temp PASSED [ 64%]
+tests/test_expert_thermal_optimizer.py::TestThermalRecommendations::test_thermal_recommendations_high_gpu_temp PASSED [ 65%]
+tests/test_expert_thermal_optimizer.py::TestThermalRecommendations::test_thermal_recommendations_ssd_overheating PASSED [ 65%]
+tests/test_expert_thermal_optimizer.py::TestThermalRecommendations::test_thermal_recommendations_normal_temps PASSED [ 65%]
+tests/test_expert_thermal_optimizer.py::TestThermalSubprocessTimeout::test_thermal_analysis_timeout PASSED [ 66%]
+tests/test_expert_thermal_optimizer.py::TestThermalSubprocessTimeout::test_thermal_sensor_read_timeout WARNING [ 66%]
+tests/test_expert_thermal_optimizer.py::TestThermalSubprocessTimeout::test_thermal_analysis_timeout_with_estimation PASSED [ 66%]
+tests/test_expert_thermal_optimizer.py::TestThermalSubprocessTimeout::test_thermal_parallel_sensor_timeout WARNING [ 67%]
+tests/test_expert_thermal_optimizer.py::TestThermalCriticalThresholds::test_thermal_critical_temperature_detection PASSED [ 67%]
+tests/test_expert_thermal_optimizer.py::TestThermalCriticalThresholds::test_thermal_critical_throttling_detection PASSED [ 67%]
+tests/test_expert_thermal_optimizer.py::TestThermalCriticalThresholds::test_thermal_threshold_boundaries PASSED [ 68%]
+tests/test_expert_thermal_optimizer.py::TestThermalCriticalThresholds::test_thermal_sustained_high_temp_critical PASSED [ 68%]
+tests/test_expert_thermal_optimizer.py::TestThermalCriticalThresholds::test_thermal_combined_critical_indicators PASSED [ 69%]
+tests/test_expert_thermal_optimizer.py::TestThermalCriticalThresholds::test_thermal_heat_pipe_failure_simulation PASSED [ 69%]
+tests/test_performance_regression.py::test_script_performance[status.py-2.0] WARNING [ 69%]
+tests/test_performance_regression.py::test_script_performance[analyze_cpu.py-2.0] WARNING [ 70%]
+tests/test_performance_regression.py::test_script_performance[analyze_memory.py-2.0] PASSED [ 70%]
+tests/test_performance_regression.py::test_script_performance[analyze_disk.py-2.0] PASSED [ 70%]
+tests/test_performance_regression.py::test_script_performance[analyze_network.py-2.0] PASSED [ 71%]
+tests/test_performance_regression.py::test_script_performance[analyze_battery.py-2.0] PASSED [ 71%]
+tests/test_performance_regression.py::test_script_performance[analyze_thermal.py-2.0] WARNING [ 71%]
+tests/test_performance_regression.py::test_script_performance[analyze_all.py-8.0] WARNING [ 72%]
+tests/test_performance_regression.py::test_script_performance[optimize.py-5.0] WARNING [ 72%]
+tests/test_performance_regression.py::test_script_performance[monitor.py-8.0] WARNING [ 73%]
+tests/test_performance_regression.py::test_script_performance[report.py-5.0] PASSED [ 73%]
+tests/test_performance_regression.py::test_script_performance[cache.py-1.0] PASSED [ 73%]
+tests/test_performance_regression.py::TestPerformanceComparison::test_status_faster_than_analyze_all WARNING [ 74%]
+tests/test_performance_regression.py::TestPerformanceComparison::test_parallel_analysis_performance WARNING [ 74%]
+tests/test_performance_regression.py::TestPerformanceComparison::test_cache_script_minimal_overhead PASSED [ 74%]
+tests/test_performance_regression.py::TestMemoryEfficiency::test_script_completes_without_memory_error[status.py] WARNING [ 75%]
+tests/test_performance_regression.py::TestMemoryEfficiency::test_script_completes_without_memory_error[analyze_cpu.py] WARNING [ 75%]
+tests/test_performance_regression.py::TestMemoryEfficiency::test_script_completes_without_memory_error[analyze_memory.py] PASSED [ 75%]
+tests/test_performance_regression.py::TestConcurrentExecution::test_multiple_status_scripts_concurrent WARNING [ 76%]
+tests/test_performance_regression.py::TestConcurrentExecution::test_monitor_script_graceful_termination WARNING [ 76%]
+tests/test_performance_regression.py::TestStartupPerformance::test_script_startup_time[status.py] WARNING [ 76%]
+tests/test_performance_regression.py::TestStartupPerformance::test_script_startup_time[cache.py] PASSED [ 77%]
+tests/test_performance_regression.py::TestLongRunningPerformance::test_monitor_extended_duration WARNING [ 77%]
+tests/test_performance_regression.py::TestResourceCleanup::test_no_zombie_processes WARNING [ 78%]
+tests/test_performance_regression.py::test_performance_baselines_summary WARNING [ 78%]
+tests/test_uv_scripts.py::TestStatusScript::test_status_json_output WARNING [ 78%]
+tests/test_uv_scripts.py::TestStatusScript::test_status_exit_codes WARNING [ 79%]
+tests/test_uv_scripts.py::TestStatusScript::test_status_verbose_mode WARNING [ 79%]
+tests/test_uv_scripts.py::TestStatusScript::test_status_metrics_structure WARNING [ 79%]
+tests/test_uv_scripts.py::TestStatusScript::test_status_performance WARNING [ 80%]
+tests/test_uv_scripts.py::TestAnalyzeCPUScript::test_analyze_cpu_json_output WARNING [ 80%]
+tests/test_uv_scripts.py::TestAnalyzeCPUScript::test_analyze_cpu_threshold WARNING [ 80%]
+tests/test_uv_scripts.py::TestAnalyzeCPUScript::test_analyze_cpu_exit_codes WARNING [ 81%]
+tests/test_uv_scripts.py::TestAnalyzeCPUScript::test_analyze_cpu_metrics_structure WARNING [ 81%]
+tests/test_uv_scripts.py::TestAnalyzeCPUScript::test_analyze_cpu_performance WARNING [ 82%]
+tests/test_uv_scripts.py::TestAnalyzeMemoryScript::test_analyze_memory_json_output PASSED [ 82%]
+tests/test_uv_scripts.py::TestAnalyzeMemoryScript::test_analyze_memory_threshold PASSED [ 82%]
+tests/test_uv_scripts.py::TestAnalyzeMemoryScript::test_analyze_memory_exit_codes PASSED [ 83%]
+tests/test_uv_scripts.py::TestAnalyzeMemoryScript::test_analyze_memory_metrics_structure FAILED [ 83%]
+tests/test_uv_scripts.py::TestAnalyzeMemoryScript::test_analyze_memory_performance PASSED [ 83%]
+tests/test_uv_scripts.py::TestAnalyzeDiskScript::test_analyze_disk_json_output PASSED [ 84%]
+tests/test_uv_scripts.py::TestAnalyzeDiskScript::test_analyze_disk_threshold PASSED [ 84%]
+tests/test_uv_scripts.py::TestAnalyzeDiskScript::test_analyze_disk_exit_codes PASSED [ 84%]
+tests/test_uv_scripts.py::TestAnalyzeDiskScript::test_analyze_disk_metrics_structure PASSED [ 85%]
+tests/test_uv_scripts.py::TestAnalyzeDiskScript::test_analyze_disk_performance PASSED [ 85%]
+tests/test_uv_scripts.py::TestAnalyzeNetworkScript::test_analyze_network_json_output PASSED [ 85%]
+tests/test_uv_scripts.py::TestAnalyzeNetworkScript::test_analyze_network_threshold PASSED [ 86%]
+tests/test_uv_scripts.py::TestAnalyzeNetworkScript::test_analyze_network_exit_codes PASSED [ 86%]
+tests/test_uv_scripts.py::TestAnalyzeNetworkScript::test_analyze_network_metrics_structure PASSED [ 87%]
+tests/test_uv_scripts.py::TestAnalyzeNetworkScript::test_analyze_network_performance PASSED [ 87%]
+tests/test_uv_scripts.py::TestAnalyzeBatteryScript::test_analyze_battery_json_output PASSED [ 87%]
+tests/test_uv_scripts.py::TestAnalyzeBatteryScript::test_analyze_battery_threshold PASSED [ 88%]
+tests/test_uv_scripts.py::TestAnalyzeBatteryScript::test_analyze_battery_exit_codes PASSED [ 88%]
+tests/test_uv_scripts.py::TestAnalyzeBatteryScript::test_analyze_battery_metrics_structure PASSED [ 88%]
+tests/test_uv_scripts.py::TestAnalyzeBatteryScript::test_analyze_battery_performance PASSED [ 89%]
+tests/test_uv_scripts.py::TestAnalyzeThermalScript::test_analyze_thermal_json_output WARNING [ 89%]
+tests/test_uv_scripts.py::TestAnalyzeThermalScript::test_analyze_thermal_threshold WARNING [ 89%]
+tests/test_uv_scripts.py::TestAnalyzeThermalScript::test_analyze_thermal_exit_codes WARNING [ 90%]
+tests/test_uv_scripts.py::TestAnalyzeThermalScript::test_analyze_thermal_metrics_structure WARNING [ 90%]
+tests/test_uv_scripts.py::TestAnalyzeThermalScript::test_analyze_thermal_performance WARNING [ 91%]
+tests/test_uv_scripts.py::TestAnalyzeAllScript::test_analyze_all_json_output WARNING [ 91%]
+tests/test_uv_scripts.py::TestAnalyzeAllScript::test_analyze_all_parallel_execution WARNING [ 91%]
+tests/test_uv_scripts.py::TestAnalyzeAllScript::test_analyze_all_exit_codes WARNING [ 92%]
+tests/test_uv_scripts.py::TestAnalyzeAllScript::test_analyze_all_results_structure WARNING [ 92%]
+tests/test_uv_scripts.py::TestAnalyzeAllScript::test_analyze_all_performance WARNING [ 92%]
+tests/test_uv_scripts.py::TestOptimizeScript::test_optimize_json_output WARNING [ 93%]
+tests/test_uv_scripts.py::TestOptimizeScript::test_optimize_dry_run_mode WARNING [ 93%]
+tests/test_uv_scripts.py::TestOptimizeScript::test_optimize_exit_codes WARNING [ 93%]
+tests/test_uv_scripts.py::TestOptimizeScript::test_optimize_actions_structure WARNING [ 94%]
+tests/test_uv_scripts.py::TestOptimizeScript::test_optimize_performance WARNING [ 94%]
+tests/test_uv_scripts.py::TestMonitorScript::test_monitor_json_output WARNING [ 94%]
+tests/test_uv_scripts.py::TestMonitorScript::test_monitor_duration_parameter WARNING [ 95%]
+tests/test_uv_scripts.py::TestMonitorScript::test_monitor_exit_codes WARNING [ 95%]
+tests/test_uv_scripts.py::TestMonitorScript::test_monitor_metrics_collection WARNING [ 96%]
+tests/test_uv_scripts.py::TestMonitorScript::test_monitor_performance WARNING [ 96%]
+tests/test_uv_scripts.py::TestReportScript::test_report_json_output WARNING [ 96%]
+tests/test_uv_scripts.py::TestReportScript::test_report_format_parameter WARNING [ 97%]
+tests/test_uv_scripts.py::TestReportScript::test_report_exit_codes WARNING [ 97%]
+tests/test_uv_scripts.py::TestReportScript::test_report_content_structure WARNING [ 97%]
+tests/test_uv_scripts.py::TestReportScript::test_report_performance WARNING [ 98%]
+tests/test_uv_scripts.py::TestCacheScript::test_cache_json_output FAILED [ 98%]
+tests/test_uv_scripts.py::TestCacheScript::test_cache_operation_parameter FAILED [ 98%]
+tests/test_uv_scripts.py::TestCacheScript::test_cache_exit_codes FAILED  [ 99%]
+tests/test_uv_scripts.py::TestCacheScript::test_cache_stats_structure FAILED [ 99%]
+tests/test_uv_scripts.py::TestCacheScript::test_cache_performance PASSED [100%]
+
+==================================== ERRORS ====================================
+___________ ERROR at setup of test_analyze_command_success_workflow ____________
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+__________ ERROR at setup of test_optimize_command_complete_workflow ___________
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+_________ ERROR at setup of test_monitor_command_continuous_operation __________
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+_________ ERROR at setup of test_report_command_generates_all_formats __________
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+__________ ERROR at setup of test_feedback_command_complete_workflow ___________
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+=================================== FAILURES ===================================
+E   assert 2 in [0, 1, 3]
+     +  where 2 = CompletedProcess(args=['uv', 'run', '/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/scripts/cache.py', '--operation', 'stats', '--json'], returncode=2, stdout='', stderr="Usage: cache.py [OPTIONS]\nTry 'cache.py --help' for help.\n\nError: No such option: --json\n").returncode
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_command_0_init.py:203: assert 2 in [0, 1, 3]
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'AskUserQuestion'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   ValueError: not enough values to unpack (expected 2, got 1)
+
+During handling of the above exception, another exception occurred:
+E   TypeError: Need a valid target to patch. You supplied: 'Task'
+/opt/homebrew/Cellar/python@3.13/3.13.6/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1675: TypeError: Need a valid target to patch. You supplied: 'Task'
+E   assert 10.0 < 5.0
+     +  where 10.0 = abs((90.0 - 80.0))
+     +    where 80.0 = BatteryMetrics(charge_percent=80.0, health_percent=90.0, time_remaining_minutes=400, is_charging=False, cycle_count=300, max_capacity_mah=5000.0, current_capacity_mah=4500.0, temperature_celsius=38.0, timestamp=datetime.datetime(2025, 11, 30, 17, 37, 23, 982841)).charge_percent
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_expert_battery_optimizer.py:98: assert 10.0 < 5.0
+E   assert False
+     +  where False = any(<generator object TestDiskRecommendations.test_disk_recommendations_io_congestion.<locals>.<genexpr> at 0x10c5b1490>)
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_expert_disk_optimizer.py:219: assert False
+E   Failed: DID NOT RAISE <class 'TimeoutError'>
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_expert_memory_optimizer.py:335: Failed: DID NOT RAISE <class 'TimeoutError'>
+E   assert 1.92 > 2.0
+     +  where 1.92 = NetworkMetrics(bytes_sent_mb=1024.0, bytes_recv_mb=2048.0, packets_sent=5000000, packets_recv=7000000, packets_dropped=250000, latency_ms=100.0, packet_loss_percent=1.92, bandwidth_usage_percent=60.0, timestamp=datetime.datetime(2025, 11, 30, 17, 37, 29, 775624)).packet_loss_percent
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_expert_network_optimizer.py:353: assert 1.92 > 2.0
+E   AssertionError: assert 'usage_percent' in {'active': 19832668160, 'available': 26456588288, 'free': 6416990208, 'inactive': 17989025792, ...}
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_uv_scripts.py:277: AssertionError: assert 'usage_percent' in {'active': 19832668160, 'available': 26456588288, 'free': 6416990208, 'inactive': 17989025792, ...}
+E   assert 2 in [0, 1, 3]
+     +  where 2 = CompletedProcess(args=['uv', 'run', '/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/scripts/cache.py', '--operation', 'stats', '--json'], returncode=2, stdout='', stderr="Usage: cache.py [OPTIONS]\nTry 'cache.py --help' for help.\n\nError: No such option: --json\n").returncode
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_uv_scripts.py:857: assert 2 in [0, 1, 3]
+E   assert 2 in [0, 1, 3]
+     +  where 2 = CompletedProcess(args=['uv', 'run', '/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/scripts/cache.py', '--operation', 'clear', '--json'], returncode=2, stdout='', stderr="Usage: cache.py [OPTIONS]\nTry 'cache.py --help' for help.\n\nError: No such option: --json\n").returncode
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_uv_scripts.py:868: assert 2 in [0, 1, 3]
+E   assert 2 in [0, 1, 3]
+     +  where 2 = CompletedProcess(args=['uv', 'run', '/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/scripts/cache.py', '--operation', 'stats', '--json'], returncode=2, stdout='', stderr="Usage: cache.py [OPTIONS]\nTry 'cache.py --help' for help.\n\nError: No such option: --json\n").returncode
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_uv_scripts.py:879: assert 2 in [0, 1, 3]
+E   assert 2 in [0, 1, 3]
+     +  where 2 = CompletedProcess(args=['uv', 'run', '/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/scripts/cache.py', '--operation', 'stats', '--json'], returncode=2, stdout='', stderr="Usage: cache.py [OPTIONS]\nTry 'cache.py --help' for help.\n\nError: No such option: --json\n").returncode
+/Users/rdmtv/Documents/claydev-local/projects-v2/moai-ir-deck/.claude/skills/macos-resource-optimizer/.data/tests/test_uv_scripts.py:890: assert 2 in [0, 1, 3]
+=========================== short test summary info ============================
+FAILED tests/test_command_0_init.py::TestCommand0InitValidation::test_cache_script_initialization
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeDelegation::test_analyze_command_delegates_to_coordinator
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeDelegation::test_analyze_command_delegates_with_parallel_execution
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_contains_all_categories
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_has_correct_metrics_per_category
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_performance_within_target
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_has_execution_time
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeOutput::test_analyze_output_format_is_json_compatible
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_coordinator_failure
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_timeout_during_analysis
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_partial_category_failure
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_cache_read_failure
+FAILED tests/test_command_1_analyze.py::TestCommand1AnalyzeErrorHandling::test_analyze_handles_expert_agent_crash
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeDelegation::test_optimize_command_delegates_sequential_workflow
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeDelegation::test_optimize_delegates_with_sequential_phases
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeUserApproval::test_optimize_requests_user_approval_with_korean_ui
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeUserApproval::test_optimize_displays_optimization_plan_to_user
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeUserApproval::test_optimize_handles_user_rejection
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeUserApproval::test_optimize_approval_includes_risk_assessment
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_coordinator_analysis_failure
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_strategy_generation_failure
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_execution_failure_with_rollback
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_user_approval_timeout
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_concurrent_system_changes
+FAILED tests/test_command_2_optimize.py::TestCommand2OptimizeErrorHandling::test_optimize_handles_insufficient_permissions
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorContinuousLoop::test_monitor_command_establishes_continuous_loop
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorContinuousLoop::test_monitor_loop_sampling_interval
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorContinuousLoop::test_monitor_loop_iteration_tracking
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_generates_cpu_alert_on_threshold_exceeded
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_generates_memory_alert_on_threshold_exceeded
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_generates_thermal_alert_on_threshold_exceeded
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_no_alert_when_below_threshold
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorAlertGeneration::test_monitor_alert_includes_recommendations
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_user_interrupt
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_timeout
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_explicit_stop_command
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_coordinator_crash
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_terminates_on_system_error
+FAILED tests/test_command_3_monitor.py::TestCommand3MonitorTerminationConditions::test_monitor_saves_state_on_termination
+FAILED tests/test_command_4_report.py::TestCommand4ReportMarkdownGeneration::test_report_command_generates_markdown_report
+FAILED tests/test_command_4_report.py::TestCommand4ReportMarkdownGeneration::test_report_markdown_includes_sections
+FAILED tests/test_command_4_report.py::TestCommand4ReportMarkdownGeneration::test_report_markdown_formatting_valid
+FAILED tests/test_command_4_report.py::TestCommand4ReportJsonOutput::test_report_command_generates_json_report
+FAILED tests/test_command_4_report.py::TestCommand4ReportJsonOutput::test_report_json_is_valid_serializable
+FAILED tests/test_command_4_report.py::TestCommand4ReportJsonOutput::test_report_json_includes_all_metrics
+FAILED tests/test_command_4_report.py::TestCommand4ReportJsonOutput::test_report_json_includes_timestamp
+FAILED tests/test_command_4_report.py::TestCommand4ReportHtmlRendering::test_report_command_generates_html_report
+FAILED tests/test_command_4_report.py::TestCommand4ReportHtmlRendering::test_report_html_includes_charts
+FAILED tests/test_command_4_report.py::TestCommand4ReportHtmlRendering::test_report_html_includes_responsive_design
+FAILED tests/test_command_4_report.py::TestCommand4ReportHtmlRendering::test_report_html_valid_structure
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackCollection::test_feedback_command_collects_structured_feedback
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackCollection::test_feedback_command_delegates_to_coordinator
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackCollection::test_feedback_includes_environment_information
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackCollection::test_feedback_includes_reproduction_steps
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_validates_required_fields
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_validates_category_values
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_validates_severity_levels
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_rejects_empty_description
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackValidation::test_feedback_validation_returns_suggestions
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_integrates_with_moai_feedback_command
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_submission_creates_improvement_ticket
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_links_to_improvement_tracking
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_enables_improvement_iteration
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackIntegration::test_feedback_supports_batched_submissions
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackTypes::test_feedback_accepts_bug_reports
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackTypes::test_feedback_accepts_feature_requests
+FAILED tests/test_command_9_feedback.py::TestCommand9FeedbackTypes::test_feedback_accepts_security_reports
+FAILED tests/test_expert_battery_optimizer.py::TestBatteryMetricsParsing::test_battery_metrics_consistency
+FAILED tests/test_expert_disk_optimizer.py::TestDiskRecommendations::test_disk_recommendations_io_congestion
+FAILED tests/test_expert_memory_optimizer.py::TestMemorySubprocessTimeout::test_memory_analysis_partial_failure_recovery
+FAILED tests/test_expert_network_optimizer.py::TestNetworkCriticalThresholds::test_network_critical_packet_loss_detection
+FAILED tests/test_uv_scripts.py::TestAnalyzeMemoryScript::test_analyze_memory_metrics_structure
+FAILED tests/test_uv_scripts.py::TestCacheScript::test_cache_json_output - as...
+FAILED tests/test_uv_scripts.py::TestCacheScript::test_cache_operation_parameter
+FAILED tests/test_uv_scripts.py::TestCacheScript::test_cache_exit_codes - ass...
+FAILED tests/test_uv_scripts.py::TestCacheScript::test_cache_stats_structure
+ERROR tests/test_command_1_analyze.py::test_analyze_command_success_workflow
+ERROR tests/test_command_2_optimize.py::test_optimize_command_complete_workflow
+ERROR tests/test_command_3_monitor.py::test_monitor_command_continuous_operation
+ERROR tests/test_command_4_report.py::test_report_command_generates_all_formats
+ERROR tests/test_command_9_feedback.py::test_feedback_command_complete_workflow
+= 76 failed, 132 passed, 3 warnings, 5 errors, 65 warning in 199.47s (0:03:19) =

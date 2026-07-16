@@ -1,0 +1,265 @@
+name: Karrot Post-Bypass Validation Flow
+description: Complete post-bypass validation and app functionality testing
+version: 1.0.0
+
+metadata:
+  category: validation
+  skill: adb-karrot
+  difficulty: intermediate
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  timeout:
+    type: integer
+    default: 45
+    description: Action timeout in seconds
+  test_transactions:
+    type: boolean
+    default: false
+    description: Test transaction features if safe
+
+phases:
+  - id: verify_app_state
+    name: Verify Application State
+    description: Check app is running normally post-bypass
+    steps:
+      - id: check_app_running
+        name: Verify App is Running
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "pidof com.daangn.android.app | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: abort
+
+      - id: get_app_version
+        name: Get App Version
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "dumpsys package com.daangn.android.app | grep 'versionName'"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: check_permissions
+        name: Check App Permissions
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "pm list permissions | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: test_core_features
+    name: Test Core Features
+    description: Validate primary app functionality
+    steps:
+      - id: test_home_feed
+        name: Test Home Feed Loading
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: text
+          target: "피드|Feed|홈|Home|상품|Products"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: abort
+
+      - id: test_search
+        name: Test Search Functionality
+        action: adb-tap
+        params:
+          device: "{{ device }}"
+          x: 540
+          y: 100
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: test_profile
+        name: Test Profile Access
+        action: adb-tap
+        params:
+          device: "{{ device }}"
+          x: 540
+          y: 900
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: verify_data_integrity
+    name: Verify Data Integrity
+    description: Check data loads and displays correctly
+    steps:
+      - id: check_user_data
+        name: Check User Data Loaded
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "프로필|profile|판매|selling|구매|buying"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_content_display
+        name: Verify Content Displays
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "원|KRW|상품|item|시간|time|위치|location"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: check_images_load
+        name: Check Images Load
+        action: adb-wait-for
+        params:
+          device: "{{ device }}"
+          method: text
+          target: "상품이미지|product|이미지"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: test_payment_features
+    name: Test Payment Features
+    description: Validate payment and transaction capabilities
+    steps:
+      - id: check_payment_methods
+        name: Check Payment Methods Available
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "결제|payment|카드|card|계좌|account"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: check_balance
+        name: Check Wallet/Balance Display
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "잔액|balance|지갑|wallet|포인트|points"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: verify_transaction_history
+        name: Verify Transaction History
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "거래|transaction|히스토리|history|내역|records"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: test_communication
+    name: Test In-App Communication
+    description: Validate messaging and notifications
+    steps:
+      - id: check_messages
+        name: Check Messages Available
+        action: adb-screen-detection
+        params:
+          device: "{{ device }}"
+          method: text
+          pattern: "채팅|chat|메시지|message|대화|conversation"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: check_notifications
+        name: Check Notifications
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "logcat -d | grep -i 'notification' | tail -5"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: verify_alerts
+        name: Verify Alert System
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "logcat -d | grep -E '(푸시|push|알림|alert)' | tail -5"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: generate_validation_report
+    name: Generate Validation Report
+    description: Create comprehensive validation summary
+    steps:
+      - id: capture_final_state
+        name: Capture Final App State
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/validation_final.png"
+        on_success: continue
+        on_failure: continue
+
+      - id: compile_results
+        name: Compile Validation Results
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Validation completed at:' && date"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: verify_app_state
+    condition: "app_running == true"
+    on_failure: abort
+
+  - phase: test_core_features
+    condition: "home_feed_loaded == true"
+    on_failure: continue
+
+  - phase: verify_data_integrity
+    condition: "user_data_loaded == true"
+    on_failure: continue
+
+  - phase: test_payment_features
+    condition: "features_accessible == true"
+    on_failure: continue
+
+recovery:
+  - on_error: test_home_feed
+    action: retry
+    max_attempts: 2
+
+  - on_error: check_payment_methods
+    action: log_and_continue
+    max_attempts: 1
+
+outputs:
+  - name: validation_status
+    format: json
+    description: Overall validation success/failure status
+
+  - name: feature_status
+    format: table
+    description: Status of each tested feature
+
+  - name: validation_report
+    format: text
+    description: Detailed validation results and recommendations

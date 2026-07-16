@@ -1,0 +1,235 @@
+name: UI Element Detection and Identification
+description: Detect and identify UI elements on screen using accessibility tree and visual matching
+version: 1.0.0
+
+metadata:
+  category: ui-automation
+  skill: adb-uiautomator
+  difficulty: intermediate
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  text_pattern:
+    type: string
+    default: ""
+    description: Text pattern to match (regex supported)
+  resource_id:
+    type: string
+    default: ""
+    description: Resource ID to find (com.app:id/resource)
+  timeout:
+    type: integer
+    default: 10
+    description: Element detection timeout in seconds
+
+phases:
+  - id: capture_screen_state
+    name: Capture Current Screen State
+    description: Get accessibility tree and current screen
+    steps:
+      - id: capture_screen
+        name: Capture Current Screen
+        action: adb-screen-capture
+        params:
+          device: "{{ device }}"
+          output_path: "/tmp/ui_state.png"
+        on_success: continue
+        on_failure: continue
+
+      - id: dump_accessibility_tree
+        name: Dump Accessibility Tree
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "uiautomator dump /tmp/ui_tree.xml 2>/dev/null && echo 'dumped' || echo 'failed'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: get_window_focus
+        name: Get Window Focus Info
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "dumpsys window windows | grep -A2 'mCurrentFocus'"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+  - id: detect_by_text
+    name: Detect Elements by Text
+    description: Find elements matching text pattern
+    steps:
+      - id: search_accessibility_text
+        name: Search Accessibility Tree for Text
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -i '{{ text_pattern }}' /tmp/ui_tree.xml 2>/dev/null | head -10"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: extract_element_bounds
+        name: Extract Element Bounds
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -i '{{ text_pattern }}' /tmp/ui_tree.xml | grep -o 'bounds=\"[^\"]*\"' | head -1"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: count_matching_elements
+        name: Count Matching Elements
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -i '{{ text_pattern }}' /tmp/ui_tree.xml | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: detect_by_resource_id
+    name: Detect Elements by Resource ID
+    description: Find elements by resource identifier
+    steps:
+      - id: search_by_id
+        name: Search by Resource ID
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep 'resource-id=\"{{ resource_id }}\"' /tmp/ui_tree.xml"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+      - id: get_id_element_info
+        name: Get Element Info for Resource ID
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -A5 'resource-id=\"{{ resource_id }}\"' /tmp/ui_tree.xml | head -10"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: analyze_element_properties
+    name: Analyze Element Properties
+    description: Extract detailed element properties
+    steps:
+      - id: check_clickable
+        name: Check If Element Clickable
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep 'clickable=\"true\"' /tmp/ui_tree.xml | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: check_scrollable
+        name: Check Scrollable Elements
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep 'scrollable=\"true\"' /tmp/ui_tree.xml | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: find_input_fields
+        name: Find Input Fields
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep 'class=\".*EditText\"' /tmp/ui_tree.xml | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: detect_button_elements
+    name: Detect Button Elements
+    description: Find and catalog button elements
+    steps:
+      - id: find_buttons
+        name: Find Button Elements
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -E 'class=\".*Button|resource-id=\".*button\"' /tmp/ui_tree.xml | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: get_button_texts
+        name: Get Button Labels
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -E 'class=\".*Button' /tmp/ui_tree.xml | grep -o 'text=\"[^\"]*\"' | head -10"
+          timeout: 10
+        on_success: continue
+        on_failure: skip
+
+  - id: generate_element_report
+    name: Generate Element Report
+    description: Create detailed element detection report
+    steps:
+      - id: analyze_hierarchy
+        name: Analyze View Hierarchy
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "grep -c '<node' /tmp/ui_tree.xml"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: create_element_summary
+        name: Create Element Summary
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Element Detection Report:' && date && grep -o 'class=\"[^\"]*\"' /tmp/ui_tree.xml | sort | uniq -c | sort -rn | head -20"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: capture_screen_state
+    condition: "ui_tree_available == true"
+    on_failure: continue
+
+  - phase: detect_by_text
+    condition: "text_pattern_provided == true"
+    on_failure: skip
+
+  - phase: detect_by_resource_id
+    condition: "resource_id_provided == true"
+    on_failure: skip
+
+recovery:
+  - on_error: dump_accessibility_tree
+    action: skip
+    max_attempts: 1
+
+  - on_error: search_accessibility_text
+    action: log_and_continue
+    max_attempts: 1
+
+outputs:
+  - name: detection_results
+    format: json
+    description: Elements found with coordinates and properties
+
+  - name: element_list
+    format: table
+    description: Detected elements with type and text
+
+  - name: element_report
+    format: text
+    description: Detailed element detection analysis

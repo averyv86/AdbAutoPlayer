@@ -1,0 +1,365 @@
+# Command 9: feedback
+
+Submit feedback, bug reports, and feature requests.
+
+## Syntax
+
+```bash
+/macos-resource-optimizer:9-feedback "Your feedback message"
+```
+
+## Description
+
+The feedback command:
+- Submits user feedback to development team
+- Reports bugs and issues
+- Requests new features
+- Shares improvement ideas
+- Contributes to product evolution
+
+## Basic Usage
+
+```bash
+# Submit general feedback
+/macos-resource-optimizer:9-feedback "Great tool! Love the performance improvements"
+
+# Report a bug
+/macos-resource-optimizer:9-feedback "Bug: CPU optimization fails on M1 Macs"
+
+# Request a feature
+/macos-resource-optimizer:9-feedback "Feature: Add GPU optimization support"
+```
+
+## Feedback Types
+
+### Bug Report
+
+Report issues and problems:
+
+```bash
+/macos-resource-optimizer:9-feedback "Bug: Memory analysis crashes when RAM > 32GB"
+```
+
+Include:
+- Issue description
+- System information
+- Steps to reproduce
+- Expected vs actual behavior
+
+### Feature Request
+
+Request new features:
+
+```bash
+/macos-resource-optimizer:9-feedback "Feature: Add GPU temperature monitoring"
+```
+
+Include:
+- Feature description
+- Use case
+- Expected benefits
+- Priority level
+
+### General Feedback
+
+Share your experience:
+
+```bash
+/macos-resource-optimizer:9-feedback "Feedback: Love the new dashboard interface, very intuitive"
+```
+
+Include:
+- What you like
+- What could improve
+- Suggestions
+
+### Performance Issue
+
+Report performance problems:
+
+```bash
+/macos-resource-optimizer:9-feedback "Perf: Optimization takes 5+ seconds on M2 Pro"
+```
+
+Include:
+- Performance metric
+- System configuration
+- Expected performance
+- Current performance
+
+### Compatibility Issue
+
+Report compatibility problems:
+
+```bash
+/macos-resource-optimizer:9-feedback "Compat: Not working on macOS 10.15.x"
+```
+
+Include:
+- macOS version
+- System model
+- Error messages
+- Workarounds tried
+
+## Feedback Options
+
+### Feedback Type
+
+```bash
+# Specify feedback type
+/macos-resource-optimizer:9-feedback --type bug "Issue description"
+/macos-resource-optimizer:9-feedback --type feature "Feature request"
+/macos-resource-optimizer:9-feedback --type improvement "Improvement idea"
+/macos-resource-optimizer:9-feedback --type performance "Performance issue"
+```
+
+### Priority Level
+
+```bash
+# Set priority
+/macos-resource-optimizer:9-feedback --priority critical "Critical bug"
+/macos-resource-optimizer:9-feedback --priority high "Important issue"
+/macos-resource-optimizer:9-feedback --priority medium "Normal issue"
+/macos-resource-optimizer:9-feedback --priority low "Minor suggestion"
+```
+
+### System Information
+
+```bash
+# Include system info automatically
+/macos-resource-optimizer:9-feedback --include-system-info "Feedback message"
+
+# Exclude system info
+/macos-resource-optimizer:9-feedback --exclude-system-info "Feedback message"
+```
+
+### Attachments
+
+```bash
+# Attach logs
+/macos-resource-optimizer:9-feedback --attach-logs "Issue description"
+
+# Attach metrics snapshot
+/macos-resource-optimizer:9-feedback --attach-metrics "Issue description"
+
+# Attach custom files
+/macos-resource-optimizer:9-feedback --attach /path/to/file "Issue description"
+```
+
+### Contact Information
+
+```bash
+# Include email for follow-up
+/macos-resource-optimizer:9-feedback --email user@example.com "Feedback"
+
+# Include contact phone
+/macos-resource-optimizer:9-feedback --phone "+1-555-0123" "Feedback"
+```
+
+## Feedback Best Practices
+
+### For Bug Reports
+
+```bash
+# Good: Specific, reproducible, detailed
+/macos-resource-optimizer:9-feedback --type bug "Bug: /macos-resource-optimizer:2-optimize fails with 'memory out of range' error on MacBook Pro M1 Max with 32GB RAM, when running in aggressive mode. Steps: 1) Run /macos-resource-optimizer:0-init 2) Run /macos-resource-optimizer:2-optimize --strategy aggressive. Error occurs at: MemoryOptimizer.compress_memory(), line 245."
+```
+
+### For Feature Requests
+
+```bash
+# Good: Clear value proposition, use case
+/macos-resource-optimizer:9-feedback --type feature "Feature: Add GPU memory optimization. Many users with integrated GPUs experience slowdowns. Optimizer could manage GPU memory pressure similar to system RAM. This would improve gaming performance and multimedia apps."
+```
+
+### For General Feedback
+
+```bash
+# Good: Specific, constructive, actionable
+/macos-resource-optimizer:9-feedback "Feedback: The dashboard is great but hard to read in dark mode. Suggestion: Add higher contrast color scheme option for dark mode accessibility."
+```
+
+## System Information Included
+
+When you include system info, we collect:
+
+- macOS version
+- Machine model (e.g., MacBook Pro 16-inch M3 Pro)
+- Processor details
+- RAM amount
+- Python version
+- MoAI-ADK version
+- Optimizer version
+
+## Feedback Tracking
+
+### Feedback ID
+
+After submitting, you receive a feedback ID:
+
+```
+Feedback submitted successfully!
+Feedback ID: FB-2024-001234
+Reference: /help/feedback/FB-2024-001234
+```
+
+### Check Status
+
+```bash
+# View feedback status
+/macos-resource-optimizer:9-feedback --status FB-2024-001234
+
+# List your feedback
+/macos-resource-optimizer:9-feedback --list-mine
+```
+
+## Response Time
+
+### Expected Response Times
+
+| Priority | Response Time | Resolution Time |
+|----------|---------------|-----------------|
+| Critical | 24 hours | 1-2 weeks |
+| High | 2-3 days | 2-4 weeks |
+| Medium | 1 week | 1-3 months |
+| Low | 2 weeks | As available |
+
+## Sample Feedback
+
+### Good Bug Report
+
+```
+Title: Analyze fails on M1 Mac with 32GB RAM
+
+Description:
+When I run /macos-resource-optimizer:1-analyze on my M1 MacBook Pro
+with 32GB RAM, it fails with error:
+"MemoryAnalyzer: index out of range at metrics[31]"
+
+Steps to reproduce:
+1. Run /macos-resource-optimizer:0-init
+2. Run /macos-resource-optimizer:1-analyze
+
+Expected: Analysis completes successfully
+Actual: Crashes with IndexError
+
+System:
+- MacBook Pro 16-inch M1 Pro
+- 32GB RAM
+- macOS 14.1.1
+- Python 3.11.6
+- Optimizer v7.0.0
+```
+
+### Good Feature Request
+
+```
+Title: Add energy impact estimation
+
+Description:
+Currently, the optimizer shows improvements but doesn't quantify
+the actual energy savings. It would be helpful to estimate:
+- kWh saved per month
+- Cost savings (based on regional electricity rates)
+- CO2 emissions reduction
+
+This would help justify the optimization effort and appeal
+to environmentally conscious users.
+
+Use case: Corporate deployments need to demonstrate ROI
+```
+
+## Feedback Guidelines
+
+### Do
+
+- Be specific and clear
+- Include reproducible steps
+- Provide system information
+- Be constructive
+- Suggest solutions when possible
+
+### Don't
+
+- Be vague or unclear
+- Include sensitive information
+- Use profanity or hostility
+- Report duplicates without checking
+- Make feature requests without use case
+
+## Privacy
+
+Your feedback may include:
+
+**Automatically sent**:
+- System information
+- Error logs
+- Optimizer version
+
+**You control**:
+- Contact information
+- Custom attachments
+- Specific message content
+
+We never send:
+- Personal files
+- Passwords or tokens
+- Private application data
+- User activity beyond optimizer
+
+## Community Feedback
+
+### Vote on Ideas
+
+```bash
+# View popular feedback
+/macos-resource-optimizer:9-feedback --popular
+
+# View recent feedback
+/macos-resource-optimizer:9-feedback --recent
+
+# Vote on feature request
+/macos-resource-optimizer:9-feedback --vote FB-2024-000999
+```
+
+### Contribute Improvements
+
+Help shape the product by:
+- Voting on features you want
+- Adding details to existing requests
+- Testing proposed solutions
+- Suggesting alternatives
+
+## Feedback Statistics
+
+View feedback trends:
+
+```bash
+/macos-resource-optimizer:9-feedback --statistics
+```
+
+Shows:
+- Total feedback submitted
+- Average response time
+- Feature request popularity
+- Bug fix rate
+
+## Next Steps
+
+- Submit your first feedback
+- Track your feedback [ID]
+- Help others by voting
+- See your feature shipped!
+
+## Related Commands
+
+- [analyze](/commands/analyze) - Provide detailed analysis data
+- [report](/commands/report) - Export detailed metrics
+
+## Getting Help
+
+- Check [FAQ](/guides/faq)
+- Review [Troubleshooting](/guides/troubleshooting)
+- Search existing feedback
+
+Thank you for helping us improve macOS Resource Optimizer!

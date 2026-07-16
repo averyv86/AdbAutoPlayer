@@ -1,0 +1,61 @@
+id: adb-disconnect
+name: Disconnect from ADB Device
+description: Terminate ADB connection from device
+category: connection
+version: 1.0.0
+
+parameters:
+  - name: device
+    type: string
+    default: ""
+    description: "Device IP:port or serial (empty = all devices)"
+    required: false
+  - name: force
+    type: boolean
+    default: false
+    description: "Force disconnect without graceful shutdown"
+    required: false
+  - name: kill_daemon
+    type: boolean
+    default: false
+    description: "Kill ADB daemon after disconnection"
+    required: false
+
+action:
+  script: .claude/skills/moai-domain-adb/scripts/connection/disconnect.py
+  args: ["--device", "{{ device }}", "--force", "{{ force }}", "--kill-daemon", "{{ kill_daemon }}"]
+  timeout_seconds: 15
+
+success_criteria:
+  exit_code: 0
+  output_contains:
+    - "Disconnected successfully"
+    - "disconnected"
+    - "no devices"
+  output_patterns:
+    - "Closed connection to .+"
+
+error_handling:
+  retry: true
+  max_retries: 2
+  retry_delay: 1
+  on_error:
+    - exit_code: 1
+      action: "Device not found, verify device specification"
+    - exit_code: 2
+      action: "Connection already closed"
+
+outputs:
+  - name: disconnected_devices
+    type: array
+    description: "List of disconnected device identifiers"
+  - name: disconnect_status
+    type: string
+    description: "Overall disconnection status"
+  - name: daemon_status
+    type: string
+    description: "ADB daemon status after disconnect"
+
+validation:
+  - name: device_format
+    rule: "device must match IP:port, serial, or be empty"

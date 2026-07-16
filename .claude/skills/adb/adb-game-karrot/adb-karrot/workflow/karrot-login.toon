@@ -1,0 +1,275 @@
+name: Karrot Login Workflow
+version: 2.0.0
+description: Login workflow with BANNED ZONE protection and auto-recovery
+last_updated: 2024-12-03
+
+# USER SETTINGS (SAVED)
+user:
+  neighborhood: "서초동"
+  phone_number: "01039705176"
+  country: "Korea"
+
+# Device Configuration
+device:
+  id: "127.0.0.1:5555"
+  emulator: "BlueStacks Air"
+
+parameters:
+  random_delay:
+    enabled: true
+    min_ms: 500
+    max_ms: 2000
+  tap_variance:
+    enabled: true
+    offset_px: 5
+  detection_avoidance: true
+  banned_zone_check: true  # NEW: Always check banned zones
+
+# BANNED ZONES - NEVER TAP HERE (imported from karrot-banned-zones.toon)
+banned_zones:
+  - id: bluestacks_game_banner
+    description: "BlueStacks POPULAR GAMES TO PLAY - opens Play Store"
+    y_min: 2187
+    y_max: 2560
+    x_min: 0
+    x_max: 1440
+    misclick_count: 3
+
+  - id: bluestacks_ad_container
+    description: "BlueStacks side ad container"
+    y_min: 162
+    y_max: 2422
+    x_min: 840
+    x_max: 1440
+    misclick_count: 1
+
+  - id: bluestacks_search
+    description: "BlueStacks Search bar"
+    y_min: 178
+    y_max: 258
+    x_min: 240
+    x_max: 1200
+    misclick_count: 0
+
+# Alert packages - if these open, we've misclicked
+alert_packages:
+  - com.android.vending       # Google Play Store
+  - com.uncube.launcher3      # BlueStacks Launcher
+  - com.google.android.gms    # Google Play Services
+
+target_package: com.towneers.www
+
+phases:
+  - id: launch
+    name: Launch Karrot App
+    steps:
+      - action: force-stop
+        package: com.uncube.launcher3
+        description: "Kill BlueStacks launcher first"
+
+      - action: adb-start-app
+        package: com.towneers.www
+        activity: .launcher.LauncherActivity
+        wait_ms: 5000
+
+      - action: verify-package
+        expected: com.towneers.www
+        on_fail: retry
+
+  - id: welcome
+    name: Handle Welcome Screen
+    steps:
+      - action: verify-screen
+        template: welcome_screen
+        timeout_ms: 10000
+
+      - action: safe-tap
+        x: 720
+        y: 2350  # SAFE: Upper part of Get Started button
+        description: "Tap Get started (avoiding ad zone)"
+        variance_px: 5
+        banned_zone_check: true
+
+      - action: delay
+        min_ms: 3000
+        max_ms: 4000
+
+      - action: verify-not-package
+        packages:
+          - com.android.vending
+          - com.uncube.launcher3
+        on_fail: recover
+
+  - id: neighborhood
+    name: Select Neighborhood
+    steps:
+      - action: wait-for-text
+        text: "Search by neighborhood"
+        timeout_ms: 10000
+
+      # 서초동 is not in default list - need to search or use GPS
+      - action: safe-tap
+        x: 720
+        y: 216
+        description: "Tap Find nearby neighborhoods"
+        variance_px: 5
+
+      - action: delay
+        min_ms: 3000
+        max_ms: 4000
+
+      # Search for 서초동 using OCR
+      - action: ocr-find
+        text: "서초동"
+        on_found: tap_element
+        on_not_found: tap_first_neighborhood
+
+  - id: verify_identity
+    name: Identity Verification
+    steps:
+      - action: wait-for-text
+        text: "Verify now"
+        timeout_ms: 10000
+
+      - action: safe-tap
+        x: 720
+        y: 2484  # SAFE: Verify now button
+        description: "Tap Verify now (30 sec)"
+        variance_px: 5
+        banned_zone_check: true
+
+      - action: wait-for-user
+        message: "Complete verification manually, then press Enter"
+        timeout_sec: 120
+
+  - id: enter_phone
+    name: Enter Phone Number
+    steps:
+      - action: wait-for-text
+        text: "phone"
+        timeout_ms: 10000
+
+      - action: safe-tap
+        x: 720
+        y: 400
+        description: "Tap phone input"
+
+      - action: input-text
+        text: "{{user.phone_number}}"
+        char_delay_ms: 80
+        char_variance_ms: 40
+
+      - action: safe-tap
+        x: 720
+        y: 2400
+        description: "Tap confirm"
+
+  - id: sms_verify
+    name: SMS Verification
+    steps:
+      - action: wait-for-user
+        message: "Enter SMS code manually, then press Enter"
+        timeout_sec: 300
+
+monitoring:
+  enabled: true
+  interval_ms: 2000
+  check_package: true
+  auto_recover: true
+
+  logcat:
+    enabled: true
+    keywords:
+      - LIAPP
+      - security
+      - tamper
+      - detection
+      - root
+    on_detect: pause_and_alert
+
+recovery:
+  on_error: retry
+  max_attempts: 3
+  retry_delay_ms: 2000
+
+  # Specific recovery actions
+  on_play_store:
+    actions:
+      - press_back
+      - press_back
+      - wait_ms: 500
+      - relaunch_app
+
+  on_bluestacks_launcher:
+    actions:
+      - force_stop: com.uncube.launcher3
+      - wait_ms: 500
+      - relaunch_app
+
+  states:
+    - condition: app_crashed
+      action: restart_app
+      wait_ms: 5000
+    - condition: dialog_popup
+      action: dismiss_dialog
+      tap_outside: true
+    - condition: wrong_package
+      action: recover_and_relaunch
+    - condition: banned_zone_tap
+      action: abort_tap
+      log: true
+
+# UI Coordinates (1440x2560 resolution)
+ui_coordinates:
+  resolution: 1440x2560
+  elements:
+    # Welcome Screen
+    welcome_get_started:
+      x: 720
+      y: 2350  # SAFE: Upper part (was 2374, now avoiding ad zone)
+      safe: true
+    welcome_log_in:
+      x: 872
+      y: 2493
+      safe: false  # WARNING: Close to banned zone
+
+    # Neighborhood Selection
+    search_field:
+      x: 756
+      y: 104
+      safe: true
+    find_nearby:
+      x: 720
+      y: 216
+      safe: true
+
+    # Verification
+    verify_now:
+      x: 720
+      y: 2484
+      safe: true
+
+    # Phone Entry
+    phone_input:
+      x: 720
+      y: 400
+      safe: true
+    confirm_button:
+      x: 720
+      y: 2400
+      safe: true  # Adjusted to avoid ad zone
+
+    # Navigation
+    back_button:
+      x: 64
+      y: 104
+      safe: true
+
+# Notes for developers
+notes:
+  - "BlueStacks ad banner at y > 2187 - NEVER tap there"
+  - "User neighborhood: 서초동 (not in default list)"
+  - "Phone: 010-3970-5176 stored as 01039705176"
+  - "Use safe-tap action with banned_zone_check: true"
+  - "Always verify package after tap to detect misclicks"
+  - "Auto-recovery closes Play Store and relaunches Karrot"

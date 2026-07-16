@@ -1,0 +1,222 @@
+name: Integrity Signature Spoofing Verification
+description: Advanced verification of device signature spoofing and integrity API bypass capabilities
+version: 1.0.0
+
+metadata:
+  category: security-validation
+  skill: adb-bypass
+  difficulty: advanced
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  test_mode:
+    type: string
+    default: "comprehensive"
+    description: "Test mode: quick, standard, or comprehensive"
+  timeout:
+    type: integer
+    default: 45
+    description: Action timeout in seconds
+
+phases:
+  - id: analyze_fingerprint
+    name: Analyze Device Fingerprint Spoofing
+    description: Deep analysis of fingerprint spoofing implementation
+    steps:
+      - id: get_original_fingerprint
+        name: Capture Original Fingerprint
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "getprop ro.build.fingerprint"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: abort
+
+      - id: verify_fingerprint_consistency
+        name: Verify Fingerprint Consistency
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "for i in 1 2 3; do getprop ro.build.fingerprint; done | sort | uniq | wc -l"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: check_build_properties
+        name: Check Build Properties
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "getprop | grep -E '(ro.build|ro.product)' | wc -l"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+  - id: test_integrity_apis
+    name: Test Integrity APIs
+    description: Test device against various integrity checking services
+    steps:
+      - id: test_play_integrity_api
+        name: Test Play Integrity API
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "pm list packages | grep com.google.android.gms"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: test_device_properties_api
+        name: Test Device Properties API
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "getprop | grep -E '(ro.debuggable|ro.secure|ro.boot.serialno)'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: verify_no_debug_flags
+        name: Verify No Debug Flags Present
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "getprop ro.debuggable"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+  - id: test_hook_effectiveness
+    name: Test Hook Effectiveness
+    description: Verify that integrity checks are properly intercepted
+    steps:
+      - id: check_xposed_framework
+        name: Check for Hooking Framework
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls -la /data/adb/modules/ | grep -i 'xposed\\|riru\\|zygisk'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: verify_magisk_modules
+        name: List Active Magisk Modules
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls /data/adb/modules/ | grep -v '^\\.' | wc -l"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: check_selinux_context
+        name: Verify SELinux Context
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "ls -lZ /system/app/GmsCore 2>/dev/null | head -1"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+  - id: run_detection_tests
+    name: Run Detection Avoidance Tests
+    description: Test detection evasion mechanisms
+    steps:
+      - id: check_magisk_detection
+        name: Check Magisk Detection
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "which magisk > /dev/null && echo 'detectable' || echo 'hidden'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: check_su_access
+        name: Check SU Access Visibility
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "su -v 2>&1 | head -1"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+      - id: verify_system_isolation
+        name: Verify System Isolation
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "cat /proc/version | grep -i 'android\\|linux'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+  - id: generate_integrity_report
+    name: Generate Comprehensive Integrity Report
+    description: Create detailed verification results
+    steps:
+      - id: capture_system_state
+        name: Capture System State
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "dumpsys package | grep -A5 'playservices' | head -20"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: continue
+
+      - id: check_module_logs
+        name: Check Module Verification Logs
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "tail -100 /data/adb/modules/playintegrityfix/log.txt 2>/dev/null || echo 'no_logs'"
+          timeout: "{{ timeout }}"
+        on_success: continue
+        on_failure: skip
+
+validation:
+  - phase: analyze_fingerprint
+    condition: "fingerprint_consistency == '1'"
+    on_failure: continue
+
+  - phase: test_integrity_apis
+    condition: "gms_package_found == true"
+    on_failure: continue
+
+  - phase: test_hook_effectiveness
+    condition: "active_modules > 0"
+    on_failure: continue
+
+  - phase: run_detection_tests
+    condition: "magisk_hidden == true"
+    on_failure: continue
+
+recovery:
+  - on_error: verify_fingerprint_consistency
+    action: log_and_continue
+    max_attempts: 1
+
+  - on_error: test_hook_effectiveness
+    action: retry
+    max_attempts: 2
+
+outputs:
+  - name: integrity_status
+    format: json
+    description: Detailed integrity bypass verification results
+
+  - name: spoofing_effectiveness
+    format: table
+    description: Effectiveness metrics for each spoofing mechanism
+
+  - name: detection_risk_assessment
+    format: text
+    description: Risk assessment for app detection

@@ -1,0 +1,165 @@
+# Boot Image URLs for SM-S908E Virtual Device (QEMU/KVM)
+# Last Updated: 2025-12-02
+
+# ================================
+# RECOMMENDED: Cuttlefish Images
+# ================================
+# Cuttlefish is Google's reference virtual device platform for QEMU/KVM
+# Best match for your virtio-based Samsung virtual device
+
+[1] Cuttlefish Android 13 ARM64 (RECOMMENDED)
+URL: https://ci.android.com/builds/latest/branches/aosp-android13-release/targets/aosp_cf_arm64-userdebug/view/boot.img
+Description: Matches your Android 13 version + ARM64 architecture
+Download:
+  curl -L -o boot_cuttlefish_android13.img \
+    'https://ci.android.com/builds/latest/branches/aosp-android13-release/targets/aosp_cf_arm64-userdebug/view/boot.img'
+
+[2] Cuttlefish Latest ARM64
+URL: https://ci.android.com/builds/latest/branches/aosp-main/targets/aosp_cf_arm64-trunk_staging-userdebug/view/boot.img
+Description: Latest Cuttlefish build (may be unstable)
+Download:
+  curl -L -o boot_cuttlefish_latest.img \
+    'https://ci.android.com/builds/latest/branches/aosp-main/targets/aosp_cf_arm64-trunk_staging-userdebug/view/boot.img'
+
+# ================================
+# Alternative: Generic Images
+# ================================
+
+[3] Generic Kernel Image (GKI) Android 13
+URL: https://dl.google.com/android/gki/gki-certified-boot-android13-5.15.img
+Description: Generic kernel boot image for Android 13 devices
+Download:
+  curl -L -o boot_gki_android13.img \
+    'https://dl.google.com/android/gki/gki-certified-boot-android13-5.15.img'
+
+[4] AOSP Generic ARM64 Android 13
+URL: https://ci.android.com/builds/latest/branches/aosp-android13-release/targets/aosp_arm64-userdebug/view/boot.img
+Description: Generic AOSP ARM64 build
+Download:
+  curl -L -o boot_aosp_generic.img \
+    'https://ci.android.com/builds/latest/branches/aosp-android13-release/targets/aosp_arm64-userdebug/view/boot.img'
+
+# ================================
+# Full System Images (Advanced)
+# ================================
+
+[5] Cuttlefish Complete System Image
+URL: https://ci.android.com/builds/latest/branches/aosp-android13-release/targets/aosp_cf_arm64-userdebug/view/aosp_cf_arm64-img-*.zip
+Description: Complete Cuttlefish system (includes boot.img + system.img)
+Note: Large download (~2-4 GB), extract boot.img from zip
+Download:
+  # First, get the exact filename from the build page
+  # Then download and extract boot.img
+
+# ================================
+# Samsung Official Firmware
+# ================================
+# Note: Samsung firmware requires Bifrost/Frija/SamFirm tools or FUS API
+# Firmware is region-specific and very large (3-5 GB)
+
+Samsung FUS API Regions for SM-S908E:
+- XSA (Australia)
+- DBT (Germany)
+- BTU (United Kingdom)
+- XEU (Europe)
+- INS (India)
+
+To download Samsung firmware:
+1. Use Python script: python3 get_boot_img.py
+2. Or use SamFirm/Frija tools
+3. Or use Updato.com / sammobile.com (requires account)
+
+# ================================
+# Quick Commands
+# ================================
+
+# Download recommended image:
+curl -L -o boot.img \
+  'https://ci.android.com/builds/latest/branches/aosp-android13-release/targets/aosp_cf_arm64-userdebug/view/boot.img'
+
+# Check if download succeeded:
+file boot.img
+# Expected output: Android bootimg, kernel, ramdisk...
+
+# Get boot.img info:
+python3 -c "
+import struct
+with open('boot.img', 'rb') as f:
+    magic = f.read(8)
+    if magic == b'ANDROID!':
+        print('Valid Android boot image')
+        f.seek(8)
+        kernel_size = struct.unpack('<I', f.read(4))[0]
+        kernel_addr = struct.unpack('<I', f.read(4))[0]
+        ramdisk_size = struct.unpack('<I', f.read(4))[0]
+        print(f'Kernel size: {kernel_size} bytes')
+        print(f'Kernel addr: 0x{kernel_addr:08x}')
+        print(f'Ramdisk size: {ramdisk_size} bytes')
+    else:
+        print('Not a valid Android boot image')
+"
+
+# ================================
+# Additional Resources
+# ================================
+
+Android CI/CD Build Server:
+  https://ci.android.com/
+
+Cuttlefish Documentation:
+  https://source.android.com/docs/setup/create/cuttlefish
+
+Generic Kernel Image (GKI):
+  https://source.android.com/docs/core/architecture/kernel/generic-kernel-image
+
+Magisk GitHub Releases:
+  https://github.com/topjohnwu/Magisk/releases
+
+# ================================
+# Virtual Device Specific Notes
+# ================================
+
+Your device details:
+- Model: SM-S908E (Galaxy S22 Ultra Exynos variant)
+- Android: 13 (API 33)
+- Build: TQ2B.230505.005.A1
+- Board: taro
+- Virtualization: QEMU/KVM
+- Block devices: vda, vdb (virtio)
+- ro.secure=0, ro.debuggable=1
+
+Since you're running a VIRTUAL device on QEMU/KVM:
+
+1. Standard Android block device paths may not work:
+   ❌ /dev/block/bootdevice/by-name/boot
+   ❌ /dev/block/mmcblk0pXX
+   ✅ /dev/vda, /dev/vdb (virtio block devices)
+
+2. You may need to:
+   - Modify VM configuration to use patched boot.img
+   - Or find the correct virtio partition containing boot
+   - Or rebuild the VM with new boot image
+
+3. Check VM boot configuration:
+   adb shell cat /proc/cmdline
+   adb shell cat /proc/partitions
+   adb shell ls -la /dev/block/
+
+4. The boot.img might be part of the VM disk image rather than
+   a separate partition you can flash via dd.
+
+# ================================
+# Support & References
+# ================================
+
+XDA Developers - Magisk:
+  https://forum.xda-developers.com/t/magisk-the-magic-mask-for-android.3473445/
+
+Samsung Firmware Downloads:
+  https://samfw.com/
+  https://samfrew.com/
+  https://www.sammobile.com/firmwares/
+
+Virtual Device Rooting:
+  https://github.com/google/android-cuttlefish
+  https://source.android.com/docs/setup/start/cuttlefish-use

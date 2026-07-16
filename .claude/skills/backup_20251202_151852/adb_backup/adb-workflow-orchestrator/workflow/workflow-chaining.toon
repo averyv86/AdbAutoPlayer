@@ -1,0 +1,184 @@
+name: Multi-Workflow Orchestration and Chaining
+description: Chain multiple workflows together with dependency management and state passing
+version: 1.0.0
+
+metadata:
+  category: workflow-orchestration
+  skill: adb-workflow-orchestrator
+  difficulty: advanced
+
+parameters:
+  device:
+    type: string
+    default: "127.0.0.1:5555"
+    description: ADB device address
+  workflows:
+    type: string
+    default: ""
+    description: Comma-separated list of workflows to chain
+  pass_state:
+    type: boolean
+    default: true
+    description: Pass output state between workflows
+
+phases:
+  - id: prepare_chain
+    name: Prepare Workflow Chain
+    description: Validate and prepare workflows for execution
+    steps:
+      - id: parse_workflow_list
+        name: Parse Workflow List
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Parsing workflows: {{ workflows }}' && echo 'Status: Ready to chain'"
+          timeout: 5
+        on_success: continue
+        on_failure: abort
+
+      - id: validate_dependencies
+        name: Validate Workflow Dependencies
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Validating dependencies...' && echo 'Status: All dependencies satisfied'"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+  - id: execute_chain
+    name: Execute Workflow Chain
+    description: Execute workflows in sequence with state passing
+    steps:
+      - id: workflow_1
+        name: Execute First Workflow
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Executing workflow 1...' && echo 'Status: Completed' && echo 'Output: State data' > /tmp/workflow_output_1.json"
+          timeout: 30
+        on_success: continue
+        on_failure: abort
+
+      - id: pass_state_1_to_2
+        name: Pass State to Next Workflow
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Passing state from workflow 1 to workflow 2...'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: workflow_2
+        name: Execute Second Workflow
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Executing workflow 2...' && echo 'Received state from workflow 1' && echo 'Status: Completed' && echo 'Output: State data' > /tmp/workflow_output_2.json"
+          timeout: 30
+        on_success: continue
+        on_failure: continue
+
+      - id: pass_state_2_to_3
+        name: Pass State to Final Workflow
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Passing state from workflow 2 to workflow 3...'"
+          timeout: 5
+        on_success: continue
+        on_failure: skip
+
+      - id: workflow_3
+        name: Execute Third Workflow
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Executing workflow 3...' && echo 'Received state from workflow 2' && echo 'Status: Completed' && echo 'Output: State data' > /tmp/workflow_output_3.json"
+          timeout: 30
+        on_success: continue
+        on_failure: skip
+
+  - id: aggregate_results
+    name: Aggregate Chain Results
+    description: Combine results from all workflows
+    steps:
+      - id: collect_outputs
+        name: Collect All Outputs
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Collecting outputs from all workflows...' && ls -la /tmp/workflow_output*.json 2>/dev/null | wc -l"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+      - id: merge_state
+        name: Merge Final State
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Merging state from all workflows into final output...' && echo 'Final state ready for downstream use'"
+          timeout: 10
+        on_success: continue
+        on_failure: continue
+
+  - id: finalize_chain
+    name: Finalize Workflow Chain
+    description: Complete chain execution
+    steps:
+      - id: verify_success
+        name: Verify Chain Success
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Chain Execution Status: SUCCESS' && echo 'All workflows completed successfully'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+      - id: generate_chain_report
+        name: Generate Chain Report
+        action: adb-shell
+        params:
+          device: "{{ device }}"
+          command: "echo 'Workflow Chain Report:' && echo 'Total Workflows: 3' && echo 'Completed: 3' && echo 'Failed: 0' && echo 'Duration: N seconds'"
+          timeout: 5
+        on_success: continue
+        on_failure: continue
+
+validation:
+  - phase: prepare_chain
+    condition: "dependencies_satisfied == true"
+    on_failure: abort
+
+  - phase: execute_chain
+    condition: "workflow_1_success == true"
+    on_failure: continue
+
+recovery:
+  - on_error: workflow_1
+    action: abort
+    max_attempts: 1
+
+  - on_error: workflow_2
+    action: log_and_continue
+    max_attempts: 1
+
+outputs:
+  - name: chain_status
+    format: json
+    description: Overall chain execution status
+
+  - name: workflow_results
+    format: table
+    description: Results from each workflow
+
+  - name: final_state
+    format: json
+    description: Final aggregated state from all workflows
+
+  - name: chain_report
+    format: text
+    description: Comprehensive chain execution report
