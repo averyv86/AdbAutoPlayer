@@ -54,7 +54,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
-      - name: Ty check
+      - name: Type check (non-blocking alpha)
         run: uv run ty check
         continue-on-error: true
 
