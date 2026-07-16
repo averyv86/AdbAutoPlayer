@@ -87,6 +87,7 @@ jobs:
       - name: Upload coverage report
         uses: codecov/codecov-action@v4
         with:
+          # Optional for public repositories; recommended for private repositories.
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
           fail_ci_if_error: false
