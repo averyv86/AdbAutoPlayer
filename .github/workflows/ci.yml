@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -35,7 +38,6 @@ jobs:
 
   typecheck:
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
       - name: Checkout
@@ -54,6 +56,7 @@ jobs:
 
       - name: Ty check
         run: uv run ty check
+        continue-on-error: true
 
   test:
     runs-on: ubuntu-latest
@@ -83,7 +86,6 @@ jobs:
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v4
-        continue-on-error: true
         with:
           files: ./coverage.xml
           fail_ci_if_error: false
