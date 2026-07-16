@@ -1,0 +1,3 @@
+# DSMS (Dynamic Security Management System) - MediaTek
+on init
+    mkdir /data/vendor/dsms 0700 system system

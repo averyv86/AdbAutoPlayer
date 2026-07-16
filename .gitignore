@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build and temp directories
+out/
+build/
+bin/
+/tmp/
+magisk_temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini

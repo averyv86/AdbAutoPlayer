@@ -1,0 +1,3 @@
+add_lunch_combo omni_gta9wifi-user
+add_lunch_combo omni_gta9wifi-userdebug
+add_lunch_combo omni_gta9wifi-eng

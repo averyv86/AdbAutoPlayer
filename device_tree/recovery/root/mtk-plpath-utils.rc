@@ -1,0 +1,6 @@
+# MediaTek PL path utilities
+service mtk_plpath_utils /system/bin/mtk_plpath_utils
+    class core
+    user root
+    group root
+    oneshot

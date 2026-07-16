@@ -1,0 +1,5 @@
+# DSMS Common
+on init
+    mkdir /persist 0700 system system
+    mkdir /persist/vendor 0700 system system
+    mkdir /persist/vendor/dsms 0700 system system
